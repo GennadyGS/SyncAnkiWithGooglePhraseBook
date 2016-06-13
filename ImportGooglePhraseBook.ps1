@@ -34,4 +34,4 @@ $key=$matches[1]
 $googlePhraseBookUrl = "$googlePhraseBookUrlTemplate$key"
 $phrasebookResponse = Invoke-WebRequest $googlePhraseBookUrl -Method POST -WebSession $session
 
-$phrasebookResponse.Content | Out-File "PhraseBook.json" -Encoding utf8
+$phrasebookResponse.Content

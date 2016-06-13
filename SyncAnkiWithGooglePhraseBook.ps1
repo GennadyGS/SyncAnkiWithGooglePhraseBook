@@ -6,9 +6,7 @@ $deckName="My words"
 $userName="GennadyGS@gmail.com"
 $password="9NJZA7Ud"
 
-Invoke-Expression ".\ImportGooglePhraseBook.ps1 $args"
-
-$phraseBook = ((Get-Content .\PhraseBook.json) | Out-String).Replace(',,', ',"",')
+$phraseBook = (Invoke-Expression ".\ImportGooglePhraseBook.ps1 $args").Replace(',,', ',"",')
 $phraseBookJson = $phraseBook | ConvertFrom-Json -Verbose
 
 Foreach($item in $phraseBookJson[2]) {
