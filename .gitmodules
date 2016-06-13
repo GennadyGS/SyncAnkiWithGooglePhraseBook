@@ -1,0 +1,6 @@
+[submodule "addToAnki"]
+	path = addToAnki
+	url = git@bitbucket.org:GennadyGS/addtoanki.git
+[submodule "anki"]
+	path = anki
+	url = git@bitbucket.org:GennadyGS/anki.git
