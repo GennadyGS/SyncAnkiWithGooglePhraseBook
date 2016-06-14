@@ -1,4 +1,4 @@
-$ankiConfig = @{
+@{
     collectionFilePath = "";
     deckName = "";
     webCredentials = @{

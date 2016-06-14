@@ -1,4 +1,4 @@
-$googleConfig = @{
+@{
     userName = "";
     password = ""
 }

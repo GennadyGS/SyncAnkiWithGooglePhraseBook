@@ -1,7 +1,11 @@
-. .\GoogleConfig.ps1
-if (Test-Path ".\GoogleConfig.private.ps1") {
-    . .\GoogleConfig.private.ps1
+Function LoadConfig() {
+    if (Test-Path .\GoogleConfig.private.ps1) {
+        return .\GoogleConfig.private.ps1
+    }
+    return .\GoogleConfig.ps1
 }
+
+$googleConfig = LoadConfig
 
 $googleAccountsUrl="https://accounts.google.com"
 $loginUrl = "$googleAccountsUrl/ServiceLogin"
@@ -35,4 +39,5 @@ $googlePhraseBookUrl = "$googlePhraseBookUrlTemplate$key"
 $phrasebookResponse = Invoke-WebRequest $googlePhraseBookUrl -Method POST -WebSession $session
 
 $contentStr = $phrasebookResponse.Content
+$contentStr | Out-File .\GooglePhrasebook.json -Encoding utf8
 $contentStr.Replace(',,', ',"",') | ConvertFrom-Json
