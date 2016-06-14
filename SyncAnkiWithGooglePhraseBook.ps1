@@ -44,7 +44,7 @@ Push-Location (Split-Path $MyInvocation.MyCommand.Path -Parent)
 
 $phraseBookJson = .\ExportGooglePhraseBook.ps1
 
-$lastHandledTime = LoadLastHandledTime
+$global:lastHandledTime = LoadLastHandledTime
 
 $ankiConfig = LoadAnkiConfiguration
 
@@ -52,6 +52,6 @@ AddCardsToDeck $phraseBookJson $ankiConfig
 
 . .\SyncAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.webCredentials.userName $ankiConfig.webCredentials.password
 
-SaveLastHandledTime $lastHandledTime
+SaveLastHandledTime $global:lastHandledTime
 
 Pop-Location
