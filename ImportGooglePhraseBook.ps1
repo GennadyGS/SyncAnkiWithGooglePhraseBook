@@ -1,7 +1,7 @@
-param (
-    $googleLogin,
-    $googlePassword
-)
+. .\GoogleConfig.ps1
+if (Test-Path ".\GoogleConfig.private.ps1") {
+    . .\GoogleConfig.private.ps1
+}
 
 $googleAccountsUrl="https://accounts.google.com"
 $loginUrl = "$googleAccountsUrl/ServiceLogin"
@@ -19,8 +19,8 @@ if (!($loginResponse -match $galxPattern)) { throw "Invalid login response." }
 $galx = $matches[1]
 
 $authParams = @{
-    Email = $googleLogin; 
-    Passwd = $googlePassword;
+    Email = $googleConfig.userName; 
+    Passwd = $googleConfig.password;
     GALX = $galx;
     PersistentCookie = "yes";
     bgresponse = "js_disabled";
