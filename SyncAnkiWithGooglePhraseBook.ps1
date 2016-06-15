@@ -21,10 +21,12 @@ Function SaveLastHandledTime() {
 
 Function AddCardsToDeck() {
     param (
-        $phraseBookJson
+        $phraseBookJson,
+        $ankiConfig
     )
 
     $maxHandledTime = $lastHandledTime;
+    $collectionChanged = $false
     Foreach($item in $phraseBookJson[2]) {
         $srcLanguage = $item[1]
         $destLanguage = $item[2]
@@ -33,8 +35,11 @@ Function AddCardsToDeck() {
         $time = [long]$item[5]
         if ($time -gt $lastHandledTime) {
             $cardModel = $ankiConfig.modelNameTemplate -f $srcLanguage, $destLanguage
-            Write-Output "Adding card '$srcPhrase`:$destPhrase' to deck '$ankiConfig.deckName' with model '$cardModel'"
+            Write-Host "Adding card '$srcPhrase`:$destPhrase' to deck '$ankiConfig.deckName' with model '$cardModel'"
             .\AddToAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.deckName $srcPhrase $destPhrase $cardModel
+            if ($?) { 
+                $global:collectionChanged = $true
+            }
             if ($time -gt $maxHandledTime) {
                 $maxHandledTime = $time
             }
@@ -48,12 +53,15 @@ Push-Location (Split-Path $MyInvocation.MyCommand.Path -Parent)
 $phraseBookJson = .\ExportGooglePhraseBook.ps1
 
 $global:lastHandledTime = LoadLastHandledTime
+$global:collectionChanged = $false
 
 $ankiConfig = LoadAnkiConfiguration
 
 AddCardsToDeck $phraseBookJson $ankiConfig
 
-. .\SyncAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.webCredentials.userName $ankiConfig.webCredentials.password
+if ($global:collectionChanged) {
+    . .\SyncAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.webCredentials.userName $ankiConfig.webCredentials.password
+}
 
 SaveLastHandledTime $global:lastHandledTime
 
