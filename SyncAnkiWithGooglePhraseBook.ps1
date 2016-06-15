@@ -60,7 +60,7 @@ $ankiConfig = LoadAnkiConfiguration
 AddCardsToDeck $phraseBookJson $ankiConfig
 
 if ($global:collectionChanged) {
-    . .\SyncAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.webCredentials.userName $ankiConfig.webCredentials.password
+    .\SyncAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.webCredentials.userName $ankiConfig.webCredentials.password
 }
 
 SaveLastHandledTime $global:lastHandledTime
