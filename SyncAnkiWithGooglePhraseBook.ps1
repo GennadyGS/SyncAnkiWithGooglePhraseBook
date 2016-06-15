@@ -26,14 +26,17 @@ Function AddCardsToDeck() {
 
     $maxHandledTime = $lastHandledTime;
     Foreach($item in $phraseBookJson[2]) {
-        $cardFront = $item[3]
-        $cardBack = $item[4]
-        $cardTime = [long]$item[5]
-        if ($cardTime -gt $lastHandledTime) {
-            Write-Output "Adding card $cardFront`:$cardBack"
-            .\AddToAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.deckName $cardFront $cardBack
-            if ($cardTime -gt $maxHandledTime) {
-                $maxHandledTime = $cardTime
+        $srcLanguage = $item[1]
+        $destLanguage = $item[2]
+        $srcPhrase = $item[3]
+        $destPhrase = $item[4]
+        $time = [long]$item[5]
+        if ($time -gt $lastHandledTime) {
+            $cardModel = $ankiConfig.modelNameTemplate -f $srcLanguage, $destLanguage
+            Write-Output "Adding card '$srcPhrase`:$destPhrase' to deck '$ankiConfig.deckName' with model '$cardModel'"
+            .\AddToAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.deckName $srcPhrase $destPhrase $cardModel
+            if ($time -gt $maxHandledTime) {
+                $maxHandledTime = $time
             }
         }
     }
