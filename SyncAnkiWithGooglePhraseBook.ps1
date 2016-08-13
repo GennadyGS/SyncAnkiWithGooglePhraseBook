@@ -52,10 +52,12 @@ Push-Location (Split-Path $MyInvocation.MyCommand.Path -Parent)
 
 $phraseBookJson = .\ExportGooglePhraseBook.ps1
 
+$ankiConfig = LoadAnkiConfiguration
+
+.\SyncAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.webCredentials.userName $ankiConfig.webCredentials.password
+
 $global:lastHandledTime = LoadLastHandledTime
 $global:collectionChanged = $false
-
-$ankiConfig = LoadAnkiConfiguration
 
 AddCardsToDeck $phraseBookJson $ankiConfig
 
