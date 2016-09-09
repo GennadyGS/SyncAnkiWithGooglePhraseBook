@@ -1,4 +1,6 @@
-$lastHandledTimeFilePath = ".\LastHandledTime.txt"
+$outputPath = "Output"
+$lastHandledTimeFilePath = "$outputPath\LastHandledTime.txt"
+$logFileName = "$outputPath\SyncAnkiWithGooglePhraseBook.log"
 
 Function LoadAnkiConfiguration() {
     if (Test-Path ".\AnkiConfig.private.ps1") {
@@ -50,21 +52,52 @@ Function AddCardsToDeck() {
 
 Push-Location (Split-Path $MyInvocation.MyCommand.Path -Parent)
 
-$phraseBookJson = .\ExportGooglePhraseBook.ps1
-
-$ankiConfig = LoadAnkiConfiguration
-
-.\SyncAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.webCredentials.userName $ankiConfig.webCredentials.password
-
-$global:lastHandledTime = LoadLastHandledTime
-$global:collectionChanged = $false
-
-AddCardsToDeck $phraseBookJson $ankiConfig
-
-if ($global:collectionChanged) {
-    .\SyncAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.webCredentials.userName $ankiConfig.webCredentials.password
+if (!(Test-Path -Path $outputPath))
+{
+    New-Item $outputPath -type directory | Out-Null
 }
 
-SaveLastHandledTime $global:lastHandledTime
+try{
+    Write-Output "Starting transcription to $logFileName..."
+    Start-Transcript -path $logFileName
+}
+catch {
+    Write-Error "Error starting subscription: $_";
+}
 
+try {
+    try {
+        $phraseBookJson = .\ExportGooglePhraseBook.ps1
+
+        $ankiConfig = LoadAnkiConfiguration
+
+        .\SyncAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.webCredentials.userName $ankiConfig.webCredentials.password
+
+        $global:lastHandledTime = LoadLastHandledTime
+        $global:collectionChanged = $false
+
+        AddCardsToDeck $phraseBookJson $ankiConfig
+
+        if ($global:collectionChanged) {
+            .\SyncAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.webCredentials.userName $ankiConfig.webCredentials.password
+        }
+
+        SaveLastHandledTime $global:lastHandledTime
+    }
+    catch {
+        Write-Error -ErrorRecord $Error[0]
+        throw
+    }
+    finally {
+        try{
+            Stop-Transcript
+        }
+        catch {
+            Write-Error "Error stopping subscription: $_";
+        }
+    }
+}
+catch {
+    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null    
+}
 Pop-Location
