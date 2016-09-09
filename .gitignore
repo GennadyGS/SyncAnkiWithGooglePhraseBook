@@ -1,3 +1,4 @@
 *.private.ps1
+/Output
 GooglePhraseBook.json
 LastHandledTime.txt

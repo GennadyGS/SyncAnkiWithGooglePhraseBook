@@ -32,7 +32,12 @@ $authParams = @{
 }
 
 $authResponse = Invoke-WebRequest $authUrl -Method POST -Body $authParams -WebSession $session
-if (!($authResponse -match $keyPattern)) { throw "Invalid auth response." }
+if (!($authResponse -match $keyPattern)) { 
+    New-Item -ItemType Directory -Force -Path Output
+    $authResponse | Out-File Output\AuthResponse.txt -Force
+    $authResponse.Content | Out-File Output\AuthResponse.html -Force
+    throw "Invalid auth response." 
+}
 $key=$matches[1]
 
 $googlePhraseBookUrl = "$googlePhraseBookUrlTemplate$key"
