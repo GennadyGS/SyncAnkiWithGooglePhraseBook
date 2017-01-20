@@ -44,5 +44,5 @@ $googlePhraseBookUrl = "$googlePhraseBookUrlTemplate$key"
 $phrasebookResponse = Invoke-WebRequest $googlePhraseBookUrl -Method POST -WebSession $session
 
 $contentStr = $phrasebookResponse.Content
-$contentStr | Out-File .\GooglePhrasebook.json -Encoding utf8
+$contentStr | Out-File .\Output\GooglePhrasebook.json -Encoding utf8
 $contentStr.Replace(',,', ',"",') | ConvertFrom-Json
