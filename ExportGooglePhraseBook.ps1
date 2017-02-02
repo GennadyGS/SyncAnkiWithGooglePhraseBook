@@ -1,3 +1,7 @@
+param (
+    $fileName
+)
+
 Function LoadConfig() {
     if (Test-Path .\GoogleConfig.private.ps1) {
         return .\GoogleConfig.private.ps1
@@ -43,6 +47,9 @@ $key=$matches[1]
 $googlePhraseBookUrl = "$googlePhraseBookUrlTemplate$key"
 $phrasebookResponse = Invoke-WebRequest $googlePhraseBookUrl -Method POST -WebSession $session
 
-$contentStr = $phrasebookResponse.Content
-$contentStr | Out-File .\Output\GooglePhrasebook.json -Encoding utf8
-$contentStr.Replace(',,', ',"",') | ConvertFrom-Json
+if ($fileName) {
+    $phrasebookResponse.Content | Out-File $fileName -Encoding utf8
+}
+else {
+    $phrasebookResponse.Content
+}

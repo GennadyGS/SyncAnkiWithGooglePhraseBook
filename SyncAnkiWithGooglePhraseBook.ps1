@@ -1,3 +1,7 @@
+param (
+    $fileName
+)
+
 $outputPath = "Output"
 $lastHandledTimeFilePath = "$outputPath\LastHandledTime.txt"
 $logFileName = "$outputPath\SyncAnkiWithGooglePhraseBook.log"
@@ -67,8 +71,8 @@ catch {
 
 try {
     try {
-        $phraseBookJson = .\ExportGooglePhraseBook.ps1
-
+        $contentStr = Get-Content $fileName
+        $phraseBookJson = $contentStr.Replace(',,', ',"",') | ConvertFrom-Json
         $ankiConfig = LoadAnkiConfiguration
 
         .\SyncAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.webCredentials.userName $ankiConfig.webCredentials.password
