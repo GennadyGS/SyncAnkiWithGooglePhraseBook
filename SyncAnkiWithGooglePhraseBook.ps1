@@ -39,7 +39,7 @@ Function AddCardsToDeck() {
         $srcPhrase = $item[3]
         $destPhrase = $item[4]
         $time = [long]$item[5]
-        if ($time -gt $lastHandledTime) {
+        if (($lastHandledTime -eq 0) -or ($time -gt $lastHandledTime)) {
             $cardModel = $ankiConfig.modelNameTemplate -f $srcLanguage, $destLanguage
             Write-Host "Adding card '$srcPhrase`:$destPhrase' to deck '$ankiConfig.deckName' with model '$cardModel'"
             .\AddToAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.deckName $srcPhrase $destPhrase $cardModel
