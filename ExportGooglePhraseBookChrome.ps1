@@ -2,7 +2,6 @@ param (
     $fileName
 )
 
-$scriptPath = $(Get-Location).Path
-$chromeProfile = "$scriptPath\Output\ChromeProfile\User Data"
+$chromeProfile = "$PSScriptRoot\Output\ChromeProfile\User Data"
 
-. "$scriptPath\GooglePhraseBookExport\GooglePhraseBookExport.exe" $chromeProfile $fileName
+. "$PSScriptRoot\GooglePhraseBookExport\GooglePhraseBookExport.exe" $chromeProfile $fileName

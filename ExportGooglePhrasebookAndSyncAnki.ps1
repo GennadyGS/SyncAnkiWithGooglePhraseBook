@@ -1,7 +1,6 @@
 $outputPath = "Output"
-$phraseBookFileName = "$outputPath\GooglePhrasebook.json"
-$scriptPath = $(Get-Location).Path
+$phraseBookFileName = "$PSScriptRoot\$outputPath\GooglePhrasebook.json"
 
 #. $scriptPath\ExportGooglePhraseBook.ps1 $phraseBookFileName
-. $scriptPath\ExportGooglePhraseBookChrome.ps1 $phraseBookFileName
-. $scriptPath\SyncAnkiWithGooglePhraseBook.ps1 $phraseBookFileName
+. $PSScriptRoot\ExportGooglePhraseBookChrome.ps1 $phraseBookFileName
+. $PSScriptRoot\SyncAnkiWithGooglePhraseBook.ps1 $phraseBookFileName
