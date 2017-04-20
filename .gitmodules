@@ -4,3 +4,6 @@
 [submodule "anki"]
 	path = anki
 	url = git@bitbucket.org:GennadyGS/anki.git
+[submodule "GooglePhrasebookExport"]
+	path = GooglePhrasebookExport
+	url = git@bitbucket.org:GennadyGS/googlephrasebookexport.git
