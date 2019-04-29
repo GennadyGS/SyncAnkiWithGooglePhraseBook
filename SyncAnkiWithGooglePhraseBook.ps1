@@ -25,6 +25,15 @@ Function SaveLastHandledTime() {
     $lastHandledTime | Out-File $lastHandledTimeFilePath
 }
 
+Function GetDeckName() {
+    param (
+        $srcLanguage,
+        $destLanguage
+    )
+    $languagesSorted = ($srcLanguage, $destLanguage) | Sort-Object
+    $ankiConfig.deckNameTemplate -f $languagesSorted[0], $languagesSorted[1]
+}
+
 Function AddCardsToDeck() {
     param (
         $phraseBookJson,
@@ -39,10 +48,11 @@ Function AddCardsToDeck() {
         $srcPhrase = $item[3]
         $destPhrase = $item[4]
         $time = [long]$item[5]
+        $deckName = GetDeckName $srcLanguage $destLanguage
         if (($lastHandledTime -eq 0) -or ($time -gt $lastHandledTime)) {
             $cardModel = $ankiConfig.modelNameTemplate -f $srcLanguage, $destLanguage
-            Write-Host "Adding card '$srcPhrase`:$destPhrase' to deck '$ankiConfig.deckName' with model '$cardModel'"
-            .\AddToAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.deckName $srcPhrase $destPhrase $cardModel
+            Write-Host "Adding card '$srcPhrase`:$destPhrase' to deck '$deckName' with model '$cardModel'"
+            .\AddToAnki.ps1 $ankiConfig.collectionFilePath $deckName $srcPhrase $destPhrase $cardModel
             if ($?) { 
                 $global:collectionChanged = $true
             }
