@@ -7,3 +7,6 @@
 [submodule "GooglePhrasebookExport"]
 	path = GooglePhrasebookExport
 	url = https://GennadyGS@bitbucket.org/GennadyGS/googlephrasebookexport.git
+[submodule "ankiNew"]
+	path = ankiNew
+	url = https://github.com/ankitects/anki.git
