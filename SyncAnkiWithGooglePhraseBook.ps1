@@ -2,16 +2,11 @@ param (
     $fileName
 )
 
+. $PSScriptRoot\AnkiUtils.ps1
+
 $outputPath = "Output"
 $lastHandledTimeFilePath = "$outputPath\LastHandledTime.txt"
 $logFileName = "$outputPath\SyncAnkiWithGooglePhraseBook.log"
-
-Function LoadAnkiConfiguration() {
-    if (Test-Path ".\AnkiConfig.private.ps1") {
-        return .\AnkiConfig.private.ps1
-    }
-    return .\AnkiConfig.ps1
-}
 
 Function LoadLastHandledTime() {
     if (!(Test-Path $lastHandledTimeFilePath)) {
@@ -31,13 +26,12 @@ Function GetDeckName() {
         $destLanguage
     )
     $languagesSorted = ($srcLanguage, $destLanguage) | Sort-Object
-    $ankiConfig.deckNameTemplate -f $languagesSorted[0], $languagesSorted[1]
+    $ankiDeckNameTemplate -f $languagesSorted[0], $languagesSorted[1]
 }
 
 Function AddCardsToDeck() {
     param (
-        $phraseBookJson,
-        $ankiConfig
+        $phraseBookJson
     )
 
     $maxHandledTime = $lastHandledTime;
@@ -50,9 +44,8 @@ Function AddCardsToDeck() {
         $time = [long]$item[5]
         $deckName = GetDeckName $srcLanguage $destLanguage
         if (($lastHandledTime -eq 0) -or ($time -gt $lastHandledTime)) {
-            $cardModel = $ankiConfig.modelNameTemplate -f $srcLanguage, $destLanguage
-            Write-Host "Adding card '$srcPhrase`:$destPhrase' to deck '$deckName' with model '$cardModel'"
-            .\AddToAnki.ps1 $ankiConfig.collectionFilePath $deckName $srcPhrase $destPhrase $cardModel
+            $cardModel = $ankiModelNameTemplate -f $srcLanguage, $destLanguage
+            AddNoteToAnki $deckName $srcPhrase $destPhrase $cardModel
             if ($?) { 
                 $global:collectionChanged = $true
             }
@@ -83,17 +76,16 @@ try {
     try {
         $contentStr = Get-Content $fileName
         $phraseBookJson = $contentStr.Replace(',,', ',"",') | ConvertFrom-Json
-        $ankiConfig = LoadAnkiConfiguration
-
-        .\SyncAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.webCredentials.userName $ankiConfig.webCredentials.password
+        . LoadAnkiConfiguration
+        SyncAnkiCollection
 
         $global:lastHandledTime = LoadLastHandledTime
         $global:collectionChanged = $false
 
-        AddCardsToDeck $phraseBookJson $ankiConfig
+        AddCardsToDeck $phraseBookJson
 
         if ($global:collectionChanged) {
-            .\SyncAnki.ps1 $ankiConfig.collectionFilePath $ankiConfig.webCredentials.userName $ankiConfig.webCredentials.password
+            SyncAnkiCollection
         }
 
         SaveLastHandledTime $global:lastHandledTime
