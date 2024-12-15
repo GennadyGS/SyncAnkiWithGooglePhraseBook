@@ -1,5 +1,9 @@
-$outputPath = "Output"
-$phraseBookFileName = "$PSScriptRoot\$outputPath\GooglePhrasebook.json"
+param (
+    $spreadSheetId
+)
 
-. $PSScriptRoot\ExportGooglePhraseBookChrome.ps1 $phraseBookFileName
-. $PSScriptRoot\SyncAnkiWithGooglePhraseBook.ps1 $phraseBookFileName
+$outputPath = "Output"
+$phraseBookFileName = "$PSScriptRoot/$outputPath/GooglePhrasebook.json"
+
+. $PSScriptRoot\ExportGooglePhraseBookFromSpreadSheet.ps1 $spreadSheetId $phraseBookFileName
+# . $PSScriptRoot\SyncAnkiWithGooglePhraseBook.ps1 $phraseBookFileName
