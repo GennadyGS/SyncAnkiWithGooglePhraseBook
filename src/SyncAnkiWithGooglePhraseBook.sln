@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportGooglePhraseBookFromS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncAnkiWithGooglePhraseBookExtension", "SyncAnkiWithGooglePhraseBookExtension\SyncAnkiWithGooglePhraseBookExtension.csproj", "{91382296-E688-436E-89AB-FF8E39C2B213}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareSpreadSheet", "ShareSpreadSheet\ShareSpreadSheet.csproj", "{8BD87E83-DFA8-4FA3-B4FA-8300A0C2B3DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{91382296-E688-436E-89AB-FF8E39C2B213}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91382296-E688-436E-89AB-FF8E39C2B213}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91382296-E688-436E-89AB-FF8E39C2B213}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BD87E83-DFA8-4FA3-B4FA-8300A0C2B3DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BD87E83-DFA8-4FA3-B4FA-8300A0C2B3DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BD87E83-DFA8-4FA3-B4FA-8300A0C2B3DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BD87E83-DFA8-4FA3-B4FA-8300A0C2B3DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
