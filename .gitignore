@@ -1,2 +1,5 @@
 .vscode
 /Output
+launchSettings.json
+credential.json
+client_secret.json
