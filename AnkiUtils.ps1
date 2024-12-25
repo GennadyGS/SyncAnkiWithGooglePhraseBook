@@ -1,7 +1,7 @@
 Function LoadAnkiConfiguration() {
-    . .\AnkiConfig.ps1
+    . $PSScriptRoot\AnkiConfig.ps1
     if (Test-Path ".\AnkiConfig.private.ps1") {
-        . .\AnkiConfig.private.ps1
+        . $PSScriptRoot\AnkiConfig.private.ps1
     }
 }
 
@@ -23,46 +23,49 @@ Function CheckAnkiConnectResult {
     }
 }
 
+Function InvokeAnkiCommand([string] $action, [PSObject] $params) {
+    $command = @{
+        action = $action;
+        version = 6;
+    }
+    if ($params) {
+        $command["params"] = $params;
+    }
+    $commandJson = $command | ConvertTo-Json -Depth 100
+    $bodyContent = [System.Text.Encoding]::UTF8.GetBytes($commandJson)
+    Invoke-RestMethod -Uri $ankiConnectUrl -Method POST -Body $bodyContent
+    | CheckAnkiConnectResult
+}
+
 Function AddNoteToAnki {
     param (
         $deckName,
+        $model,
         $front,
-        $back,
-        $model
+        $back
     )
 
     EnsureAnkiIsRunning
     "Adding note '$front' - '$back' with model '$model' to deck '$deckName'"
-    $body =  @{
-        action = "addNote";
-        version = 6;
-        params = @{
-            note = @{
-                deckName = $deckName;
-                modelName = $model;
-                fields = @{
-                    Front = $front;
-                    Back = $back;
-                };
-                options = @{
-                    allowDuplicate = $false;
-                    duplicateScope = "deck";
-                };
-            }
+    $params = @{
+        note = @{
+            deckName = $deckName;
+            modelName = $model;
+            fields = @{
+                Front = $front;
+                Back = $back;
+            };
+            options = @{
+                allowDuplicate = $false;
+                duplicateScope = "deck";
+            };
         }
-    } | ConvertTo-Json -Depth 3
-    $bodyContent = [System.Text.Encoding]::UTF8.GetBytes($body)
-    Invoke-RestMethod -Uri $ankiConnectUrl -Method 'Post' -Body $bodyContent -ContentType 'application/json' `
-    | CheckAnkiConnectResult
+    }
+    InvokeAnkiCommand "addNote" $params
 }
 
 Function SyncAnkiCollection {
     EnsureAnkiIsRunning
     "Sync anki collection"
-    $body =  @{
-        action = "sync";
-        version = 6;
-    } | ConvertTo-Json -Depth 3
-    Invoke-RestMethod -Uri $ankiConnectUrl -Method 'Post' -Body $body -ContentType 'application/json' `
-    | CheckAnkiConnectResult
+    InvokeAnkiCommand "sync"
 }

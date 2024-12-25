@@ -45,8 +45,8 @@ Function AddCardsToDeck() {
         $deckName = GetDeckName $srcLanguage $destLanguage
         if (($lastHandledTime -eq 0) -or ($time -gt $lastHandledTime)) {
             $cardModel = $ankiModelNameTemplate -f $srcLanguage, $destLanguage
-            AddNoteToAnki $deckName $srcPhrase $destPhrase $cardModel
-            if ($?) { 
+            AddNoteToAnki $deckName $cardModel $srcPhrase $destPhrase
+            if ($?) {
                 $global:collectionChanged = $true
             }
             if ($time -gt $maxHandledTime) {
@@ -104,6 +104,6 @@ try {
     }
 }
 catch {
-    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null    
+    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
 }
 Pop-Location
