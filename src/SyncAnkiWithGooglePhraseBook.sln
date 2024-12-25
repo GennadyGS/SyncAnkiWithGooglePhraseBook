@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncAnkiWithGooglePhraseBoo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareSpreadSheet", "ShareSpreadSheet\ShareSpreadSheet.csproj", "{8BD87E83-DFA8-4FA3-B4FA-8300A0C2B3DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateAnki", "UpdateAnki\UpdateAnki.csproj", "{F85D7E36-64C1-4A07-9C63-54B58E2A0D7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Translation.Models", "Translation.Models\Translation.Models.csproj", "{7E3C6F43-27E7-4F87-8177-5331F63AAECE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{8BD87E83-DFA8-4FA3-B4FA-8300A0C2B3DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BD87E83-DFA8-4FA3-B4FA-8300A0C2B3DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8BD87E83-DFA8-4FA3-B4FA-8300A0C2B3DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F85D7E36-64C1-4A07-9C63-54B58E2A0D7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F85D7E36-64C1-4A07-9C63-54B58E2A0D7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F85D7E36-64C1-4A07-9C63-54B58E2A0D7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F85D7E36-64C1-4A07-9C63-54B58E2A0D7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E3C6F43-27E7-4F87-8177-5331F63AAECE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E3C6F43-27E7-4F87-8177-5331F63AAECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E3C6F43-27E7-4F87-8177-5331F63AAECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E3C6F43-27E7-4F87-8177-5331F63AAECE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
