@@ -7,16 +7,14 @@ namespace ShareSpreadsheet;
 
 internal static class Program
 {
-    // Scopes for Google Drive API
     private const string ApplicationName = "Drive API C# Quickstart";
+    private const string SecretFileName = "client_secret.json";
     private static readonly string[] Scopes = [DriveService.Scope.Drive];
 
     static async Task Main(string[] args)
     {
-        // Authenticate and create a Drive service
         var service = await AuthenticateUserAsync();
 
-        // Service account email
         const string serviceAccountEmail =
             "googlesheetscalendar@iconic-iridium-374712.iam.gserviceaccount.com";
         const string fileId = "1wmx2Nr8-IwRlHe4OanMxDxt_Jf1XMd7S7YbCdTV8LyY";
@@ -26,8 +24,7 @@ internal static class Program
 
     static async Task<DriveService> AuthenticateUserAsync()
     {
-        // Path to credentials.json (OAuth 2.0 credentials file)
-        await using var stream = new FileStream("client_secret.json", FileMode.Open, FileAccess.Read);
+        await using var stream = new FileStream(SecretFileName, FileMode.Open, FileAccess.Read);
         const string credPath = "token.json";
         var secretsStream = await GoogleClientSecrets.FromStreamAsync(stream);
         var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
@@ -37,12 +34,12 @@ internal static class Program
             CancellationToken.None,
             new FileDataStore(credPath, true));
 
-        // Create Drive API service
-        return new DriveService(new BaseClientService.Initializer()
-        {
-            HttpClientInitializer = credential,
-            ApplicationName = ApplicationName,
-        });
+        return new DriveService(
+            new BaseClientService.Initializer
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = ApplicationName,
+            });
     }
 
     static async Task ShareFileWithServiceAccount(
@@ -50,20 +47,19 @@ internal static class Program
     {
         try
         {
-            // Create a new permission
             var permission = new Google.Apis.Drive.v3.Data.Permission
             {
-                Type = "user",  // Sharing with a specific user
-                Role = "reader", // Access level (reader, writer, etc.)
-                EmailAddress = serviceAccountEmail
+                Type = "user",
+                Role = "reader",
+                EmailAddress = serviceAccountEmail,
             };
 
-            // Call the permissions.create method
             var request = service.Permissions.Create(permission, fileId);
-            request.Fields = "id"; // Only return the ID of the permission
+            request.Fields = "id";
             var result = await request.ExecuteAsync();
 
-            Console.WriteLine($"Successfully shared file (ID: {fileId}) with {serviceAccountEmail}. Permission ID: {result.Id}");
+            Console.WriteLine(
+                $"Successfully shared file (ID: {fileId}) with {serviceAccountEmail}. Permission ID: {result.Id}");
         }
         catch (Exception ex)
         {
