@@ -3,7 +3,7 @@ using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
 
-namespace ShareSpreadSheet;
+namespace ShareSpreadsheet;
 
 internal static class Program
 {
