@@ -17,8 +17,22 @@ public static class Program
     private const string CredentialFileName = "credential.json";
     private const string PhrasebookRange = "A:D";
 
-    public static int Main(string[] args) =>
-        Parser.Default.ParseArguments<CommandLineOptions>(args)
+    public static int Main(string[] args)
+    {
+        try
+        {
+            return RunCommandLineParser(args);
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e);
+            return 2;
+        }
+    }
+
+    private static int RunCommandLineParser(string[] args)
+    {
+        return Parser.Default.ParseArguments<CommandLineOptions>(args)
             .WithParsed(opt =>
             {
                 ExportPhrasebookToFile(opt.SpreadsheetId, opt.OutputFilePath);
@@ -31,11 +45,14 @@ public static class Program
                 }
             })
             .MapResult(_ => 0, _ => 1);
+    }
 
     private static void ExportPhrasebookToFile(string spreadsheetId, string outputFilePath)
     {
         var phraseTranslations = LoadPhraseTranslations(spreadsheetId);
+        Console.WriteLine($"Successfully loaded phrase book from spreadSheet {spreadsheetId}");
         SavePhraseTranslationsToFile(phraseTranslations, outputFilePath);
+        Console.WriteLine($"Successfully saved phrase book to file {outputFilePath}");
     }
 
     private static IReadOnlyCollection<PhraseTranslation> LoadPhraseTranslations(
