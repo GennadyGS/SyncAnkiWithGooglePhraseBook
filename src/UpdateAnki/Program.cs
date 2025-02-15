@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Translation.Models;
 using UpdateAnki.Extensions;
@@ -42,6 +43,10 @@ internal static class Program
 
         var noteIds = await httpClient.FindNotes($"\"deck:{ankiSettings.RootDeckName}\"");
         var notesInfo = await httpClient.GetNotesInfo(noteIds);
-        return [];
+        var modelNamePattern = ankiSettings.ModelNamePattern.ThrowIfNull();
+        var modelNameRegex = new Regex($"^{modelNamePattern}$", RegexOptions.Compiled);
+        return notesInfo
+            .Select(info => info.ToPhraseTranslation(modelNameRegex))
+            .ToArray();
     }
 }

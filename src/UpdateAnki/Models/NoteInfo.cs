@@ -6,5 +6,5 @@ internal sealed record NoteInfo
 
     public required string ModelName { get; init; }
 
-    public required IReadOnlyDictionary<string, object?> Fields { get; init; }
+    public required IReadOnlyDictionary<string, dynamic?> Fields { get; init; }
 }
