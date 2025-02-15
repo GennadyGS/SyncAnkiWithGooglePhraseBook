@@ -40,11 +40,8 @@ internal static class Program
             BaseAddress = ankiSettings.AnkiConnectUri,
         };
 
-        var parameters = new
-        {
-            query = $"\"deck:{ankiSettings.RootDeckName}\"",
-        };
-        var response = await httpClient.InvokeAnkiCommandAsync("findNotes", parameters);
+        var noteIds = await httpClient.FindNotes($"\"deck:{ankiSettings.RootDeckName}\"");
+        var notesInfo = await httpClient.GetNotesInfo(noteIds);
         return [];
     }
 }
