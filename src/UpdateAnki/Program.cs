@@ -41,8 +41,8 @@ internal static class Program
             BaseAddress = ankiSettings.AnkiConnectUri,
         };
 
-        var noteIds = await httpClient.FindNotes($"\"deck:{ankiSettings.RootDeckName}\"");
-        var notesInfo = await httpClient.GetNotesInfo(noteIds);
+        var noteIds = await httpClient.FindNotesAsync($"\"deck:{ankiSettings.RootDeckName}\"");
+        var notesInfo = await httpClient.GetNotesInfoAsync(noteIds);
         var modelNamePattern = ankiSettings.ModelNamePattern.ThrowIfNull();
         var modelNameRegex = new Regex($"^{modelNamePattern}$", RegexOptions.Compiled);
         return notesInfo

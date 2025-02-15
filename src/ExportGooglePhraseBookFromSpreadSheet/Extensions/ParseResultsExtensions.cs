@@ -16,7 +16,7 @@ internal static class ParseResultsExtensions
                         (acc.successes.Append<T>(success.Result), acc.errors),
                     ParseResult<T>.Error error =>
                         (acc.successes, acc.errors.Append(error.Message)),
-                    _ => throw new UnreachableException("Impossible case.")
+                    _ => throw new UnreachableException("Impossible case."),
                 })
             .BiMap(successes => successes.ToList(), errors => errors.ToList());
 }

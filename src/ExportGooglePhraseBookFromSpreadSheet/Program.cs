@@ -1,14 +1,14 @@
-﻿using CommandLine;
+﻿using System.Globalization;
+using CommandLine;
 using ExportGooglePhraseBookFromSpreadSheet.Configuration;
+using ExportGooglePhraseBookFromSpreadSheet.Extensions;
+using ExportGooglePhraseBookFromSpreadSheet.Models;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
-using Newtonsoft.Json;
-using System.Globalization;
-using ExportGooglePhraseBookFromSpreadSheet.Extensions;
-using ExportGooglePhraseBookFromSpreadSheet.Models;
-using Translation.Models;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Translation.Models;
 
 namespace ExportGooglePhraseBookFromSpreadSheet;
 
@@ -16,6 +16,7 @@ public static class Program
 {
     private const string CredentialFileName = "credential.json";
     private const string PhrasebookRange = "A:D";
+    private const int ErrorExitCode = 2;
 
     public static int Main(string[] args)
     {
@@ -26,7 +27,7 @@ public static class Program
         catch (Exception e)
         {
             Console.Error.WriteLine(e);
-            return 2;
+            return ErrorExitCode;
         }
     }
 
@@ -114,7 +115,6 @@ public static class Program
                     LanguageCode = targetLangCode,
                 },
             });
-
     }
 
     private static ILogger CreateLogger() =>

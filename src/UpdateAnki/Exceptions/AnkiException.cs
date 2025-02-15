@@ -1,3 +1,3 @@
 ﻿namespace UpdateAnki.Exceptions;
 
-internal sealed class AnkiException(string message) : Exception(message);
+public sealed class AnkiException(string message) : Exception(message);

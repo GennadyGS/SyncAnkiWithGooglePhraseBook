@@ -9,11 +9,11 @@ namespace ShareGoogleDriveFile;
 
 internal static class Program
 {
+    private const int ErrorExitCode = 2;
     private const string SecretFileName = "client_secret.json";
-
     private static readonly string[] Scopes = [DriveService.Scope.Drive];
 
-    static async Task<int> Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
         try
         {
@@ -21,8 +21,8 @@ internal static class Program
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine(e);
-            return 2;
+            await Console.Error.WriteLineAsync(e.ToString());
+            return ErrorExitCode;
         }
     }
 

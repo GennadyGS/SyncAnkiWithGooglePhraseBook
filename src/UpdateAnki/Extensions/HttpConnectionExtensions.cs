@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using UpdateAnki.Exceptions;
 using UpdateAnki.Models;
 using UpdateAnki.Utils;
 
@@ -10,7 +9,7 @@ internal static class HttpConnectionExtensions
 {
     private const int AnkiConnectApiVersion = 6;
 
-    private static readonly JsonSerializerSettings JsonSettings = new ()
+    private static readonly JsonSerializerSettings JsonSettings = new()
     {
         ContractResolver = new CamelCasePropertyNamesContractResolver(),
     };
@@ -33,8 +32,8 @@ internal static class HttpConnectionExtensions
             HttpContentFactory.CreateJsonContentWithFixedLength(ankiRequest, JsonSettings);
         var responseMessage = await httpClient.PostAsync(new Uri("/", UriKind.Relative), content);
         responseMessage.EnsureSuccessStatusCode();
-        var ankiResponse = await responseMessage.GetAnkiResponse<TResult>(JsonSettings);
+        var ankiResponse = await responseMessage.GetAnkiResponseAsync<TResult>(JsonSettings);
         return ankiResponse.Result ??
-            throw new NullReferenceException("Result cannot be null");
+            throw new InvalidOperationException("Result cannot be null");
     }
 }

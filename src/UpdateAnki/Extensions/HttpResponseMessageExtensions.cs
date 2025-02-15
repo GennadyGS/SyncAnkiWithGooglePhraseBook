@@ -5,7 +5,7 @@ namespace UpdateAnki.Extensions;
 
 internal static class HttpResponseMessageExtensions
 {
-    public static async Task<AnkiResponse<TResult>> GetAnkiResponse<TResult>(
+    public static async Task<AnkiResponse<TResult>> GetAnkiResponseAsync<TResult>(
         this HttpResponseMessage responseMessage, JsonSerializerSettings jsonSettings)
     {
         var ankiResponseString = await responseMessage.Content.ReadAsStringAsync();

@@ -1,12 +1,11 @@
-﻿using System.Text;
-using UpdateAnki.Extensions;
+﻿using UpdateAnki.Extensions;
 using UpdateAnki.Models;
 
 namespace UpdateAnki;
 
 internal static class AnkiHttpClientExtensions
 {
-    public static async Task<long[]> FindNotes(this HttpClient httpClient, string query)
+    public static async Task<long[]> FindNotesAsync(this HttpClient httpClient, string query)
     {
         var parameters = new FindNotesParams
         {
@@ -17,7 +16,8 @@ internal static class AnkiHttpClientExtensions
             .InvokeAnkiCommandAsync<FindNotesParams, long[]>("findNotes", parameters);
     }
 
-    public static async Task<NoteInfo[]> GetNotesInfo(this HttpClient httpClient, long[] noteIds)
+    public static async Task<NoteInfo[]> GetNotesInfoAsync(
+        this HttpClient httpClient, long[] noteIds)
     {
         var parameters = new GetNotesInfoParams
         {
