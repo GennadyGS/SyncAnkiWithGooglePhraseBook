@@ -8,7 +8,7 @@ namespace UpdateAnki.Services;
 internal static class AnkiPhraseTranslationsRepository
 {
     public static async Task<IDictionary<long, PhraseTranslation>>
-        LoadPhraseTranslationsFromAnkiAsync(AnkiSettings ankiSettings)
+        LoadPhraseTranslationsAsync(AnkiSettings ankiSettings)
     {
         var httpClient = new HttpClient
         {
