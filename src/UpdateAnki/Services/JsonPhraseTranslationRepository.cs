@@ -3,7 +3,7 @@ using Translation.Models;
 
 namespace UpdateAnki.Services;
 
-internal static class JsonPhraseTranslationRepository
+internal static class JsonPhraseTranslationsRepository
 {
     public static async Task<IReadOnlyCollection<PhraseTranslation>> LoadPhraseTranslationsAsync(
         string fileName)

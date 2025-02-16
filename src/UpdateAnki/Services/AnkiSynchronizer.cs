@@ -9,7 +9,7 @@ internal static class AnkiSynchronizer
         string sourceFileName, AnkiSettings ankiSettings)
     {
         var sourcePhraseTranslations =
-            await JsonPhraseTranslationRepository.LoadPhraseTranslationsAsync(sourceFileName);
+            await JsonPhraseTranslationsRepository.LoadPhraseTranslationsAsync(sourceFileName);
         var targetPhraseTranslations =
             await AnkiPhraseTranslationsRepository.LoadPhraseTranslationsAsync(ankiSettings);
         var updateActions = CollectionSynchronizer
