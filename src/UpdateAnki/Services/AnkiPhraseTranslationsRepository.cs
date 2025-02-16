@@ -5,9 +5,9 @@ using UpdateAnki.Models;
 
 namespace UpdateAnki.Services;
 
-internal static class AnkiPhraseTranslationsRepository
+internal sealed class AnkiPhraseTranslationsRepository
 {
-    public static async Task<IDictionary<long, PhraseTranslation>>
+    public async Task<IDictionary<long, PhraseTranslation>>
         LoadPhraseTranslationsAsync(AnkiSettings ankiSettings)
     {
         var httpClient = new HttpClient
@@ -23,7 +23,7 @@ internal static class AnkiPhraseTranslationsRepository
             .ToDictionary(info => info.NoteId, info => info.ToPhraseTranslation(modelNameRegex));
     }
 
-    public static async Task UpdatePhraseTranslationsAsync(
+    public async Task UpdatePhraseTranslationsAsync(
         AnkiSettings ankiSettings, UpdateActions<long, PhraseTranslation> updateActions)
     {
         await Task.CompletedTask;

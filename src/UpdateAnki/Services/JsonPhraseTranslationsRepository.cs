@@ -3,9 +3,9 @@ using Translation.Models;
 
 namespace UpdateAnki.Services;
 
-internal static class JsonPhraseTranslationsRepository
+internal sealed class JsonPhraseTranslationsRepository
 {
-    public static async Task<IReadOnlyCollection<PhraseTranslation>> LoadPhraseTranslationsAsync(
+    public async Task<IReadOnlyCollection<PhraseTranslation>> LoadPhraseTranslationsAsync(
         string fileName)
     {
         var sourceFileContent = await File.ReadAllTextAsync(fileName);
