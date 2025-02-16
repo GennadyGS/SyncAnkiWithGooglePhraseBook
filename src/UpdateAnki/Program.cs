@@ -14,6 +14,6 @@ internal static class Program
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
         var ankiSettings = configuration.GetAnkiSettings();
-        await AnkiSynchronizer.SyncAnkiFromJsonFileAsync(fileName, ankiSettings);
+        await UpdateAnkiService.UpdateAnkiFromJsonFileAsync(fileName, ankiSettings);
     }
 }
