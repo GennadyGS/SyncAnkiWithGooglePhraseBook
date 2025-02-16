@@ -7,9 +7,6 @@ namespace SyncAnkiWithGooglePhraseBookExtension;
 
 public partial class BackgroundWorker : BackgroundWorkerBase
 {
-    [GeneratedRegex(@"^https://docs\.google\.com/spreadsheets/d/([a-zA-Z0-9-_]+)")]
-    private static partial Regex GoogleSheetUrlRegex { get; }
-
     [BackgroundWorkerMain]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Reliability",
@@ -31,7 +28,7 @@ public partial class BackgroundWorker : BackgroundWorkerBase
             return;
         }
 
-        var match = GoogleSheetUrlRegex.Match(url);
+        var match = GoogleSheetUrlRegex().Match(url);
         if (!match.Success)
         {
             return;
@@ -42,4 +39,7 @@ public partial class BackgroundWorker : BackgroundWorkerBase
         var updateProperties = new UpdateProperties { Url = redirectUrl };
         await WebExtensions.Tabs.Update(tab.Id, updateProperties);
     }
+
+    [GeneratedRegex(@"^https://docs\.google\.com/spreadsheets/d/([a-zA-Z0-9-_]+)")]
+    private static partial Regex GoogleSheetUrlRegex();
 }
