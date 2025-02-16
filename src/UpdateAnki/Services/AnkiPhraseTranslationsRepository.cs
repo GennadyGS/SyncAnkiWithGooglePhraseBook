@@ -5,26 +5,27 @@ using UpdateAnki.Models;
 
 namespace UpdateAnki.Services;
 
-internal sealed class AnkiPhraseTranslationsRepository
+internal sealed class AnkiPhraseTranslationsRepository(AnkiSettings ankiSettings)
 {
-    public async Task<IDictionary<long, PhraseTranslation>>
-        LoadPhraseTranslationsAsync(AnkiSettings ankiSettings)
+    private readonly AnkiSettings _ankiSettings = ankiSettings;
+
+    public async Task<IDictionary<long, PhraseTranslation>> LoadPhraseTranslationsAsync()
     {
         var httpClient = new HttpClient
         {
-            BaseAddress = ankiSettings.AnkiConnectUri,
+            BaseAddress = _ankiSettings.AnkiConnectUri,
         };
 
-        var noteIds = await httpClient.FindNotesAsync($"\"deck:{ankiSettings.RootDeckName}\"");
+        var noteIds = await httpClient.FindNotesAsync($"\"deck:{_ankiSettings.RootDeckName}\"");
         var notesInfo = await httpClient.GetNotesInfoAsync(noteIds);
-        var modelNamePattern = ankiSettings.ModelNamePattern.ThrowIfNull();
+        var modelNamePattern = _ankiSettings.ModelNamePattern.ThrowIfNull();
         var modelNameRegex = new Regex($"^{modelNamePattern}$", RegexOptions.Compiled);
         return notesInfo
             .ToDictionary(info => info.NoteId, info => info.ToPhraseTranslation(modelNameRegex));
     }
 
     public async Task UpdatePhraseTranslationsAsync(
-        AnkiSettings ankiSettings, UpdateActions<long, PhraseTranslation> updateActions)
+        UpdateActions<long, PhraseTranslation> updateActions)
     {
         await Task.CompletedTask;
     }

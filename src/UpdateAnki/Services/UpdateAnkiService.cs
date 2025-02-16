@@ -8,15 +8,14 @@ internal sealed class UpdateAnkiService
     public async Task UpdateAnkiFromJsonFileAsync(
         string sourceFileName, AnkiSettings ankiSettings)
     {
-        var ankiPhraseTranslationsRepository = new AnkiPhraseTranslationsRepository();
-        var jsonPhraseTranslationsRepository = new JsonPhraseTranslationsRepository();
+        var ankiPhraseTranslationsRepository = new AnkiPhraseTranslationsRepository(ankiSettings);
+        var jsonPhraseTranslationsRepository = new JsonPhraseTranslationsRepository(sourceFileName);
         var sourcePhraseTranslations = await jsonPhraseTranslationsRepository
-            .LoadPhraseTranslationsAsync(sourceFileName);
+            .LoadPhraseTranslationsAsync();
         var targetPhraseTranslations =
-            await ankiPhraseTranslationsRepository.LoadPhraseTranslationsAsync(ankiSettings);
+            await ankiPhraseTranslationsRepository.LoadPhraseTranslationsAsync();
         var updateActions = UpdateActionsCalculator
             .GetUpdateActions(sourcePhraseTranslations, targetPhraseTranslations);
-        await ankiPhraseTranslationsRepository
-            .UpdatePhraseTranslationsAsync(ankiSettings, updateActions);
+        await ankiPhraseTranslationsRepository.UpdatePhraseTranslationsAsync(updateActions);
     }
 }
