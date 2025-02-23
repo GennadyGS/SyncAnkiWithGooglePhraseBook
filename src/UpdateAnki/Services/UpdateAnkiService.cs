@@ -3,30 +3,24 @@ using UpdateAnki.Utils;
 
 namespace UpdateAnki.Services;
 
-internal sealed class UpdateAnkiService(string sourceFileName, AnkiSettings ankiSettings)
+internal sealed class UpdateAnkiService(
+    AnkiPhraseTranslationsRepository ankiPhraseTranslationsRepository,
+    JsonPhraseTranslationsReader jsonPhraseTranslationsReader)
 {
-    private readonly string _sourceFileName = sourceFileName;
+    private readonly AnkiPhraseTranslationsRepository _ankiPhraseTranslationsRepository =
+        ankiPhraseTranslationsRepository;
 
-    private readonly AnkiSettings _ankiSettings = ankiSettings;
+    private readonly JsonPhraseTranslationsReader _jsonPhraseTranslationsReader =
+        jsonPhraseTranslationsReader;
 
-    private readonly JsonPhraseTranslationsRepositoryFactory _jsonPhraseTranslationsRepositoryFactory =
-        new();
-
-    private readonly AnkiPhraseTranslationsRepositoryFactory _ankiPhraseTranslationsRepositoryFactory =
-        new();
-
-    public async Task UpdateAnkiFromJsonFileAsync()
+    public async Task UpdateAnkiFromJsonFileAsync(AnkiSettings ankiSettings, string fileName)
     {
-        var ankiPhraseTranslationsRepository =
-            _ankiPhraseTranslationsRepositoryFactory.CreateRepository(_ankiSettings);
-        var jsonPhraseTranslationsRepository =
-            _jsonPhraseTranslationsRepositoryFactory.CreateRepository(_sourceFileName);
-        var sourcePhraseTranslations = await jsonPhraseTranslationsRepository
-            .LoadPhraseTranslationsAsync();
+        var sourcePhraseTranslations = await _jsonPhraseTranslationsReader
+            .LoadPhraseTranslationsAsync(fileName);
         var targetPhraseTranslations =
-            await ankiPhraseTranslationsRepository.LoadPhraseTranslationsAsync();
+            await _ankiPhraseTranslationsRepository.LoadPhraseTranslationsAsync(ankiSettings);
         var updateActions = UpdateActionsCalculator
             .GetUpdateActions(sourcePhraseTranslations, targetPhraseTranslations);
-        await ankiPhraseTranslationsRepository.UpdatePhraseTranslationsAsync(updateActions);
+        await _ankiPhraseTranslationsRepository.UpdatePhraseTranslationsAsync(updateActions);
     }
 }

@@ -3,13 +3,12 @@ using Translation.Models;
 
 namespace UpdateAnki.Services;
 
-internal sealed class JsonPhraseTranslationsRepository(string fileName)
+internal sealed class JsonPhraseTranslationsReader
 {
-    private readonly string _fileName = fileName;
-
-    public async Task<IReadOnlyCollection<PhraseTranslation>> LoadPhraseTranslationsAsync()
+    public async Task<IReadOnlyCollection<PhraseTranslation>> LoadPhraseTranslationsAsync(
+        string fileName)
     {
-        var sourceFileContent = await File.ReadAllTextAsync(_fileName);
+        var sourceFileContent = await File.ReadAllTextAsync(fileName);
         var options = new JsonSerializerOptions
         {
             RespectNullableAnnotations = true,

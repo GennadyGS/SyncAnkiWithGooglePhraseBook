@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UpdateAnki.Extensions;
+using UpdateAnki.Models;
 using UpdateAnki.Services;
 
 namespace UpdateAnki;
@@ -14,19 +15,18 @@ internal static class Program
         var fileName = args[0];
         var configuration = LoadConfiguration();
         var ankiSettings = configuration.GetAnkiSettings();
-        var updateAnkiServiceFactory = CreateUpdateAnkiServiceFactory();
-        var updateAnkiService = updateAnkiServiceFactory.CreateService(fileName, ankiSettings);
-        await updateAnkiService.UpdateAnkiFromJsonFileAsync();
+        var ankiConnectSettings = configuration.GetAnkiConnectSettings();
+        var updateAnkiService = CreateUpdateAnkiService(ankiConnectSettings);
+        await updateAnkiService.UpdateAnkiFromJsonFileAsync(ankiSettings, fileName);
     }
 
-    private static UpdateAnkiServiceFactory CreateUpdateAnkiServiceFactory()
+    private static UpdateAnkiService CreateUpdateAnkiService(
+        AnkiConnectSettings ankiConnectSettings)
     {
-        var services = new ServiceCollection();
-        var serviceProvider = ServiceConfigurator
-            .RegisterServices(services)
+        var serviceProvider = new ServiceCollection()
+            .RegisterServices(ankiConnectSettings)
             .BuildServiceProvider();
-
-        return serviceProvider.GetRequiredService<UpdateAnkiServiceFactory>();
+        return serviceProvider.GetRequiredService<UpdateAnkiService>();
     }
 
     private static IConfigurationRoot LoadConfiguration() =>
