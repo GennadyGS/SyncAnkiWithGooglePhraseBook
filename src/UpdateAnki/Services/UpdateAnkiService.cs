@@ -21,6 +21,7 @@ internal sealed class UpdateAnkiService(
             await _ankiPhraseTranslationsRepository.LoadPhraseTranslationsAsync(ankiSettings);
         var updateActions = UpdateActionsCalculator
             .GetUpdateActions(sourcePhraseTranslations, targetPhraseTranslations);
-        await _ankiPhraseTranslationsRepository.UpdatePhraseTranslationsAsync(updateActions);
+        await _ankiPhraseTranslationsRepository
+            .UpdatePhraseTranslationsAsync(updateActions, ankiSettings);
     }
 }
