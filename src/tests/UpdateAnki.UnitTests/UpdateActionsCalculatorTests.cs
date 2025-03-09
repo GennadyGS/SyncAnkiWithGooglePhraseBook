@@ -11,12 +11,12 @@ public sealed class UpdateActionsCalculatorTests
         TheoryDataBuilder.TheoryData([
             new TestCase<int, string>
             {
-                Source = ["one1", "two", "three"],
+                Source = ["One", "two", "three"],
                 Target = new Dictionary<int, string> { { 1, "one" }, { 2, "two" } },
                 ExpectedResult = new UpdateActions<int, string>
                 {
                     ToAdd = new List<string> { "three" },
-                    ToUpdate = [KeyValuePair.Create(1, "one1")],
+                    ToUpdate = [KeyValuePair.Create(1, "One")],
                 },
             },
         ]);
@@ -29,7 +29,8 @@ public sealed class UpdateActionsCalculatorTests
             testCase.Source,
             testCase.Target,
             testCase.DeleteUnmatched,
-            testCase.DeleteExcessMatched);
+            testCase.DeleteExcessMatched,
+            StringComparer.OrdinalIgnoreCase);
 
         result.Should().BeEquivalentTo(testCase.ExpectedResult);
     }
