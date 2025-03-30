@@ -1,9 +1,9 @@
 param (
     $name = "exportGooglePhrasebookToAnki",
-    $description = "Export Google Phrasebook to Anki",
-    $url = "pwsh.exe -noexit `"c:/Source/Private/SyncAnkiWithGooglePhraseBook/ExportGooglePhrasebookAndSyncAnkiCustomUrlHandler.ps1`" `"%1`""
+    $description = "Export Google Phrasebook to Anki"
 )
 
+$url = "pwsh.exe -noexit `"$PSScriptRoot/../ExportGooglePhrasebookAndSyncAnkiCustomUrlHandler.ps1`" `"%1`""
 $classesPath = "HKCU:\SOFTWARE\Classes"
 New-Item -Path "$classesPath" -Name "$name" -Force
 

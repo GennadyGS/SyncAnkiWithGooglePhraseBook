@@ -3,7 +3,7 @@ param (
     [Parameter(Mandatory=$true)] $outputFileName
 )
 
-$appPathRoot = "$PSScriptRoot/src"
+$appPathRoot = "$PSScriptRoot/src/src"
 $exportGooglePhraseBookFromSpreadSheetAppPath =
     "$appPathRoot/ExportGooglePhraseBookFromSpreadSheet"
 $shareGoogleDriveFileAppPath = "$appPathRoot/ShareGoogleDriveFile"
