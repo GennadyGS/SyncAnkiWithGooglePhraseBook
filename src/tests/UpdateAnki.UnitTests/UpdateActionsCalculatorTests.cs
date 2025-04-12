@@ -12,12 +12,18 @@ public sealed class UpdateActionsCalculatorTests
             new TestCase<int, string>
             {
                 Source = ["One", "two", "three"],
-                Target = new Dictionary<int, string> { { 1, "one" }, { 2, "two" } },
+                Target = new Dictionary<int, string>
+                {
+                    [1] = "one",
+                    [2] = "two",
+                    [4] = "four",
+                },
                 MatchComparer = StringComparer.OrdinalIgnoreCase,
                 ExpectedResult = new UpdateActions<int, string>
                 {
                     ToAdd = new List<string> { "three" },
                     ToUpdate = [KeyValuePair.Create(1, "One")],
+                    ToDelete = [4],
                 },
             },
         ]);

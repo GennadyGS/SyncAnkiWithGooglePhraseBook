@@ -26,14 +26,19 @@ public static class UpdateActionsCalculator
             s => (source: (TValue[]?)s.ToArray(), target: null),
             t => (source: (TValue[]?)null, target: (KeyValuePair<TKey, TValue>[]?)t.ToArray()),
             (s, t) => (source: s.ToArray(), target: t.ToArray()),
-            matchComparer);
+            matchComparer).ToList();
         var toAdd = fullOuterJoin
             .Where(x => x.source is not null && x.target is null)
             .SelectMany(x => x.source!)
             .ToArray();
+        var toDelete = fullOuterJoin
+            .Where(x => x.source is null && x.target is not null)
+            .SelectMany(x => x.target!.Select(kvp => kvp.Key))
+            .ToArray();
         return new UpdateActions<TKey, TValue>
         {
             ToAdd = toAdd,
+            ToDelete = toDelete,
         };
     }
 }
