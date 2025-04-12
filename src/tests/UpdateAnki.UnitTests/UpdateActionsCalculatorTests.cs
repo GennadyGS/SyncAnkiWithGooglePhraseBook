@@ -13,6 +13,7 @@ public sealed class UpdateActionsCalculatorTests
             {
                 Source = ["One", "two", "three"],
                 Target = new Dictionary<int, string> { { 1, "one" }, { 2, "two" } },
+                MatchComparer = StringComparer.OrdinalIgnoreCase,
                 ExpectedResult = new UpdateActions<int, string>
                 {
                     ToAdd = new List<string> { "three" },
@@ -30,7 +31,8 @@ public sealed class UpdateActionsCalculatorTests
             testCase.Target,
             testCase.DeleteUnmatched,
             testCase.DeleteExcessMatched,
-            StringComparer.OrdinalIgnoreCase);
+            testCase.MatchComparer,
+            testCase.ValueDistanceProvider);
 
         result.Should().BeEquivalentTo(testCase.ExpectedResult);
     }
@@ -45,6 +47,10 @@ public sealed class UpdateActionsCalculatorTests
         public bool DeleteUnmatched { get; init; }
 
         public bool DeleteExcessMatched { get; init; }
+
+        public IEqualityComparer<string>? MatchComparer { get; init; }
+
+        public Func<string, string, double>? ValueDistanceProvider { get; init; }
 
         public required UpdateActions<TKey, TValue> ExpectedResult { get; init; }
     }
