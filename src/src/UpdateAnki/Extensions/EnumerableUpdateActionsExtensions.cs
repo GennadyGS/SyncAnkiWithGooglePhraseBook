@@ -5,6 +5,11 @@ namespace UpdateAnki.Extensions;
 
 internal static class EnumerableUpdateActionsExtensions
 {
+    public static EnumerableUpdateActions<TKey, TValue> AddUpdateActions<TKey, TValue>(
+        this EnumerableUpdateActions<TKey, TValue> source,
+        IEnumerable<UpdateAction<TKey, TValue>> actions) =>
+        actions.Aggregate(source, AddUpdateAction);
+
     public static EnumerableUpdateActions<TKey, TValue> AddUpdateAction<TKey, TValue>(
         this EnumerableUpdateActions<TKey, TValue> source, UpdateAction<TKey, TValue> action) =>
         action switch

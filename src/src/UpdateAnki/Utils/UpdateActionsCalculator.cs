@@ -25,14 +25,13 @@ public static class UpdateActionsCalculator
                 groupedTarget,
                 s => s.Key,
                 t => t.Key,
-                s => (UpdateAction<TKey, TValue>)new UpdateAction<TKey, TValue>.Add(s),
-                t => new UpdateAction<TKey, TValue>.Delete(GetDeletes(t, deleteUnmatched)),
-                (s, t) => new UpdateAction<TKey, TValue>.Update(
-                    GetUpdates(s.ToArray(), t.ToArray(), deleteExcessMatched)),
+                s => [new UpdateAction<TKey, TValue>.Add(s)],
+                t => [new UpdateAction<TKey, TValue>.Delete(GetDeletes(t, deleteUnmatched))],
+                (s, t) => GetMatchingUpdateActions(s.ToArray(), t.ToArray(), deleteExcessMatched),
                 matchComparer)
             .Aggregate(
                 new EnumerableUpdateActions<TKey, TValue>(),
-                (actions, action) => actions.AddUpdateAction(action))
+                (actions, action) => actions.AddUpdateActions(action))
             .ToArrays();
     }
 
@@ -46,7 +45,7 @@ public static class UpdateActionsCalculator
         "Major Code Smell",
         "S1172:Unused method parameters should be removed",
         Justification = "Pending")]
-    private static IEnumerable<KeyValuePair<TKey, TValue>> GetUpdates<TKey, TValue>(
+    private static IEnumerable<UpdateAction<TKey, TValue>> GetMatchingUpdateActions<TKey, TValue>(
         TValue[] source, KeyValuePair<TKey, TValue>[] target, bool deleteExcessMatched)
     {
         return [];
