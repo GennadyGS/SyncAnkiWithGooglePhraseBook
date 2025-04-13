@@ -19,6 +19,7 @@ public sealed class UpdateActionsCalculatorTests
                     [4] = "four",
                 },
                 MatchComparer = StringComparer.OrdinalIgnoreCase,
+                DeleteUnmatched = true,
                 ExpectedResult = new UpdateActions<int, string>
                 {
                     ToAdd = new List<string> { "three" },
