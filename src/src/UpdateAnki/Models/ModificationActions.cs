@@ -1,6 +1,6 @@
 ﻿namespace UpdateAnki.Models;
 
-public sealed record UpdateActions<TKey, TValue>
+public sealed record ModificationActions<TKey, TValue>
 {
     public IReadOnlyCollection<TValue> ToAdd { get; init; } = [];
 

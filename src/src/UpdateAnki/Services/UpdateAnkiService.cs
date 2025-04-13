@@ -19,7 +19,7 @@ internal sealed class UpdateAnkiService(
             .LoadPhraseTranslationsAsync(fileName);
         var targetPhraseTranslations =
             await _ankiPhraseTranslationsRepository.LoadPhraseTranslationsAsync(ankiSettings);
-        var updateActions = UpdateActionsCalculator.GetUpdateActions(
+        var updateActions = ModificationActionsCalculator.GetModificationActions(
             sourcePhraseTranslations, targetPhraseTranslations, deleteExcessMatched: true);
         await _ankiPhraseTranslationsRepository
             .UpdatePhraseTranslationsAsync(updateActions, ankiSettings);

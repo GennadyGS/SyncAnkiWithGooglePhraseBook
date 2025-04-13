@@ -5,7 +5,7 @@ using UpdateAnki.Utils;
 
 namespace UpdateAnki.UnitTests;
 
-public sealed class UpdateActionsCalculatorTests
+public sealed class ModificationActionsCalculatorTests
 {
     public static TheoryData<TestCase<int, string>> GetTestCases() =>
         TheoryDataBuilder.TheoryData([
@@ -20,7 +20,7 @@ public sealed class UpdateActionsCalculatorTests
                 },
                 MatchComparer = StringComparer.OrdinalIgnoreCase,
                 DeleteUnmatched = true,
-                ExpectedResult = new UpdateActions<int, string>
+                ExpectedResult = new ModificationActions<int, string>
                 {
                     ToAdd = new List<string> { "three" },
                     ToUpdate = [KeyValuePair.Create(1, "One")],
@@ -33,7 +33,7 @@ public sealed class UpdateActionsCalculatorTests
     [MemberData(nameof(GetTestCases))]
     public void GetUpdateActions_ShouldReturnCorrectResults(TestCase<int, string> testCase)
     {
-        var result = UpdateActionsCalculator.GetUpdateActions(
+        var result = ModificationActionsCalculator.GetModificationActions(
             testCase.Source,
             testCase.Target,
             testCase.DeleteUnmatched,
@@ -59,6 +59,6 @@ public sealed class UpdateActionsCalculatorTests
 
         public Func<string, string, double>? ValueDistanceProvider { get; init; }
 
-        public required UpdateActions<TKey, TValue> ExpectedResult { get; init; }
+        public required ModificationActions<TKey, TValue> ExpectedResult { get; init; }
     }
 }

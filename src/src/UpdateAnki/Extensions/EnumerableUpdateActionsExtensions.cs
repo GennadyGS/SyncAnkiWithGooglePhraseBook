@@ -5,26 +5,26 @@ namespace UpdateAnki.Extensions;
 
 internal static class EnumerableUpdateActionsExtensions
 {
-    public static EnumerableUpdateActions<TKey, TValue> AddUpdateActions<TKey, TValue>(
-        this EnumerableUpdateActions<TKey, TValue> source,
-        IEnumerable<UpdateAction<TKey, TValue>> actions) =>
+    public static EnumerableModificationActions<TKey, TValue> AddUpdateActions<TKey, TValue>(
+        this EnumerableModificationActions<TKey, TValue> source,
+        IEnumerable<ModificationAction<TKey, TValue>> actions) =>
         actions.Aggregate(source, AddUpdateAction);
 
-    public static EnumerableUpdateActions<TKey, TValue> AddUpdateAction<TKey, TValue>(
-        this EnumerableUpdateActions<TKey, TValue> source, UpdateAction<TKey, TValue> action) =>
+    public static EnumerableModificationActions<TKey, TValue> AddUpdateAction<TKey, TValue>(
+        this EnumerableModificationActions<TKey, TValue> source, ModificationAction<TKey, TValue> action) =>
         action switch
         {
-            UpdateAction<TKey, TValue>.Add addAction =>
+            ModificationAction<TKey, TValue>.Add addAction =>
                 source with
                 {
                     ToAdd = source.ToAdd.Concat(addAction.Values),
                 },
-            UpdateAction<TKey, TValue>.Update updateAction =>
+            ModificationAction<TKey, TValue>.Update updateAction =>
                 source with
                 {
                     ToUpdate = source.ToUpdate.Concat(updateAction.Updates),
                 },
-            UpdateAction<TKey, TValue>.Delete deleteAction =>
+            ModificationAction<TKey, TValue>.Delete deleteAction =>
                 source with
                 {
                     ToDelete = source.ToDelete.Concat(deleteAction.Keys),
@@ -32,8 +32,8 @@ internal static class EnumerableUpdateActionsExtensions
             _ => throw new UnreachableException(),
         };
 
-    public static UpdateActions<TKey, TValue> ToArrays<TKey, TValue>(
-        this EnumerableUpdateActions<TKey, TValue> source) =>
+    public static ModificationActions<TKey, TValue> ToArrays<TKey, TValue>(
+        this EnumerableModificationActions<TKey, TValue> source) =>
         new()
         {
             ToAdd = source.ToAdd.ToArray(),
