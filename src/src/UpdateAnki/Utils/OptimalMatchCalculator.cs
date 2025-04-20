@@ -1,4 +1,5 @@
 ﻿using Accord.Math.Optimization;
+using UpdateAnki.Extensions;
 
 namespace UpdateAnki.Utils;
 
@@ -10,7 +11,7 @@ internal static class OptimalMatchCalculator
         Func<TValue, TValue, double>? distanceProvider)
     {
         var establishedDistanceProvider =
-            distanceProvider ?? DistanceUtils.CreateDefaultDistanceProvider<TValue>();
+            distanceProvider ?? EqualityComparer<TValue>.Default.ToDistanceProvider();
         var maxLength = Math.Max(source.Count, target.Count);
         var costMatrix = Enumerable.Range(0, maxLength)
             .Select(s =>

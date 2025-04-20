@@ -72,7 +72,7 @@ public static class ModificationActionsCalculator
         Func<TValue, TValue, double>? valueDistanceProvider)
     {
         var establishedValueDistanceProvider =
-            valueDistanceProvider ?? DistanceUtils.CreateDefaultDistanceProvider<TValue>();
+            valueDistanceProvider ?? EqualityComparer<TValue>.Default.ToDistanceProvider();
         var distance =
             establishedValueDistanceProvider(target[targetIndex].Value, source[sourceIndex]);
 
