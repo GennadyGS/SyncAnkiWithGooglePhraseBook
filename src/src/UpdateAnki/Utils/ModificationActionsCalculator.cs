@@ -1,4 +1,5 @@
-﻿using MoreLinq;
+﻿using System.Diagnostics;
+using MoreLinq;
 using UpdateAnki.Extensions;
 using UpdateAnki.Models;
 
@@ -12,7 +13,7 @@ public static class ModificationActionsCalculator
         bool deleteUnmatched = false,
         bool deleteExcessMatched = false,
         IEqualityComparer<TValue>? matchComparer = null,
-        Func<TValue, TValue, double>? valueEditDistanceProvider = null)
+        Func<TValue, TValue, double>? valueDistanceProvider = null)
     {
         var groupedSource = source
             .GroupBy(x => x, x => x, matchComparer)
@@ -27,7 +28,8 @@ public static class ModificationActionsCalculator
                 t => t.Key,
                 s => [new ModificationAction<TKey, TValue>.Add(s)],
                 t => GetDeleteActions(t, deleteUnmatched),
-                (s, t) => GetMatchingActions(s.ToArray(), t.ToArray(), deleteExcessMatched),
+                (s, t) => GetMatchingActions(
+                    s.ToArray(), t.ToArray(), deleteExcessMatched, valueDistanceProvider),
                 matchComparer)
             .Aggregate(
                 new EnumerableModificationActions<TKey, TValue>(),
@@ -41,14 +43,60 @@ public static class ModificationActionsCalculator
             ? [new ModificationAction<TKey, TValue>.Delete(keyValues.Select(kvp => kvp.Key))]
             : [];
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S1172:Unused method parameters should be removed",
-        Justification = "Pending")]
-    private static IEnumerable<ModificationAction<TKey, TValue>>
-        GetMatchingActions<TKey, TValue>(
-            TValue[] source, KeyValuePair<TKey, TValue>[] target, bool deleteExcessMatched)
+    private static IEnumerable<ModificationAction<TKey, TValue>> GetMatchingActions<TKey, TValue>(
+        TValue[] source,
+        KeyValuePair<TKey, TValue>[] target,
+        bool deleteExcessMatched,
+        Func<TValue, TValue, double>? valueDistanceProvider)
     {
-        return [];
+        var targetValues = target.Select(kvp => kvp.Value).ToList();
+        return OptimalMatchCalculator
+            .GetOptimalMatch(source, targetValues, valueDistanceProvider)
+            .SelectMany((ti, si) => (ti, si) switch
+            {
+                _ when ti < target.Length && si < source.Length =>
+                    GetUpdateActions(source, si, target, ti, valueDistanceProvider),
+                _ when ti >= target.Length =>
+                    [new ModificationAction<TKey, TValue>.Add([source[si]])],
+                _ when si >= source.Length =>
+                    GetMatchingDeleteActions(target, ti, deleteExcessMatched),
+                _ => throw new UnreachableException("Unexpected output from optimizer"),
+            });
+    }
+
+    private static IEnumerable<ModificationAction<TKey, TValue>> GetUpdateActions<TKey, TValue>(
+        TValue[] source,
+        int sourceIndex,
+        KeyValuePair<TKey, TValue>[] target,
+        int targetIndex,
+        Func<TValue, TValue, double>? valueDistanceProvider)
+    {
+        var establishedValueDistanceProvider =
+            valueDistanceProvider ?? DistanceUtils.CreateDefaultDistanceProvider<TValue>();
+        var distance =
+            establishedValueDistanceProvider(target[targetIndex].Value, source[sourceIndex]);
+
+        if (MathUtils.EqualWithTolerance(distance, 0))
+        {
+            return [];
+        }
+
+        return
+        [
+            new ModificationAction<TKey, TValue>.Update(
+                [new KeyValuePair<TKey, TValue>(target[targetIndex].Key, source[sourceIndex])]),
+        ];
+    }
+
+    private static IEnumerable<ModificationAction<TKey, TValue>>
+        GetMatchingDeleteActions<TKey, TValue>(
+            KeyValuePair<TKey, TValue>[] target, int ti, bool deleteExcessMatched)
+    {
+        if (!deleteExcessMatched)
+        {
+            return [];
+        }
+
+        return [new ModificationAction<TKey, TValue>.Delete([target[ti].Key])];
     }
 }
