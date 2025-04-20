@@ -1,5 +1,6 @@
 using FluentAssertions;
 using UpdateAnki.Models;
+using UpdateAnki.UnitTests.Extensions;
 using UpdateAnki.UnitTests.Utils;
 using UpdateAnki.Utils;
 
@@ -22,8 +23,27 @@ public sealed class ModificationActionsCalculatorTests
                 DeleteUnmatched = true,
                 ExpectedResult = new ModificationActions<int, string>
                 {
-                    ToAdd = new List<string> { "three" },
+                    ToAdd = ["three"],
                     ToUpdate = [KeyValuePair.Create(1, "One")],
+                    ToDelete = [4],
+                },
+            },
+            new TestCase<int, string>
+            {
+                Source = ["One", "two", "three"],
+                Target = new Dictionary<int, string>
+                {
+                    [1] = "one",
+                    [2] = "two",
+                    [4] = "four",
+                },
+                MatchComparer = StringComparer.OrdinalIgnoreCase,
+                ValueDistanceProvider = StringComparer.OrdinalIgnoreCase.ToDistanceProvider(),
+                DeleteUnmatched = true,
+                ExpectedResult = new ModificationActions<int, string>
+                {
+                    ToAdd = ["three"],
+                    ToUpdate = [],
                     ToDelete = [4],
                 },
             },
