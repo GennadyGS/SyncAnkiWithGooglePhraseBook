@@ -1,5 +1,6 @@
 ﻿using Accord.Math.Optimization;
-using UpdateAnki.Extensions;
+using DistanceProviders;
+using DistanceProviders.Extensions;
 
 namespace UpdateAnki.Utils;
 
@@ -8,18 +9,10 @@ internal static class OptimalMatchCalculator
     public static IReadOnlyList<int> GetOptimalMatch<TValue>(
         IReadOnlyList<TValue> source,
         IReadOnlyList<TValue> target,
-        Func<TValue, TValue, double>? distanceProvider)
+        IDistanceProvider<TValue>? distanceProvider)
     {
-        var establishedDistanceProvider =
-            distanceProvider ?? EqualityComparer<TValue>.Default.ToDistanceProvider();
-        var maxLength = Math.Max(source.Count, target.Count);
-        var costMatrix = Enumerable.Range(0, maxLength)
-            .Select(s =>
-                Enumerable.Range(0, maxLength)
-                    .Select(t => establishedDistanceProvider(source[s], target[t]))
-                    .ToArray())
-            .ToArray();
-        var optimizer = new Munkres(costMatrix);
+        var distanceMatrix = GetDistanceMatrix(source, target, distanceProvider);
+        var optimizer = new Munkres(distanceMatrix);
         if (!optimizer.Minimize())
         {
             throw new InvalidOperationException("Cannot solve for optimal matching assignment.");
@@ -29,4 +22,34 @@ internal static class OptimalMatchCalculator
             .Select(index => (int)index)
             .ToList();
     }
+
+    private static double[][] GetDistanceMatrix<TValue>(
+        IReadOnlyList<TValue> source,
+        IReadOnlyList<TValue> target,
+        IDistanceProvider<TValue>? distanceProvider)
+    {
+        var establishedDistanceProvider =
+            distanceProvider ?? EqualityComparer<TValue>.Default.ToDistanceProvider();
+        var distanceRectMatrix = Enumerable.Range(0, source.Count)
+            .Select(s =>
+                Enumerable.Range(0, target.Count)
+                    .Select(t => establishedDistanceProvider.GetDistance(source[s], target[t]))
+                    .ToArray())
+            .ToArray();
+        var maxValue = distanceRectMatrix.SelectMany(x => x).Max();
+        var maxSize = Math.Max(source.Count, target.Count);
+        return SetDimensions(distanceRectMatrix, maxSize, maxSize, maxValue + 1);
+    }
+
+    private static T[][] SetDimensions<T>(
+        T[][] source, int dimension1, int dimension2, T defaultValue) =>
+        Enumerable.Range(0, dimension1)
+            .Select(i1 =>
+                Enumerable.Range(0, dimension2)
+                    .Select(i2 =>
+                        i1 < source.Length && i2 < source[i1].Length
+                            ? source[i1][i2]
+                            : defaultValue)
+                    .ToArray())
+            .ToArray();
 }

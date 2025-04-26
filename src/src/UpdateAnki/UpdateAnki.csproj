@@ -17,6 +17,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\DistanceProviders\DistanceProviders.csproj" />
     <ProjectReference Include="..\Translation.Models\Translation.Models.csproj" />
   </ItemGroup>
   

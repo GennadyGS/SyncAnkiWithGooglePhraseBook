@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using DistanceProviders;
+using DistanceProviders.Extensions;
 using MoreLinq;
 using UpdateAnki.Extensions;
 using UpdateAnki.Models;
@@ -13,7 +15,7 @@ public static class ModificationActionsCalculator
         bool deleteUnmatched = false,
         bool deleteExcessMatched = false,
         IEqualityComparer<TValue>? matchComparer = null,
-        Func<TValue, TValue, double>? valueDistanceProvider = null)
+        IDistanceProvider<TValue>? valueDistanceProvider = null)
     {
         var groupedSource = source
             .GroupBy(x => x, x => x, matchComparer)
@@ -47,7 +49,7 @@ public static class ModificationActionsCalculator
         TValue[] source,
         KeyValuePair<TKey, TValue>[] target,
         bool deleteExcessMatched,
-        Func<TValue, TValue, double>? valueDistanceProvider)
+        IDistanceProvider<TValue>? valueDistanceProvider)
     {
         var targetValues = target.Select(kvp => kvp.Value).ToList();
         return OptimalMatchCalculator
@@ -69,12 +71,12 @@ public static class ModificationActionsCalculator
         int sourceIndex,
         KeyValuePair<TKey, TValue>[] target,
         int targetIndex,
-        Func<TValue, TValue, double>? valueDistanceProvider)
+        IDistanceProvider<TValue>? valueDistanceProvider)
     {
         var establishedValueDistanceProvider =
             valueDistanceProvider ?? EqualityComparer<TValue>.Default.ToDistanceProvider();
-        var distance =
-            establishedValueDistanceProvider(target[targetIndex].Value, source[sourceIndex]);
+        var distance = establishedValueDistanceProvider
+            .GetDistance(target[targetIndex].Value, source[sourceIndex]);
 
         if (MathUtils.EqualWithTolerance(distance, 0))
         {
