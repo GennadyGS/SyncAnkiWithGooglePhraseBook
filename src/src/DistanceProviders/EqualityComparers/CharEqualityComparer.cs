@@ -6,7 +6,7 @@ public sealed class CharEqualityComparer(IEqualityComparer<string> stringEqualit
     private readonly IEqualityComparer<string> _stringEqualityComparer = stringEqualityComparer;
 
     public bool Equals(char x, char y) =>
-        _stringEqualityComparer.Equals(x.ToString(), x.ToString());
+        _stringEqualityComparer.Equals(x.ToString(), y.ToString());
 
     public int GetHashCode(char obj) => _stringEqualityComparer.GetHashCode(obj.ToString());
 }
