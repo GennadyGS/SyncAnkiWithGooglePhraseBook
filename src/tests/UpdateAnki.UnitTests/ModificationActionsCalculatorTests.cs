@@ -65,7 +65,8 @@ public sealed class ModificationActionsCalculatorTests
                     [4] = "four",
                 },
                 MatchComparer = StringComparer.OrdinalIgnoreCase,
-                ValueDistanceProvider = new CaseSoftStringEditDistanceProvider(0.5),
+                ValueDistanceProvider =
+                    new StringEditDistanceProvider(new CaseSoftCharEditDistanceProvider(0.5)),
                 DeleteUnmatched = true,
                 ExpectedResult = new ModificationActions<int, string>
                 {
