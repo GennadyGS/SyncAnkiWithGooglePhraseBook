@@ -13,7 +13,7 @@ public sealed class ModificationActionsCalculatorTests
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Layout",
         "MEN003:Method is too long",
-        Justification = "Method does not contain logic, just data declarations.")]
+        Justification = "Method does not contain logic, just data declarations")]
     public static TheoryData<TestCase<int, string>> GetTestCases() =>
         TheoryDataBuilder.TheoryData((TestCase<int, string>[])[
             new TestCase<int, string>

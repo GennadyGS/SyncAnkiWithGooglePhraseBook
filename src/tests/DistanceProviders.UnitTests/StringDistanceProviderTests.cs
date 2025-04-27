@@ -64,6 +64,12 @@ public sealed class StringDistanceProviderTests
         [
             new TestCase
             {
+                Source = string.Empty,
+                Target = string.Empty,
+                ExpectedDistance = 0,
+            },
+            new TestCase
+            {
                 Source = "Test",
                 Target = "test",
                 ExpectedDistance = 0,
@@ -79,6 +85,90 @@ public sealed class StringDistanceProviderTests
                 Source = "Kitten",
                 Target = "SITTING",
                 ExpectedDistance = 3,
+            },
+            new TestCase
+            {
+                Source = string.Empty,
+                Target = "test",
+                ExpectedDistance = 4,
+            },
+            new TestCase
+            {
+                Source = "test",
+                Target = string.Empty,
+                ExpectedDistance = 4,
+            },
+        ]);
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Layout",
+        "MEN003:Method is too long",
+        Justification = "Method does not contain logic, just data declarations")]
+    public static TheoryData<SoftCaseTestCase> GetSoftCaseTestCases() =>
+        TheoryDataBuilder.TheoryData(
+        [
+            new SoftCaseTestCase
+            {
+                CaseWeight = 0.7,
+                Source = "kitten",
+                Target = "sitting",
+                ExpectedDistance = 3,
+            },
+            new SoftCaseTestCase
+            {
+                CaseWeight = 0.4,
+                Source = "CASE",
+                Target = "case",
+                ExpectedDistance = 1.6,
+            },
+            new SoftCaseTestCase
+            {
+                CaseWeight = 0.3,
+                Source = "MisMatch",
+                Target = "match",
+                ExpectedDistance = 3.3,
+            },
+            new SoftCaseTestCase
+            {
+                CaseWeight = 0.6,
+                Source = "Edit",
+                Target = "Distance",
+                ExpectedDistance = 6.6,
+            },
+            new SoftCaseTestCase
+            {
+                CaseWeight = 0.5,
+                Source = "abc",
+                Target = "aBc",
+                ExpectedDistance = 0.5,
+            },
+            new SoftCaseTestCase
+            {
+                CaseWeight = 0.5,
+                Source = "abc",
+                Target = "abcd",
+                ExpectedDistance = 1.0,
+            },
+            new SoftCaseTestCase
+            {
+                CaseWeight = 0.5,
+                Source = "abcd",
+                Target = "abc",
+                ExpectedDistance = 1.0,
+            },
+            new SoftCaseTestCase
+            {
+                CaseWeight = 0.5,
+                Source = "abc",
+                Target = "aXc",
+                ExpectedDistance = 1.0,
+            },
+            new SoftCaseTestCase
+            {
+                CaseWeight = 0.5,
+                Source = "abc",
+                Target = "aBcX",
+                ExpectedDistance = 1.5,
             },
         ]);
 
@@ -106,12 +196,29 @@ public sealed class StringDistanceProviderTests
         distance.Should().BeApproximately(testCase.ExpectedDistance, double.Epsilon);
     }
 
-    public sealed class TestCase
+    [Theory]
+    [MemberData(nameof(GetSoftCaseTestCases))]
+    public void GetDistance_ShouldReturnCorrectDistance_ForSoftCaseDistanceProvider(
+        SoftCaseTestCase testCase)
+    {
+        var sut = StringDistanceProviders.CreateSoftCase(testCase.CaseWeight);
+
+        var distance = sut.GetDistance(testCase.Source, testCase.Target);
+
+        distance.Should().BeApproximately(testCase.ExpectedDistance, double.Epsilon);
+    }
+
+    public class TestCase
     {
         public required string Source { get; init; }
 
         public required string Target { get; init; }
 
         public required double ExpectedDistance { get; init; }
+    }
+
+    public sealed class SoftCaseTestCase : TestCase
+    {
+        public required double CaseWeight { get; init; }
     }
 }
