@@ -2,6 +2,6 @@
 
 public static class MathUtils
 {
-    public static bool EqualWithTolerance(double a, double b, double tolerance = 1e-10) =>
-        Math.Abs(a - b) < tolerance;
+    public static bool EqualWithTolerance(double a, double b, double epsilon = double.Epsilon) =>
+        Math.Abs(a - b) < epsilon;
 }

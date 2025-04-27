@@ -1,4 +1,6 @@
-﻿namespace UpdateAnki.UnitTests.Utils;
+﻿using Xunit;
+
+namespace TestUtils;
 
 public static class TheoryDataBuilder
 {

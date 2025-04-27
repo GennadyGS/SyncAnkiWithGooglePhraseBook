@@ -1,9 +1,10 @@
 using DistanceProviders;
 using DistanceProviders.Extensions;
 using FluentAssertions;
+using TestUtils;
 using UpdateAnki.Models;
-using UpdateAnki.UnitTests.Utils;
 using UpdateAnki.Utils;
+using Xunit;
 
 namespace UpdateAnki.UnitTests;
 
@@ -65,8 +66,7 @@ public sealed class ModificationActionsCalculatorTests
                     [4] = "four",
                 },
                 MatchComparer = StringComparer.OrdinalIgnoreCase,
-                ValueDistanceProvider =
-                    new StringEditDistanceProvider(new CaseSoftCharEditDistanceProvider(0.5)),
+                ValueDistanceProvider = StringDistanceProviders.CreateSoftCase(0.5),
                 DeleteUnmatched = true,
                 ExpectedResult = new ModificationActions<int, string>
                 {
