@@ -5,26 +5,28 @@ namespace UpdateAnki.Extensions;
 
 internal static class EnumerableUpdateActionsExtensions
 {
-    public static EnumerableModificationActions<TKey, TValue> AddUpdateActions<TKey, TValue>(
-        this EnumerableModificationActions<TKey, TValue> source,
-        IEnumerable<ModificationAction<TKey, TValue>> actions) =>
-        actions.Aggregate(source, AddUpdateAction);
+    public static EnumerableModificationActions<TSource, TTarget>
+        AddUpdateActions<TSource, TTarget>(
+            this EnumerableModificationActions<TSource, TTarget> source,
+            IEnumerable<ModificationAction<TSource, TTarget>> actions) =>
+            actions.Aggregate(source, AddUpdateAction);
 
-    public static EnumerableModificationActions<TKey, TValue> AddUpdateAction<TKey, TValue>(
-        this EnumerableModificationActions<TKey, TValue> source, ModificationAction<TKey, TValue> action) =>
+    public static EnumerableModificationActions<TSource, TTarget> AddUpdateAction<TSource, TTarget>(
+        this EnumerableModificationActions<TSource, TTarget> source,
+        ModificationAction<TSource, TTarget> action) =>
         action switch
         {
-            ModificationAction<TKey, TValue>.Add addAction =>
+            ModificationAction<TSource, TTarget>.Add addAction =>
                 source with
                 {
                     ToAdd = source.ToAdd.Concat(addAction.Values),
                 },
-            ModificationAction<TKey, TValue>.Update updateAction =>
+            ModificationAction<TSource, TTarget>.Update updateAction =>
                 source with
                 {
                     ToUpdate = source.ToUpdate.Concat(updateAction.Updates),
                 },
-            ModificationAction<TKey, TValue>.Delete deleteAction =>
+            ModificationAction<TSource, TTarget>.Delete deleteAction =>
                 source with
                 {
                     ToDelete = source.ToDelete.Concat(deleteAction.Keys),
@@ -32,8 +34,8 @@ internal static class EnumerableUpdateActionsExtensions
             _ => throw new UnreachableException(),
         };
 
-    public static ModificationActions<TKey, TValue> ToArrays<TKey, TValue>(
-        this EnumerableModificationActions<TKey, TValue> source) =>
+    public static ModificationActions<TSource, TTarget> ToArrays<TSource, TTarget>(
+        this EnumerableModificationActions<TSource, TTarget> source) =>
         new()
         {
             ToAdd = source.ToAdd.ToArray(),

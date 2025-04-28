@@ -10,7 +10,7 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
 {
     private readonly HttpClient _httpClient = httpClient;
 
-    public async Task<IDictionary<long, PhraseTranslation>> LoadPhraseTranslationsAsync(
+    public async Task<IReadOnlyDictionary<long, PhraseTranslation>> LoadPhraseTranslationsAsync(
         AnkiSettings ankiSettings)
     {
         var noteIds = await _httpClient.FindNotesAsync($"\"deck:{ankiSettings.RootDeckName}\"");
@@ -22,11 +22,18 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
     }
 
     public async Task UpdatePhraseTranslationsAsync(
-        ModificationActions<long, PhraseTranslation> modificationActions, AnkiSettings ankiSettings)
+        ModificationActions<PhraseTranslation, KeyValuePair<long, PhraseTranslation>> modificationActions,
+        AnkiSettings ankiSettings)
     {
-        await UpdatePhraseTranslationsAsync(modificationActions.ToUpdate);
+        var translationsToUpdate = modificationActions.ToUpdate
+            .Select(item => KeyValuePair.Create(item.target.Key, item.source))
+            .ToList();
+        await UpdatePhraseTranslationsAsync(translationsToUpdate);
         await AddPhraseTranslationsAsync(modificationActions.ToAdd, ankiSettings);
-        await DeletePhraseTranslationsAsync(modificationActions.ToDelete);
+        var translationsToDelete = modificationActions.ToDelete
+            .Select(kvp => kvp.Key)
+            .ToList();
+        await DeletePhraseTranslationsAsync(translationsToDelete);
     }
 
     private async Task UpdatePhraseTranslationsAsync(

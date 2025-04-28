@@ -1,10 +1,10 @@
 ﻿namespace UpdateAnki.Models;
 
-public sealed record EnumerableModificationActions<TKey, TValue>
+public sealed record EnumerableModificationActions<TSource, TTarget>
 {
-    public IEnumerable<TValue> ToAdd { get; init; } = [];
+    public IEnumerable<TSource> ToAdd { get; init; } = [];
 
-    public IEnumerable<KeyValuePair<TKey, TValue>> ToUpdate { get; init; } = [];
+    public IEnumerable<(TSource source, TTarget target)> ToUpdate { get; init; } = [];
 
-    public IEnumerable<TKey> ToDelete { get; init; } = [];
+    public IEnumerable<TTarget> ToDelete { get; init; } = [];
 }

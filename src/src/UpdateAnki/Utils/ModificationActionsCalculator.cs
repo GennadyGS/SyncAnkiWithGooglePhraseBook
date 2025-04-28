@@ -9,74 +9,90 @@ namespace UpdateAnki.Utils;
 
 public static class ModificationActionsCalculator
 {
-    public static ModificationActions<TKey, TValue> GetModificationActions<TKey, TValue>(
-        IReadOnlyCollection<TValue> source,
-        IDictionary<TKey, TValue> target,
-        bool deleteUnmatched = false,
-        bool deleteExcessMatched = false,
-        IEqualityComparer<TValue>? matchComparer = null,
-        IDistanceProvider<TValue>? valueDistanceProvider = null)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "Generalized algorithm requiring a lot of specifications")]
+    public static ModificationActions<TSource, TTarget>
+        GetModificationActions<TSource, TTarget, TKey>(
+            IReadOnlyCollection<TSource> source,
+            IReadOnlyCollection<TTarget> target,
+            Func<TSource, TKey> sourceKeySelector,
+            Func<TTarget, TKey> targetKeySelector,
+            bool deleteUnmatched = false,
+            bool deleteExcessMatched = false,
+            IEqualityComparer<TKey>? matchComparer = null,
+            IDistanceProvider<TKey>? valueDistanceProvider = null)
     {
         var groupedSource = source
-            .GroupBy(x => x, x => x, matchComparer)
+            .GroupBy(sourceKeySelector, x => x, matchComparer)
             .ToList();
         var groupedTarget = target
-            .GroupBy(x => x.Value, x => x, matchComparer)
+            .GroupBy(targetKeySelector, x => x, matchComparer)
             .ToList();
         return groupedSource
             .FullJoin(
                 groupedTarget,
                 s => s.Key,
                 t => t.Key,
-                s => [new ModificationAction<TKey, TValue>.Add(s)],
-                t => GetDeleteActions(t, deleteUnmatched),
+                s => [new ModificationAction<TSource, TTarget>.Add(s),],
+                t => GetDeleteActions<TSource, TTarget>(t, deleteUnmatched),
                 (s, t) => GetMatchingActions(
-                    s.ToArray(), t.ToArray(), deleteExcessMatched, valueDistanceProvider),
+                    s.ToArray(),
+                    t.ToArray(),
+                    sourceKeySelector,
+                    targetKeySelector,
+                    deleteExcessMatched,
+                    valueDistanceProvider),
                 matchComparer)
             .Aggregate(
-                new EnumerableModificationActions<TKey, TValue>(),
+                new EnumerableModificationActions<TSource, TTarget>(),
                 (actions, action) => actions.AddUpdateActions(action))
             .ToArrays();
     }
 
-    private static ModificationAction<TKey, TValue>[] GetDeleteActions<TKey, TValue>(
-        IEnumerable<KeyValuePair<TKey, TValue>> keyValues, bool deleteUnmatched) =>
+    private static ModificationAction<TSource, TTarget>[] GetDeleteActions<TSource, TTarget>(
+        IEnumerable<TTarget> target, bool deleteUnmatched) =>
         deleteUnmatched
-            ? [new ModificationAction<TKey, TValue>.Delete(keyValues.Select(kvp => kvp.Key))]
+            ? [new ModificationAction<TSource, TTarget>.Delete(target)]
             : [];
 
-    private static IEnumerable<ModificationAction<TKey, TValue>> GetMatchingActions<TKey, TValue>(
-        TValue[] source,
-        KeyValuePair<TKey, TValue>[] target,
-        bool deleteExcessMatched,
-        IDistanceProvider<TValue>? valueDistanceProvider)
+    private static IEnumerable<ModificationAction<TSource, TTarget>>
+        GetMatchingActions<TSource, TTarget, TKey>(
+            TSource[] source,
+            TTarget[] target,
+            Func<TSource, TKey> sourceKeySelector,
+            Func<TTarget, TKey> targetKeySelector,
+            bool deleteExcessMatched,
+            IDistanceProvider<TKey>? valueDistanceProvider)
     {
-        var targetValues = target.Select(kvp => kvp.Value).ToList();
+        var sourceKeys = source.Select(sourceKeySelector).ToArray();
+        var targetKeys = target.Select(targetKeySelector).ToArray();
         return OptimalMatchCalculator
-            .GetOptimalMatch(source, targetValues, valueDistanceProvider)
+            .GetOptimalMatch(sourceKeys, targetKeys, valueDistanceProvider)
             .SelectMany((ti, si) => (ti, si) switch
             {
-                _ when ti < target.Length && si < source.Length =>
-                    GetUpdateActions(source, si, target, ti, valueDistanceProvider),
+                _ when ti < target.Length && si < source.Length => GetUpdateActions(
+                    source[si], sourceKeys[si], target[ti], targetKeys[ti], valueDistanceProvider),
                 _ when ti >= target.Length =>
-                    [new ModificationAction<TKey, TValue>.Add([source[si]])],
+                    [new ModificationAction<TSource, TTarget>.Add([source[si]])],
                 _ when si >= source.Length =>
-                    GetMatchingDeleteActions(target, ti, deleteExcessMatched),
+                    GetMatchingDeleteActions<TSource, TTarget>(target[ti], deleteExcessMatched),
                 _ => throw new UnreachableException("Unexpected output from optimizer"),
             });
     }
 
-    private static IEnumerable<ModificationAction<TKey, TValue>> GetUpdateActions<TKey, TValue>(
-        TValue[] source,
-        int sourceIndex,
-        KeyValuePair<TKey, TValue>[] target,
-        int targetIndex,
-        IDistanceProvider<TValue>? valueDistanceProvider)
+    private static IEnumerable<ModificationAction<TSource, TTarget>>
+        GetUpdateActions<TSource, TTarget, TKey>(
+            TSource sourceItem,
+            TKey sourceKey,
+            TTarget targetItem,
+            TKey targetKey,
+            IDistanceProvider<TKey>? valueDistanceProvider)
     {
         var establishedValueDistanceProvider =
-            valueDistanceProvider ?? EqualityComparer<TValue>.Default.ToDistanceProvider();
-        var distance = establishedValueDistanceProvider
-            .GetDistance(target[targetIndex].Value, source[sourceIndex]);
+            valueDistanceProvider ?? EqualityComparer<TKey>.Default.ToDistanceProvider();
+        var distance = establishedValueDistanceProvider.GetDistance(sourceKey, targetKey);
 
         if (MathUtils.EqualWithTolerance(distance, 0))
         {
@@ -85,20 +101,19 @@ public static class ModificationActionsCalculator
 
         return
         [
-            new ModificationAction<TKey, TValue>.Update(
-                [new KeyValuePair<TKey, TValue>(target[targetIndex].Key, source[sourceIndex])]),
+            new ModificationAction<TSource, TTarget>
+                .Update([(source: sourceItem, target: targetItem)]),
         ];
     }
 
-    private static IEnumerable<ModificationAction<TKey, TValue>>
-        GetMatchingDeleteActions<TKey, TValue>(
-            KeyValuePair<TKey, TValue>[] target, int ti, bool deleteExcessMatched)
+    private static IEnumerable<ModificationAction<TSource, TTarget>>
+        GetMatchingDeleteActions<TSource, TTarget>(TTarget targetItem, bool deleteExcessMatched)
     {
         if (!deleteExcessMatched)
         {
             return [];
         }
 
-        return [new ModificationAction<TKey, TValue>.Delete([target[ti].Key])];
+        return [new ModificationAction<TSource, TTarget>.Delete([targetItem])];
     }
 }

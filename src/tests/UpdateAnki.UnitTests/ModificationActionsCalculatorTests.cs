@@ -1,5 +1,4 @@
 using DistanceProviders;
-using DistanceProviders.Extensions;
 using FluentAssertions;
 using TestUtils;
 using UpdateAnki.Models;
@@ -10,13 +9,9 @@ namespace UpdateAnki.UnitTests;
 
 public sealed class ModificationActionsCalculatorTests
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Layout",
-        "MEN003:Method is too long",
-        Justification = "Method does not contain logic, just data declarations")]
-    public static TheoryData<TestCase<int, string>> GetTestCases() =>
-        TheoryDataBuilder.TheoryData((TestCase<int, string>[])[
-            new TestCase<int, string>
+    public static TheoryData<TestCase<string, KeyValuePair<int, string>>> GetDefaultTestCases() =>
+        TheoryDataBuilder.TheoryData([
+            new TestCase<string, KeyValuePair<int, string>>
             {
                 Id = 1,
                 Source = ["One", "two", "three"],
@@ -28,14 +23,19 @@ public sealed class ModificationActionsCalculatorTests
                 },
                 MatchComparer = StringComparer.OrdinalIgnoreCase,
                 DeleteUnmatched = true,
-                ExpectedResult = new ModificationActions<int, string>
+                ExpectedResult = new ModificationActions<string, KeyValuePair<int, string>>
                 {
                     ToAdd = ["three"],
-                    ToUpdate = [KeyValuePair.Create(1, "One")],
-                    ToDelete = [4],
+                    ToUpdate = [(source: "One", target: KeyValuePair.Create(1, "one"))],
+                    ToDelete = [KeyValuePair.Create(4, "four")],
                 },
             },
-            new TestCase<int, string>
+        ]);
+
+    public static TheoryData<TestCase<string, KeyValuePair<int, string>>>
+        GetIgnoreCaseTestCases() =>
+        TheoryDataBuilder.TheoryData([
+            new TestCase<string, KeyValuePair<int, string>>
             {
                 Id = 2,
                 Source = ["One", "two", "three"],
@@ -46,16 +46,20 @@ public sealed class ModificationActionsCalculatorTests
                     [4] = "four",
                 },
                 MatchComparer = StringComparer.OrdinalIgnoreCase,
-                ValueDistanceProvider = StringComparer.OrdinalIgnoreCase.ToDistanceProvider(),
                 DeleteUnmatched = true,
-                ExpectedResult = new ModificationActions<int, string>
+                ExpectedResult = new ModificationActions<string, KeyValuePair<int, string>>
                 {
                     ToAdd = ["three"],
                     ToUpdate = [],
-                    ToDelete = [4],
+                    ToDelete = [KeyValuePair.Create(4, "four")],
                 },
             },
-            new TestCase<int, string>
+        ]);
+
+    public static TheoryData<SoftCaseTestCase<string, KeyValuePair<int, string>>>
+        GetSoftCaseTestCases() =>
+        TheoryDataBuilder.TheoryData([
+            new SoftCaseTestCase<string, KeyValuePair<int, string>>
             {
                 Id = 3,
                 Source = ["ONE", "one", "OnE", "Two", "three"],
@@ -66,40 +70,65 @@ public sealed class ModificationActionsCalculatorTests
                     [4] = "four",
                 },
                 MatchComparer = StringComparer.OrdinalIgnoreCase,
-                ValueDistanceProvider = StringDistanceProviders.CreateSoftCase(0.5),
+                CaseWeight = 0.5,
                 DeleteUnmatched = true,
-                ExpectedResult = new ModificationActions<int, string>
+                ExpectedResult = new ModificationActions<string, KeyValuePair<int, string>>
                 {
                     ToAdd = ["ONE", "OnE", "three"],
-                    ToUpdate = [KeyValuePair.Create(2, "Two")],
-                    ToDelete = [4],
+                    ToUpdate = [(source: "Two", target: KeyValuePair.Create(2, "two"))],
+                    ToDelete = [KeyValuePair.Create(4, "four")],
                 },
             },
         ]);
 
     [Theory]
-    [MemberData(nameof(GetTestCases))]
-    public void GetUpdateActions_ShouldReturnCorrectResults(TestCase<int, string> testCase)
+    [MemberData(nameof(GetDefaultTestCases))]
+    public void GetUpdateActions_ShouldReturnCorrectResults_ForDefaultDistanceProvider(
+        TestCase<string, KeyValuePair<int, string>> testCase)
+    {
+        RunTestCase(testCase, StringDistanceProviders.Default);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIgnoreCaseTestCases))]
+    public void GetUpdateActions_ShouldReturnCorrectResults_ForIgnoreCaseDistanceProvider(
+        TestCase<string, KeyValuePair<int, string>> testCase)
+    {
+        RunTestCase(testCase, StringDistanceProviders.OrdinalIgnoreCase);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetSoftCaseTestCases))]
+    public void GetUpdateActions_ShouldReturnCorrectResults_ForSoftCaseDistanceProvider(
+        SoftCaseTestCase<string, KeyValuePair<int, string>> testCase)
+    {
+        RunTestCase(testCase, StringDistanceProviders.CreateSoftCase(testCase.CaseWeight));
+    }
+
+    private static void RunTestCase(
+        TestCase<string, KeyValuePair<int, string>> testCase,
+        IDistanceProvider<string> valueDistanceProvider)
     {
         var result = ModificationActionsCalculator.GetModificationActions(
             testCase.Source,
             testCase.Target,
+            s => s,
+            t => t.Value,
             testCase.DeleteUnmatched,
             testCase.DeleteExcessMatched,
             testCase.MatchComparer,
-            testCase.ValueDistanceProvider);
+            valueDistanceProvider);
 
         result.Should().BeEquivalentTo(testCase.ExpectedResult);
     }
 
-    public sealed record TestCase<TKey, TValue>
-        where TKey : notnull
+    public record TestCase<TSource, TTarget>
     {
         public required int Id { get; init; }
 
-        public required IReadOnlyCollection<TValue> Source { get; init; }
+        public required IReadOnlyCollection<TSource> Source { get; init; }
 
-        public required IDictionary<TKey, TValue> Target { get; init; }
+        public required IReadOnlyCollection<TTarget> Target { get; init; }
 
         public bool DeleteUnmatched { get; init; }
 
@@ -107,8 +136,11 @@ public sealed class ModificationActionsCalculatorTests
 
         public IEqualityComparer<string>? MatchComparer { get; init; }
 
-        public IDistanceProvider<TValue>? ValueDistanceProvider { get; init; }
+        public required ModificationActions<TSource, TTarget> ExpectedResult { get; init; }
+    }
 
-        public required ModificationActions<TKey, TValue> ExpectedResult { get; init; }
+    public sealed record SoftCaseTestCase<TSource, TTarget> : TestCase<TSource, TTarget>
+    {
+        public required double CaseWeight { get; init; }
     }
 }
