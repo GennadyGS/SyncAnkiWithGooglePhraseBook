@@ -16,8 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DistanceProviders\DistanceProviders.csproj" />
-    <ProjectReference Include="..\..\src\UpdateAnki\UpdateAnki.csproj" />
+    <ProjectReference Include="..\..\src\ChangeSetCalculation\ChangeSetCalculation.csproj" />
     <ProjectReference Include="..\TestUtils\TestUtils.csproj" />
   </ItemGroup>
 </Project>

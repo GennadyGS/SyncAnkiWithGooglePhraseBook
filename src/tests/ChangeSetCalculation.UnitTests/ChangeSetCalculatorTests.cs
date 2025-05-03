@@ -1,11 +1,10 @@
-using ChangeSetCalculation;
 using DistanceProviders;
 using FluentAssertions;
 using TestUtils;
 using UpdateAnki.Models;
 using Xunit;
 
-namespace UpdateAnki.UnitTests;
+namespace ChangeSetCalculation.UnitTests;
 
 public sealed class ChangeSetCalculatorTests
 {
