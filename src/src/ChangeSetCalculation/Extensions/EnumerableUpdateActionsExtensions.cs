@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using UpdateAnki.Models;
 
-namespace UpdateAnki.Extensions;
+namespace ChangeSetCalculation.Extensions;
 
 internal static class EnumerableUpdateActionsExtensions
 {

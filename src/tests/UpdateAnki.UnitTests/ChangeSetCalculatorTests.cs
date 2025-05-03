@@ -1,8 +1,8 @@
+using ChangeSetCalculation;
 using DistanceProviders;
 using FluentAssertions;
 using TestUtils;
 using UpdateAnki.Models;
-using UpdateAnki.Utils;
 using Xunit;
 
 namespace UpdateAnki.UnitTests;
