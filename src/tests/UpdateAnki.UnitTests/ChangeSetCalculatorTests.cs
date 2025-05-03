@@ -7,7 +7,7 @@ using Xunit;
 
 namespace UpdateAnki.UnitTests;
 
-public sealed class ModificationActionsCalculatorTests
+public sealed class ChangeSetCalculatorTests
 {
     public static TheoryData<TestCase<string, KeyValuePair<int, string>>> GetDefaultTestCases() =>
         TheoryDataBuilder.TheoryData([
@@ -109,7 +109,7 @@ public sealed class ModificationActionsCalculatorTests
         TestCase<string, KeyValuePair<int, string>> testCase,
         IDistanceProvider<string> valueDistanceProvider)
     {
-        var result = ModificationActionsCalculator.GetModificationActions(
+        var result = ChangeSetCalculator.GetModificationActions(
             testCase.Source,
             testCase.Target,
             s => s,

@@ -7,7 +7,7 @@ using UpdateAnki.Models;
 
 namespace UpdateAnki.Utils;
 
-public static class ModificationActionsCalculator
+public static class ChangeSetCalculator
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
