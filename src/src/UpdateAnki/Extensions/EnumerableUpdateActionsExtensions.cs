@@ -8,25 +8,25 @@ internal static class EnumerableUpdateActionsExtensions
     public static EnumerableChangeSet<TSource, TTarget>
         AddUpdateActions<TSource, TTarget>(
             this EnumerableChangeSet<TSource, TTarget> source,
-            IEnumerable<ModificationAction<TSource, TTarget>> actions) =>
+            IEnumerable<ChangeAction<TSource, TTarget>> actions) =>
             actions.Aggregate(source, AddUpdateAction);
 
     public static EnumerableChangeSet<TSource, TTarget> AddUpdateAction<TSource, TTarget>(
         this EnumerableChangeSet<TSource, TTarget> source,
-        ModificationAction<TSource, TTarget> action) =>
+        ChangeAction<TSource, TTarget> action) =>
         action switch
         {
-            ModificationAction<TSource, TTarget>.Add addAction =>
+            ChangeAction<TSource, TTarget>.Add addAction =>
                 source with
                 {
                     ToAdd = source.ToAdd.Concat(addAction.Values),
                 },
-            ModificationAction<TSource, TTarget>.Update updateAction =>
+            ChangeAction<TSource, TTarget>.Update updateAction =>
                 source with
                 {
                     ToUpdate = source.ToUpdate.Concat(updateAction.Updates),
                 },
-            ModificationAction<TSource, TTarget>.Delete deleteAction =>
+            ChangeAction<TSource, TTarget>.Delete deleteAction =>
                 source with
                 {
                     ToDelete = source.ToDelete.Concat(deleteAction.Keys),
