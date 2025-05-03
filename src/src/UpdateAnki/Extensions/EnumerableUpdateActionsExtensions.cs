@@ -5,14 +5,14 @@ namespace UpdateAnki.Extensions;
 
 internal static class EnumerableUpdateActionsExtensions
 {
-    public static EnumerableModificationActions<TSource, TTarget>
+    public static EnumerableChangeSet<TSource, TTarget>
         AddUpdateActions<TSource, TTarget>(
-            this EnumerableModificationActions<TSource, TTarget> source,
+            this EnumerableChangeSet<TSource, TTarget> source,
             IEnumerable<ModificationAction<TSource, TTarget>> actions) =>
             actions.Aggregate(source, AddUpdateAction);
 
-    public static EnumerableModificationActions<TSource, TTarget> AddUpdateAction<TSource, TTarget>(
-        this EnumerableModificationActions<TSource, TTarget> source,
+    public static EnumerableChangeSet<TSource, TTarget> AddUpdateAction<TSource, TTarget>(
+        this EnumerableChangeSet<TSource, TTarget> source,
         ModificationAction<TSource, TTarget> action) =>
         action switch
         {
@@ -34,8 +34,8 @@ internal static class EnumerableUpdateActionsExtensions
             _ => throw new UnreachableException(),
         };
 
-    public static ModificationActions<TSource, TTarget> ToArrays<TSource, TTarget>(
-        this EnumerableModificationActions<TSource, TTarget> source) =>
+    public static ChangeSet<TSource, TTarget> ToArrays<TSource, TTarget>(
+        this EnumerableChangeSet<TSource, TTarget> source) =>
         new()
         {
             ToAdd = source.ToAdd.ToArray(),

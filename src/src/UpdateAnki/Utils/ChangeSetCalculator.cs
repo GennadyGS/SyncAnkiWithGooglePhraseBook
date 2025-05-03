@@ -13,16 +13,15 @@ public static class ChangeSetCalculator
         "Major Code Smell",
         "S107:Methods should not have too many parameters",
         Justification = "Generalized algorithm requiring a lot of specifications")]
-    public static ModificationActions<TSource, TTarget>
-        GetModificationActions<TSource, TTarget, TKey>(
-            IReadOnlyCollection<TSource> source,
-            IReadOnlyCollection<TTarget> target,
-            Func<TSource, TKey> sourceKeySelector,
-            Func<TTarget, TKey> targetKeySelector,
-            bool deleteUnmatched = false,
-            bool deleteExcessMatched = false,
-            IEqualityComparer<TKey>? matchComparer = null,
-            IDistanceProvider<TKey>? valueDistanceProvider = null)
+    public static ChangeSet<TSource, TTarget> GetModificationActions<TSource, TTarget, TKey>(
+        IReadOnlyCollection<TSource> source,
+        IReadOnlyCollection<TTarget> target,
+        Func<TSource, TKey> sourceKeySelector,
+        Func<TTarget, TKey> targetKeySelector,
+        bool deleteUnmatched = false,
+        bool deleteExcessMatched = false,
+        IEqualityComparer<TKey>? matchComparer = null,
+        IDistanceProvider<TKey>? valueDistanceProvider = null)
     {
         var groupedSource = source
             .GroupBy(sourceKeySelector, x => x, matchComparer)
@@ -46,7 +45,7 @@ public static class ChangeSetCalculator
                     valueDistanceProvider),
                 matchComparer)
             .Aggregate(
-                new EnumerableModificationActions<TSource, TTarget>(),
+                new EnumerableChangeSet<TSource, TTarget>(),
                 (actions, action) => actions.AddUpdateActions(action))
             .ToArrays();
     }

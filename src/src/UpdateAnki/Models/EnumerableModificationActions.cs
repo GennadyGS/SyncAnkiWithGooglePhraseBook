@@ -1,6 +1,6 @@
 ﻿namespace UpdateAnki.Models;
 
-public sealed record EnumerableModificationActions<TSource, TTarget>
+public sealed record EnumerableChangeSet<TSource, TTarget>
 {
     public IEnumerable<TSource> ToAdd { get; init; } = [];
 

@@ -23,7 +23,7 @@ public sealed class ChangeSetCalculatorTests
                 },
                 MatchComparer = StringComparer.OrdinalIgnoreCase,
                 DeleteUnmatched = true,
-                ExpectedResult = new ModificationActions<string, KeyValuePair<int, string>>
+                ExpectedResult = new ChangeSet<string, KeyValuePair<int, string>>
                 {
                     ToAdd = ["three"],
                     ToUpdate = [(source: "One", target: KeyValuePair.Create(1, "one"))],
@@ -47,7 +47,7 @@ public sealed class ChangeSetCalculatorTests
                 },
                 MatchComparer = StringComparer.OrdinalIgnoreCase,
                 DeleteUnmatched = true,
-                ExpectedResult = new ModificationActions<string, KeyValuePair<int, string>>
+                ExpectedResult = new ChangeSet<string, KeyValuePair<int, string>>
                 {
                     ToAdd = ["three"],
                     ToUpdate = [],
@@ -72,7 +72,7 @@ public sealed class ChangeSetCalculatorTests
                 MatchComparer = StringComparer.OrdinalIgnoreCase,
                 CaseWeight = 0.5,
                 DeleteUnmatched = true,
-                ExpectedResult = new ModificationActions<string, KeyValuePair<int, string>>
+                ExpectedResult = new ChangeSet<string, KeyValuePair<int, string>>
                 {
                     ToAdd = ["ONE", "OnE", "three"],
                     ToUpdate = [(source: "Two", target: KeyValuePair.Create(2, "two"))],
@@ -136,7 +136,7 @@ public sealed class ChangeSetCalculatorTests
 
         public IEqualityComparer<string>? MatchComparer { get; init; }
 
-        public required ModificationActions<TSource, TTarget> ExpectedResult { get; init; }
+        public required ChangeSet<TSource, TTarget> ExpectedResult { get; init; }
     }
 
     public sealed record SoftCaseTestCase<TSource, TTarget> : TestCase<TSource, TTarget>

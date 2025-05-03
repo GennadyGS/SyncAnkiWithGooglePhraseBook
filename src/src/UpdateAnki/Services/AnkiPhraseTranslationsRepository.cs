@@ -22,15 +22,15 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
     }
 
     public async Task UpdatePhraseTranslationsAsync(
-        ModificationActions<PhraseTranslation, KeyValuePair<long, PhraseTranslation>> modificationActions,
+        ChangeSet<PhraseTranslation, KeyValuePair<long, PhraseTranslation>> changeSet,
         AnkiSettings ankiSettings)
     {
-        var translationsToUpdate = modificationActions.ToUpdate
+        var translationsToUpdate = changeSet.ToUpdate
             .Select(item => KeyValuePair.Create(item.target.Key, item.source))
             .ToList();
         await UpdatePhraseTranslationsAsync(translationsToUpdate);
-        await AddPhraseTranslationsAsync(modificationActions.ToAdd, ankiSettings);
-        var translationsToDelete = modificationActions.ToDelete
+        await AddPhraseTranslationsAsync(changeSet.ToAdd, ankiSettings);
+        var translationsToDelete = changeSet.ToDelete
             .Select(kvp => kvp.Key)
             .ToList();
         await DeletePhraseTranslationsAsync(translationsToDelete);

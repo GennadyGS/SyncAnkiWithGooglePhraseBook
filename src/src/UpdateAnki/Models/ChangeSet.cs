@@ -1,6 +1,6 @@
 ﻿namespace UpdateAnki.Models;
 
-public sealed record ModificationActions<TSource, TTarget>
+public sealed record ChangeSet<TSource, TTarget>
 {
     public IReadOnlyCollection<TSource> ToAdd { get; init; } = [];
 
