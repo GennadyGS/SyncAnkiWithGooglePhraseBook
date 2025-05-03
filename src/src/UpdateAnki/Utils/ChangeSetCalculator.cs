@@ -35,8 +35,8 @@ public static class ChangeSetCalculator
                 s => s.Key,
                 t => t.Key,
                 s => [new ChangeAction<TSource, TTarget>.Add(s)],
-                t => GetDeleteActions<TSource, TTarget>(t, deleteUnmatched),
-                (s, t) => GetMatchingActions(
+                t => CalculateDeletions<TSource, TTarget>(t, deleteUnmatched),
+                (s, t) => CalculateMatches(
                     s.ToArray(),
                     t.ToArray(),
                     sourceKeySelector,
@@ -50,14 +50,14 @@ public static class ChangeSetCalculator
             .ToArrays();
     }
 
-    private static ChangeAction<TSource, TTarget>[] GetDeleteActions<TSource, TTarget>(
+    private static ChangeAction<TSource, TTarget>[] CalculateDeletions<TSource, TTarget>(
         IEnumerable<TTarget> target, bool deleteUnmatched) =>
         deleteUnmatched
             ? [new ChangeAction<TSource, TTarget>.Delete(target)]
             : [];
 
     private static IEnumerable<ChangeAction<TSource, TTarget>>
-        GetMatchingActions<TSource, TTarget, TKey>(
+        CalculateMatches<TSource, TTarget, TKey>(
             TSource[] source,
             TTarget[] target,
             Func<TSource, TKey> sourceKeySelector,
@@ -71,18 +71,18 @@ public static class ChangeSetCalculator
             .GetOptimalMatch(sourceKeys, targetKeys, valueDistanceProvider)
             .SelectMany((ti, si) => (ti, si) switch
             {
-                _ when ti < target.Length && si < source.Length => GetUpdateActions(
+                _ when ti < target.Length && si < source.Length => CalculateUpdates(
                     source[si], sourceKeys[si], target[ti], targetKeys[ti], valueDistanceProvider),
                 _ when ti >= target.Length =>
                     [new ChangeAction<TSource, TTarget>.Add([source[si]])],
                 _ when si >= source.Length =>
-                    GetMatchingDeleteActions<TSource, TTarget>(target[ti], deleteExcessMatched),
+                    CalculateMatchingDeletions<TSource, TTarget>(target[ti], deleteExcessMatched),
                 _ => throw new UnreachableException("Unexpected output from optimizer"),
             });
     }
 
     private static IEnumerable<ChangeAction<TSource, TTarget>>
-        GetUpdateActions<TSource, TTarget, TKey>(
+        CalculateUpdates<TSource, TTarget, TKey>(
             TSource sourceItem,
             TKey sourceKey,
             TTarget targetItem,
@@ -106,7 +106,7 @@ public static class ChangeSetCalculator
     }
 
     private static IEnumerable<ChangeAction<TSource, TTarget>>
-        GetMatchingDeleteActions<TSource, TTarget>(TTarget targetItem, bool deleteExcessMatched)
+        CalculateMatchingDeletions<TSource, TTarget>(TTarget targetItem, bool deleteExcessMatched)
     {
         if (!deleteExcessMatched)
         {
