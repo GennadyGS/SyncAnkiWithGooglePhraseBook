@@ -19,13 +19,13 @@ internal sealed class UpdateAnkiService(
             .LoadPhraseTranslationsAsync(fileName);
         var targetPhraseTranslations =
             await _ankiPhraseTranslationsRepository.LoadPhraseTranslationsAsync(ankiSettings);
-        var updateActions = ChangeSetCalculator.GetModificationActions(
+        var changeSet = ChangeSetCalculator.CalculateChangeSet(
             sourcePhraseTranslations,
             targetPhraseTranslations,
             s => s,
             t => t.Value,
             deleteExcessMatched: true);
         await _ankiPhraseTranslationsRepository
-            .UpdatePhraseTranslationsAsync(updateActions, ankiSettings);
+            .UpdatePhraseTranslationsAsync(changeSet, ankiSettings);
     }
 }

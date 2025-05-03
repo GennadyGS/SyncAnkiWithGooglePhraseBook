@@ -13,7 +13,7 @@ public static class ChangeSetCalculator
         "Major Code Smell",
         "S107:Methods should not have too many parameters",
         Justification = "Generalized algorithm requiring a lot of specifications")]
-    public static ChangeSet<TSource, TTarget> GetModificationActions<TSource, TTarget, TKey>(
+    public static ChangeSet<TSource, TTarget> CalculateChangeSet<TSource, TTarget, TKey>(
         IReadOnlyCollection<TSource> source,
         IReadOnlyCollection<TTarget> target,
         Func<TSource, TKey> sourceKeySelector,

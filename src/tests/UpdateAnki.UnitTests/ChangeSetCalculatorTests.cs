@@ -109,7 +109,7 @@ public sealed class ChangeSetCalculatorTests
         TestCase<string, KeyValuePair<int, string>> testCase,
         IDistanceProvider<string> valueDistanceProvider)
     {
-        var result = ChangeSetCalculator.GetModificationActions(
+        var result = ChangeSetCalculator.CalculateChangeSet(
             testCase.Source,
             testCase.Target,
             s => s,
