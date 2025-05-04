@@ -70,7 +70,8 @@ public static class ChangeSetCalculator
             keyDistanceProvider ?? EqualityComparer<TKey>.Default.ToDistanceProvider();
         return OptimalAssignmentSolver
             .CalculateOptimalAssignment(source.Length, target.Length, GetKeyGetDistance)
-            .SelectMany(a => a switch
+            .Matches
+            .SelectMany(match => match switch
             {
                 ({ } si, { } ti, { } dist) => CalculateUpdates(source[si], target[ti], dist),
                 ({ } si, null, _) => [new ChangeAction<TSource, TTarget>.Add([source[si]])],

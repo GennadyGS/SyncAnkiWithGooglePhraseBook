@@ -5,7 +5,7 @@ namespace ChangeSetCalculation.Utils;
 
 internal static class OptimalAssignmentSolver
 {
-    public static IReadOnlyList<OptimalMatch> CalculateOptimalAssignment(
+    public static OptimalAssignment CalculateOptimalAssignment(
         int sourceCount, int targetCount, Func<int, int, double> costProvider)
     {
         var costMatrix = GetCostMatrix(sourceCount, targetCount, costProvider);
@@ -15,12 +15,16 @@ internal static class OptimalAssignmentSolver
             throw new InvalidOperationException("Cannot solve for optimal matching assignment.");
         }
 
-        var assignments = optimizer.Solution
-            .Select((ti, si) => CreateAssignment(si, ti))
+        var matches = optimizer.Solution
+            .Select((ti, si) => CreateMatch(si, ti))
             .ToList();
-        return assignments;
+        return new OptimalAssignment
+        {
+            Matches = matches,
+            TotalCost = optimizer.Value,
+        };
 
-        OptimalMatch CreateAssignment(int sourceIndex, double targetIndex) =>
+        OptimalMatch CreateMatch(int sourceIndex, double targetIndex) =>
             new()
             {
                 SourceIndex = sourceIndex < sourceCount ? sourceIndex : null,
