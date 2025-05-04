@@ -70,13 +70,11 @@ public static class ChangeSetCalculator
             keyDistanceProvider ?? EqualityComparer<TKey>.Default.ToDistanceProvider();
         return OptimalAssignmentSolver
             .CalculateOptimalAssignment(source.Length, target.Length, GetKeyGetDistance)
-            .SelectMany(assignment => (assignment.si, assignment.ti) switch
+            .SelectMany(a => a switch
             {
-                ({ } si, { } ti) =>
-                    CalculateUpdates(source[si], target[ti], GetKeyGetDistance(si, ti)),
-                ({ } si, null) =>
-                    [new ChangeAction<TSource, TTarget>.Add([source[si]])],
-                (null, { } ti) =>
+                ({ } si, { } ti, { } dist) => CalculateUpdates(source[si], target[ti], dist),
+                ({ } si, null, _) => [new ChangeAction<TSource, TTarget>.Add([source[si]])],
+                (null, { } ti, _) =>
                     CalculateMatchingDeletions<TSource, TTarget>(target[ti], deleteExcessMatched),
                 _ => throw new UnreachableException("Unexpected output from optimizer"),
             });

@@ -1,26 +1,37 @@
 ﻿using Accord.Math.Optimization;
+using ChangeSetCalculation.Models;
 
 namespace ChangeSetCalculation.Utils;
 
 internal static class OptimalAssignmentSolver
 {
-    public static IReadOnlyList<(int? si, int? ti)> CalculateOptimalAssignment(
+    public static IReadOnlyList<Assignment> CalculateOptimalAssignment(
         int sourceCount, int targetCount, Func<int, int, double> costProvider)
     {
-        var distanceMatrix = GetDistanceMatrix(sourceCount, targetCount, costProvider);
-        var optimizer = new Munkres(distanceMatrix);
+        var costMatrix = GetCostMatrix(sourceCount, targetCount, costProvider);
+        var optimizer = new Munkres(costMatrix);
         if (!optimizer.Minimize())
         {
             throw new InvalidOperationException("Cannot solve for optimal matching assignment.");
         }
 
-        return optimizer.Solution
-            .Select((ti, si) =>
-                (si < sourceCount ? (int?)si : null, ti < targetCount ? (int?)ti : null))
+        var assignments = optimizer.Solution
+            .Select((ti, si) => CreateAssignment(si, ti))
             .ToList();
+        return assignments;
+
+        Assignment CreateAssignment(int sourceIndex, double targetIndex) =>
+            new()
+            {
+                SourceIndex = sourceIndex < sourceCount ? sourceIndex : null,
+                TargetIndex = targetIndex < targetCount ? (int)targetIndex : null,
+                Cost = sourceIndex < sourceCount && targetIndex < targetCount
+                    ? costMatrix[sourceIndex][(int)targetIndex]
+                    : null,
+            };
     }
 
-    private static double[][] GetDistanceMatrix(
+    private static double[][] GetCostMatrix(
         int sourceCount, int targetCount, Func<int, int, double> costProvider)
     {
         var maxCount = Math.Max(sourceCount, targetCount);
