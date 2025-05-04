@@ -68,8 +68,8 @@ public static class ChangeSetCalculator
     {
         var sourceKeys = source.Select(sourceKeySelector).ToArray();
         var targetKeys = target.Select(targetKeySelector).ToArray();
-        return OptimalMatchCalculator
-            .GetOptimalMatch(sourceKeys, targetKeys, valueDistanceProvider)
+        return OptimalAssignmentSolver
+            .CalculateOptimalAssignment(sourceKeys, targetKeys, valueDistanceProvider)
             .SelectMany((ti, si) => (ti, si) switch
             {
                 _ when ti < target.Length && si < source.Length => CalculateUpdates(

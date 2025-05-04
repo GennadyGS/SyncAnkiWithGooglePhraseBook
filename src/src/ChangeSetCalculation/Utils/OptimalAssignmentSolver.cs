@@ -4,12 +4,12 @@ using DistanceProviders.Extensions;
 
 namespace ChangeSetCalculation.Utils;
 
-internal static class OptimalMatchCalculator
+internal static class OptimalAssignmentSolver
 {
-    public static IReadOnlyList<int> GetOptimalMatch<TValue>(
-        IReadOnlyList<TValue> source,
-        IReadOnlyList<TValue> target,
-        IDistanceProvider<TValue>? distanceProvider)
+    public static IReadOnlyList<int> CalculateOptimalAssignment<TValue>(
+       IReadOnlyList<TValue> source,
+       IReadOnlyList<TValue> target,
+       IDistanceProvider<TValue>? distanceProvider)
     {
         var distanceMatrix = GetDistanceMatrix(source, target, distanceProvider);
         var optimizer = new Munkres(distanceMatrix);
