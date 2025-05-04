@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <ProjectReference Include="..\AssignmentOptimization\AssignmentOptimization.csproj" />
     <ProjectReference Include="..\DistanceProviders\DistanceProviders.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Accord.Math" Version="3.8.0" />
     <PackageReference Include="MoreLinq" Version="4.4.0" />
   </ItemGroup>
 </Project>

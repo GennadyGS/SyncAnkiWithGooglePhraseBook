@@ -1,6 +1,6 @@
-﻿namespace ChangeSetCalculation.Models;
+﻿namespace AssignmentOptimization.Models;
 
-internal sealed record OptimalAssignment
+public sealed record OptimalAssignment
 {
     public required IReadOnlyList<OptimalMatch> Matches { get; init; }
 

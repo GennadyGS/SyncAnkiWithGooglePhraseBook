@@ -1,9 +1,9 @@
 ﻿using Accord.Math.Optimization;
-using ChangeSetCalculation.Models;
+using AssignmentOptimization.Models;
 
-namespace ChangeSetCalculation.Utils;
+namespace AssignmentOptimization;
 
-internal static class OptimalAssignmentSolver
+public static class OptimalAssignmentSolver
 {
     public static OptimalAssignment CalculateOptimalAssignment(
         int sourceCount, int targetCount, Func<int, int, double> costProvider)
