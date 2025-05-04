@@ -1,6 +1,6 @@
 ﻿namespace ChangeSetCalculation.Models;
 
-internal readonly record struct Assignment
+internal readonly record struct OptimalMatch
 {
     public int? SourceIndex { get; init; }
 

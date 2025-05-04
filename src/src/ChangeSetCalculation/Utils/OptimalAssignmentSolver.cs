@@ -5,7 +5,7 @@ namespace ChangeSetCalculation.Utils;
 
 internal static class OptimalAssignmentSolver
 {
-    public static IReadOnlyList<Assignment> CalculateOptimalAssignment(
+    public static IReadOnlyList<OptimalMatch> CalculateOptimalAssignment(
         int sourceCount, int targetCount, Func<int, int, double> costProvider)
     {
         var costMatrix = GetCostMatrix(sourceCount, targetCount, costProvider);
@@ -20,7 +20,7 @@ internal static class OptimalAssignmentSolver
             .ToList();
         return assignments;
 
-        Assignment CreateAssignment(int sourceIndex, double targetIndex) =>
+        OptimalMatch CreateAssignment(int sourceIndex, double targetIndex) =>
             new()
             {
                 SourceIndex = sourceIndex < sourceCount ? sourceIndex : null,
