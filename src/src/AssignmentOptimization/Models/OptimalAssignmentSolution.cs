@@ -1,6 +1,6 @@
 ﻿namespace AssignmentOptimization.Models;
 
-public sealed record OptimalAssignment
+public sealed record OptimalAssignmentSolution
 {
     public required IReadOnlyList<OptimalMatch> Matches { get; init; }
 

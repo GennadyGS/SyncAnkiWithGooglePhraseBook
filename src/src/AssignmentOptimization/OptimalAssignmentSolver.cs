@@ -5,7 +5,7 @@ namespace AssignmentOptimization;
 
 public static class OptimalAssignmentSolver
 {
-    public static OptimalAssignment CalculateOptimalAssignment(
+    public static OptimalAssignmentSolution CalculateOptimalAssignment(
         int sourceCount, int targetCount, Func<int, int, double> costProvider)
     {
         var costMatrix = GetCostMatrix(sourceCount, targetCount, costProvider);
@@ -18,7 +18,7 @@ public static class OptimalAssignmentSolver
         var matches = optimizer.Solution
             .Select((ti, si) => CreateMatch(si, ti))
             .ToList();
-        return new OptimalAssignment
+        return new OptimalAssignmentSolution
         {
             Matches = matches,
             TotalCost = optimizer.Value,
