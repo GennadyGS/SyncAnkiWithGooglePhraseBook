@@ -6,10 +6,10 @@ namespace ChangeSetCalculation.Utils;
 
 internal static class OptimalAssignmentSolver
 {
-    public static IReadOnlyList<int> CalculateOptimalAssignment<TValue>(
-       IReadOnlyList<TValue> source,
-       IReadOnlyList<TValue> target,
-       IDistanceProvider<TValue>? distanceProvider)
+    public static IReadOnlyList<(int? si, int? ti)> CalculateOptimalAssignment<TValue>(
+        IReadOnlyList<TValue> source,
+        IReadOnlyList<TValue> target,
+        IDistanceProvider<TValue>? distanceProvider)
     {
         var distanceMatrix = GetDistanceMatrix(source, target, distanceProvider);
         var optimizer = new Munkres(distanceMatrix);
@@ -19,7 +19,8 @@ internal static class OptimalAssignmentSolver
         }
 
         return optimizer.Solution
-            .Select(index => (int)index)
+            .Select((ti, si) =>
+                (si < source.Count ? (int?)si : null, ti < target.Count ? (int?)ti : null))
             .ToList();
     }
 

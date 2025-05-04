@@ -70,13 +70,13 @@ public static class ChangeSetCalculator
         var targetKeys = target.Select(targetKeySelector).ToArray();
         return OptimalAssignmentSolver
             .CalculateOptimalAssignment(sourceKeys, targetKeys, valueDistanceProvider)
-            .SelectMany((ti, si) => (ti, si) switch
+            .SelectMany(assignment => (assignment.si, assignment.ti) switch
             {
-                _ when ti < target.Length && si < source.Length => CalculateUpdates(
+                ({ } si, { } ti) => CalculateUpdates(
                     source[si], sourceKeys[si], target[ti], targetKeys[ti], valueDistanceProvider),
-                _ when ti >= target.Length =>
+                ({ } si, null) =>
                     [new ChangeAction<TSource, TTarget>.Add([source[si]])],
-                _ when si >= source.Length =>
+                (null, { } ti) =>
                     CalculateMatchingDeletions<TSource, TTarget>(target[ti], deleteExcessMatched),
                 _ => throw new UnreachableException("Unexpected output from optimizer"),
             });
