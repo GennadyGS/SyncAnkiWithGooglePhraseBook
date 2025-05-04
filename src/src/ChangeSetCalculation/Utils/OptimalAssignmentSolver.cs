@@ -1,17 +1,13 @@
 ﻿using Accord.Math.Optimization;
-using DistanceProviders;
-using DistanceProviders.Extensions;
 
 namespace ChangeSetCalculation.Utils;
 
 internal static class OptimalAssignmentSolver
 {
-    public static IReadOnlyList<(int? si, int? ti)> CalculateOptimalAssignment<TValue>(
-        IReadOnlyList<TValue> source,
-        IReadOnlyList<TValue> target,
-        IDistanceProvider<TValue>? distanceProvider)
+    public static IReadOnlyList<(int? si, int? ti)> CalculateOptimalAssignment(
+        int sourceCount, int targetCount, Func<int, int, double> costProvider)
     {
-        var distanceMatrix = GetDistanceMatrix(source, target, distanceProvider);
+        var distanceMatrix = GetDistanceMatrix(sourceCount, targetCount, costProvider);
         var optimizer = new Munkres(distanceMatrix);
         if (!optimizer.Minimize())
         {
@@ -20,37 +16,19 @@ internal static class OptimalAssignmentSolver
 
         return optimizer.Solution
             .Select((ti, si) =>
-                (si < source.Count ? (int?)si : null, ti < target.Count ? (int?)ti : null))
+                (si < sourceCount ? (int?)si : null, ti < targetCount ? (int?)ti : null))
             .ToList();
     }
 
-    private static double[][] GetDistanceMatrix<TValue>(
-        IReadOnlyList<TValue> source,
-        IReadOnlyList<TValue> target,
-        IDistanceProvider<TValue>? distanceProvider)
+    private static double[][] GetDistanceMatrix(
+        int sourceCount, int targetCount, Func<int, int, double> costProvider)
     {
-        var establishedDistanceProvider =
-            distanceProvider ?? EqualityComparer<TValue>.Default.ToDistanceProvider();
-        var distanceRectMatrix = Enumerable.Range(0, source.Count)
-            .Select(s =>
-                Enumerable.Range(0, target.Count)
-                    .Select(t => establishedDistanceProvider.GetDistance(source[s], target[t]))
+        var maxCount = Math.Max(sourceCount, targetCount);
+        return Enumerable.Range(0, maxCount)
+            .Select(si =>
+                Enumerable.Range(0, maxCount)
+                    .Select(ti => si < sourceCount && ti < targetCount ? costProvider(si, ti) : 0)
                     .ToArray())
             .ToArray();
-        var maxValue = distanceRectMatrix.SelectMany(x => x).Max();
-        var maxSize = Math.Max(source.Count, target.Count);
-        return SetDimensions(distanceRectMatrix, maxSize, maxSize, maxValue + 1);
     }
-
-    private static T[][] SetDimensions<T>(
-        T[][] source, int dimension1, int dimension2, T defaultValue) =>
-        Enumerable.Range(0, dimension1)
-            .Select(i1 =>
-                Enumerable.Range(0, dimension2)
-                    .Select(i2 =>
-                        i1 < source.Length && i2 < source[i1].Length
-                            ? source[i1][i2]
-                            : defaultValue)
-                    .ToArray())
-            .ToArray();
 }

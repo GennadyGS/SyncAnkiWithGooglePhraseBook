@@ -22,7 +22,7 @@ public static class ChangeSetCalculator
         bool deleteUnmatched = false,
         bool deleteExcessMatched = false,
         IEqualityComparer<TKey>? matchComparer = null,
-        IDistanceProvider<TKey>? valueDistanceProvider = null)
+        IDistanceProvider<TKey>? keyDistanceProvider = null)
     {
         var groupedSource = source
             .GroupBy(sourceKeySelector, x => x, matchComparer)
@@ -43,7 +43,7 @@ public static class ChangeSetCalculator
                     sourceKeySelector,
                     targetKeySelector,
                     deleteExcessMatched,
-                    valueDistanceProvider),
+                    keyDistanceProvider),
                 matchComparer)
             .Aggregate(
                 new EnumerableChangeSet<TSource, TTarget>(),
@@ -64,36 +64,32 @@ public static class ChangeSetCalculator
             Func<TSource, TKey> sourceKeySelector,
             Func<TTarget, TKey> targetKeySelector,
             bool deleteExcessMatched,
-            IDistanceProvider<TKey>? valueDistanceProvider)
+            IDistanceProvider<TKey>? keyDistanceProvider)
     {
-        var sourceKeys = source.Select(sourceKeySelector).ToArray();
-        var targetKeys = target.Select(targetKeySelector).ToArray();
+        var establishedKeyDistanceProvider =
+            keyDistanceProvider ?? EqualityComparer<TKey>.Default.ToDistanceProvider();
         return OptimalAssignmentSolver
-            .CalculateOptimalAssignment(sourceKeys, targetKeys, valueDistanceProvider)
+            .CalculateOptimalAssignment(source.Length, target.Length, GetKeyGetDistance)
             .SelectMany(assignment => (assignment.si, assignment.ti) switch
             {
-                ({ } si, { } ti) => CalculateUpdates(
-                    source[si], sourceKeys[si], target[ti], targetKeys[ti], valueDistanceProvider),
+                ({ } si, { } ti) =>
+                    CalculateUpdates(source[si], target[ti], GetKeyGetDistance(si, ti)),
                 ({ } si, null) =>
                     [new ChangeAction<TSource, TTarget>.Add([source[si]])],
                 (null, { } ti) =>
                     CalculateMatchingDeletions<TSource, TTarget>(target[ti], deleteExcessMatched),
                 _ => throw new UnreachableException("Unexpected output from optimizer"),
             });
+
+        double GetKeyGetDistance(int si, int ti) =>
+            establishedKeyDistanceProvider.GetDistance(
+                sourceKeySelector(source[si]),
+                targetKeySelector(target[ti]));
     }
 
-    private static IEnumerable<ChangeAction<TSource, TTarget>>
-        CalculateUpdates<TSource, TTarget, TKey>(
-            TSource sourceItem,
-            TKey sourceKey,
-            TTarget targetItem,
-            TKey targetKey,
-            IDistanceProvider<TKey>? valueDistanceProvider)
+    private static IEnumerable<ChangeAction<TSource, TTarget>> CalculateUpdates<TSource, TTarget>(
+        TSource sourceItem, TTarget targetItem, double distance)
     {
-        var establishedValueDistanceProvider =
-            valueDistanceProvider ?? EqualityComparer<TKey>.Default.ToDistanceProvider();
-        var distance = establishedValueDistanceProvider.GetDistance(sourceKey, targetKey);
-
         if (MathUtils.EqualWithTolerance(distance, 0))
         {
             return [];

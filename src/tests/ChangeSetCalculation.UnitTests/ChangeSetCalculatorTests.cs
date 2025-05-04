@@ -106,7 +106,7 @@ public sealed class ChangeSetCalculatorTests
 
     private static void RunTestCase(
         TestCase<string, KeyValuePair<int, string>> testCase,
-        IDistanceProvider<string> valueDistanceProvider)
+        IDistanceProvider<string> keyDistanceProvider)
     {
         var result = ChangeSetCalculator.CalculateChangeSet(
             testCase.Source,
@@ -116,7 +116,7 @@ public sealed class ChangeSetCalculatorTests
             testCase.DeleteUnmatched,
             testCase.DeleteExcessMatched,
             testCase.MatchComparer,
-            valueDistanceProvider);
+            keyDistanceProvider);
 
         result.Should().BeEquivalentTo(testCase.ExpectedResult);
     }
