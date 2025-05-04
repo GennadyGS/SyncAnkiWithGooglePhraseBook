@@ -1,4 +1,4 @@
-﻿namespace UpdateAnki.Utils;
+﻿namespace ChangeSetCalculation.Utils;
 
 public static class MathUtils
 {

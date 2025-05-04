@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
 using ChangeSetCalculation.Extensions;
+using ChangeSetCalculation.Models;
+using ChangeSetCalculation.Utils;
 using DistanceProviders;
 using DistanceProviders.Extensions;
 using MoreLinq.Extensions;
-using UpdateAnki.Models;
-using UpdateAnki.Utils;
 
 namespace ChangeSetCalculation;
 

@@ -1,4 +1,4 @@
-﻿namespace UpdateAnki.Models;
+﻿namespace ChangeSetCalculation.Models;
 
 public sealed record EnumerableChangeSet<TSource, TTarget>
 {

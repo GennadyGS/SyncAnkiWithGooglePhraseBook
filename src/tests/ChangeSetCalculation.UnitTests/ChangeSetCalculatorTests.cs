@@ -1,7 +1,7 @@
+using ChangeSetCalculation.Models;
 using DistanceProviders;
 using FluentAssertions;
 using TestUtils;
-using UpdateAnki.Models;
 using Xunit;
 
 namespace ChangeSetCalculation.UnitTests;

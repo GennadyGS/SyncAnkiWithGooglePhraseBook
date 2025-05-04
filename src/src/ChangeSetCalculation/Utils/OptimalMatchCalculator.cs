@@ -2,7 +2,7 @@
 using DistanceProviders;
 using DistanceProviders.Extensions;
 
-namespace UpdateAnki.Utils;
+namespace ChangeSetCalculation.Utils;
 
 internal static class OptimalMatchCalculator
 {

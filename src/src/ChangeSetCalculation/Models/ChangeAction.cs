@@ -1,4 +1,4 @@
-﻿namespace UpdateAnki.Models;
+﻿namespace ChangeSetCalculation.Models;
 
 internal abstract record ChangeAction<TSource, TTarget>
 {
