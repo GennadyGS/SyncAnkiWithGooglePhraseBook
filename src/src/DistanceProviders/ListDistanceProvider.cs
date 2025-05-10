@@ -7,6 +7,31 @@ public sealed class ListDistanceProvider<T>(IDistanceProvider<T> itemDistancePro
 
     public double GetDistance(IReadOnlyList<T> source, IReadOnlyList<T> target)
     {
+        var maxSize = Math.Max(source.Count, target.Count);
+        return maxSize > 0
+            ? GetTotalDistance(source, target) / maxSize
+            : 0;
+    }
+
+    private static double[,] CreateDistanceMatrix(int sourceLength, int targetLength)
+    {
+        var matrix = new double[sourceLength + 1, targetLength + 1];
+
+        for (var si = 0; si <= sourceLength; matrix[si, 0] = si++)
+        {
+            // do nothing
+        }
+
+        for (var ti = 0; ti <= targetLength; matrix[0, ti] = ti++)
+        {
+            // do nothing
+        }
+
+        return matrix;
+    }
+
+    private double GetTotalDistance(IReadOnlyList<T> source, IReadOnlyList<T> target)
+    {
         if (source.Count == 0)
         {
             return target.Count;
@@ -32,22 +57,5 @@ public sealed class ListDistanceProvider<T>(IDistanceProvider<T> itemDistancePro
         }
 
         return matrix[source.Count, target.Count];
-    }
-
-    private static double[,] CreateDistanceMatrix(int sourceLength, int targetLength)
-    {
-        var matrix = new double[sourceLength + 1, targetLength + 1];
-
-        for (var si = 0; si <= sourceLength; matrix[si, 0] = si++)
-        {
-            // do nothing
-        }
-
-        for (var ti = 0; ti <= targetLength; matrix[0, ti] = ti++)
-        {
-            // do nothing
-        }
-
-        return matrix;
     }
 }

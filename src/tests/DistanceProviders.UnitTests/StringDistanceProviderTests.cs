@@ -19,25 +19,25 @@ public sealed class StringDistanceProviderTests
             {
                 Source = "kitten",
                 Target = "sitting",
-                ExpectedDistance = 3,
+                ExpectedDistance = 3.0 / 7,
             },
             new TestCase
             {
                 Source = "flaw",
                 Target = "lawn",
-                ExpectedDistance = 2,
+                ExpectedDistance = 0.5,
             },
             new TestCase
             {
                 Source = "distance",
                 Target = "instance",
-                ExpectedDistance = 2,
+                ExpectedDistance = 0.25,
             },
             new TestCase
             {
                 Source = "example",
                 Target = "samples",
-                ExpectedDistance = 3,
+                ExpectedDistance = 3.0 / 7,
             },
             new TestCase
             {
@@ -49,13 +49,13 @@ public sealed class StringDistanceProviderTests
             {
                 Source = string.Empty,
                 Target = "test",
-                ExpectedDistance = 4,
+                ExpectedDistance = 1,
             },
             new TestCase
             {
                 Source = "test",
                 Target = string.Empty,
-                ExpectedDistance = 4,
+                ExpectedDistance = 1,
             },
         ]);
 
@@ -84,19 +84,19 @@ public sealed class StringDistanceProviderTests
             {
                 Source = "Kitten",
                 Target = "SITTING",
-                ExpectedDistance = 3,
+                ExpectedDistance = 3.0 / 7,
             },
             new TestCase
             {
                 Source = string.Empty,
                 Target = "test",
-                ExpectedDistance = 4,
+                ExpectedDistance = 1,
             },
             new TestCase
             {
                 Source = "test",
                 Target = string.Empty,
-                ExpectedDistance = 4,
+                ExpectedDistance = 1,
             },
         ]);
 
@@ -112,63 +112,63 @@ public sealed class StringDistanceProviderTests
                 CaseWeight = 0.7,
                 Source = "kitten",
                 Target = "sitting",
-                ExpectedDistance = 3,
+                ExpectedDistance = 3.0 / 7,
             },
             new SoftCaseTestCase
             {
                 CaseWeight = 0.4,
                 Source = "CASE",
                 Target = "case",
-                ExpectedDistance = 1.6,
+                ExpectedDistance = 1.6 / 4,
             },
             new SoftCaseTestCase
             {
                 CaseWeight = 0.3,
                 Source = "MisMatch",
                 Target = "match",
-                ExpectedDistance = 3.3,
+                ExpectedDistance = 3.3 / 8,
             },
             new SoftCaseTestCase
             {
                 CaseWeight = 0.6,
                 Source = "Edit",
                 Target = "Distance",
-                ExpectedDistance = 6.6,
+                ExpectedDistance = 6.6 / 8,
             },
             new SoftCaseTestCase
             {
                 CaseWeight = 0.5,
                 Source = "abc",
                 Target = "aBc",
-                ExpectedDistance = 0.5,
+                ExpectedDistance = 0.5 / 3,
             },
             new SoftCaseTestCase
             {
                 CaseWeight = 0.5,
                 Source = "abc",
                 Target = "abcd",
-                ExpectedDistance = 1.0,
+                ExpectedDistance = 1.0 / 4,
             },
             new SoftCaseTestCase
             {
                 CaseWeight = 0.5,
                 Source = "abcd",
                 Target = "abc",
-                ExpectedDistance = 1.0,
+                ExpectedDistance = 1.0 / 4,
             },
             new SoftCaseTestCase
             {
                 CaseWeight = 0.5,
                 Source = "abc",
                 Target = "aXc",
-                ExpectedDistance = 1.0,
+                ExpectedDistance = 1.0 / 3,
             },
             new SoftCaseTestCase
             {
                 CaseWeight = 0.5,
                 Source = "abc",
                 Target = "aBcX",
-                ExpectedDistance = 1.5,
+                ExpectedDistance = 1.5 / 4,
             },
         ]);
 
