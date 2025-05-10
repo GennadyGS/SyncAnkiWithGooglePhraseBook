@@ -1,5 +1,7 @@
 ﻿using ChangeSetCalculation;
+using UpdateAnki.Comparers;
 using UpdateAnki.Models;
+using UpdateAnki.Utils;
 
 namespace UpdateAnki.Services;
 
@@ -24,7 +26,10 @@ internal sealed class UpdateAnkiService(
             targetPhraseTranslations,
             s => s,
             t => t.Value,
-            deleteExcessMatched: true);
+            deleteExcessMatched: true,
+            deleteUnmatched: false,
+            matchComparer: new PhraseTranslationMatchComparer(),
+            keyDistanceProvider: new PhraseTranslationDistanceProvider());
         await _ankiPhraseTranslationsRepository
             .UpdatePhraseTranslationsAsync(changeSet, ankiSettings);
     }

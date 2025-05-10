@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using UpdateAnki.Extensions;
 using UpdateAnki.Models;
 using UpdateAnki.Services;
@@ -25,6 +26,7 @@ internal static class Program
     {
         var serviceProvider = new ServiceCollection()
             .RegisterServices(ankiConnectSettings)
+            .AddLogging(builder => builder.AddConsole())
             .BuildServiceProvider();
         return serviceProvider.GetRequiredService<UpdateAnkiService>();
     }
