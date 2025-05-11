@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.IO;
 using CommandLine;
 using ExportGooglePhraseBookFromSpreadSheet.Configuration;
 using ExportGooglePhraseBookFromSpreadSheet.Extensions;
@@ -141,7 +142,8 @@ public static class Program
     private static GoogleCredential LoadCredential()
     {
         var scope = SheetsService.Scope.SpreadsheetsReadonly;
-        using var stream = new FileStream(CredentialFileName, FileMode.Open, FileAccess.Read);
+        var credentialFullFilePath = Path.GetFullPath(CredentialFileName, AppContext.BaseDirectory);
+        using var stream = new FileStream(credentialFullFilePath, FileMode.Open, FileAccess.Read);
         return GoogleCredential.FromStream(stream).CreateScoped(scope);
     }
 }

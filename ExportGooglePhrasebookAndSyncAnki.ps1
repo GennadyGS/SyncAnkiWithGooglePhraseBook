@@ -3,24 +3,26 @@ param (
     [switch] ${what-if}
 )
 
+if (${what-if}) {
+    Write-Host "Running in what-if mode. No changes will be applied."
+}
+
 $outputPath = "Output"
 $phraseBookFileName = "$PSScriptRoot/$outputPath/GooglePhrasebook.json"
 
 $appPathRoot = "$PSScriptRoot/src/src"
 $exportGooglePhraseBookFromSpreadSheetAppPath =
     "$appPathRoot/ExportGooglePhraseBookFromSpreadSheet"
-$shareGoogleDriveFileAppPath = "$appPathRoot/ShareGoogleDriveFile"
-$updateAnkiAppPath = "$appPathRoot/UpdateAnki"
 
 $credentialFilePath = "$exportGooglePhraseBookFromSpreadSheetAppPath/credential.json"
 $credential = Get-Content $credentialFilePath -Raw | ConvertFrom-Json
 
-Push-Location $shareGoogleDriveFileAppPath
+Push-Location "$appPathRoot/ShareGoogleDriveFile"
 dotnet run -- -i $spreadSheetId -u $credential.client_email
 Pop-Location
 
-Push-Location $exportGooglePhraseBookFromSpreadSheetAppPath
-dotnet run -- -i $spreadSheetId -o $phraseBookFileName
-Pop-Location
+dotnet run --project $exportGooglePhraseBookFromSpreadSheetAppPath `
+    -- -i $spreadSheetId -o $phraseBookFileName
 
-dotnet run --project $updateAnkiAppPath -- -i $phraseBookFileName $(${what-if}?"--what-if" : "")
+dotnet run --project "$appPathRoot/UpdateAnki" `
+    -- -i $phraseBookFileName $(${what-if} ? "--what-if" : "")

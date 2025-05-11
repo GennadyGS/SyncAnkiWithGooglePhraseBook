@@ -65,6 +65,7 @@ internal static class Program
 
     private static IConfigurationRoot LoadConfiguration() =>
         new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile(ConfigurationFileName, optional: false)
             .Build();
 }
