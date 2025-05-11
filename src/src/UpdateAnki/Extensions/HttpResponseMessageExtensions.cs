@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Common.Extensions;
+using Newtonsoft.Json;
 using UpdateAnki.Models;
 
 namespace UpdateAnki.Extensions;

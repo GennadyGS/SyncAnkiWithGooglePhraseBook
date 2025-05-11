@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace UpdateAnki.Extensions;
+namespace Common.Extensions;
 
 public static class NullableExtensions
 {

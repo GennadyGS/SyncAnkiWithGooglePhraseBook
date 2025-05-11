@@ -42,12 +42,12 @@ internal sealed class UpdateAnkiService(
         LogChangeSet(changeSet);
         if (!commandLineOptions.WhatIf)
         {
-            await _ankiPhraseTranslationsRepository
-                .UpdatePhraseTranslationsAsync(changeSet, ankiSettings);
+            ////await _ankiPhraseTranslationsRepository
+            ////    .UpdatePhraseTranslationsAsync(changeSet, ankiSettings);
         }
         else
         {
-            _logger.LogInformation("WhatIf mode: no changes will be applied.");
+            _logger.LogInformation("Running in what-if mode. No changes will be applied.");
         }
     }
 

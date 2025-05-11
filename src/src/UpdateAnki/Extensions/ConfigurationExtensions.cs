@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Common.Extensions;
+using Microsoft.Extensions.Configuration;
 using UpdateAnki.Constants;
 using UpdateAnki.Models;
 

@@ -1,4 +1,5 @@
-﻿using Translation.Models;
+﻿using Common.Extensions;
+using Translation.Models;
 using UpdateAnki.Constants;
 using UpdateAnki.Models;
 
