@@ -1,5 +1,5 @@
 param (
-    $spreadSheetId
+    [Parameter(Mandatory=$true)] $spreadSheetId
 )
 
 $outputPath = "Output"

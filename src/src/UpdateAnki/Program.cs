@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CommandLine;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using UpdateAnki.Configuration;
 using UpdateAnki.Extensions;
 using UpdateAnki.Services;
 
@@ -8,15 +10,43 @@ namespace UpdateAnki;
 
 internal static class Program
 {
+    private const int ErrorExitCode = 1;
     private const string ConfigurationFileName = "appsettings.json";
 
-    public static async Task Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
-        var fileName = args[0];
+        try
+        {
+            return await RunCommandLineParserAsync(args);
+        }
+        catch (Exception e)
+        {
+            await Console.Error.WriteLineAsync(e.ToString());
+            return ErrorExitCode;
+        }
+    }
+
+    private static async Task<int> RunCommandLineParserAsync(string[] args) =>
+        (await Parser.Default.ParseArguments<CommandLineOptions>(args)
+            .WithParsedAsync(async opt =>
+            {
+                await UpdateAnkiAsync(opt);
+            }))
+        .WithNotParsed(errors =>
+        {
+            foreach (var error in errors)
+            {
+                Console.WriteLine($"Command line parser error: {error}");
+            }
+        })
+        .MapResult(_ => 0, _ => 1);
+
+    private static async Task UpdateAnkiAsync(CommandLineOptions commandLineOptions)
+    {
         var configuration = LoadConfiguration();
         var ankiSettings = configuration.GetAnkiSettings();
         var updateAnkiService = CreateUpdateAnkiService(configuration);
-        await updateAnkiService.UpdateAnkiFromJsonFileAsync(ankiSettings, fileName);
+        await updateAnkiService.UpdateAnkiFromJsonFileAsync(ankiSettings, commandLineOptions);
     }
 
     private static UpdateAnkiService CreateUpdateAnkiService(IConfiguration configuration)

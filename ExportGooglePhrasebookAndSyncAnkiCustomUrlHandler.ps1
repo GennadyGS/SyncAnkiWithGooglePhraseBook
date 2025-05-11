@@ -1,4 +1,6 @@
-param ($url)
+param (
+    [Parameter(Mandatory=$true)] $url
+)
 
 Add-Type -AssemblyName System.Web
 

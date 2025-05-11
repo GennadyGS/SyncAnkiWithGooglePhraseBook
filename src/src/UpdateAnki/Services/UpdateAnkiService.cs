@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Translation.Models;
 using UpdateAnki.Comparers;
+using UpdateAnki.Configuration;
 using UpdateAnki.Models;
 using UpdateAnki.Utils;
 
@@ -22,10 +23,11 @@ internal sealed class UpdateAnkiService(
 
     private readonly ILogger<UpdateAnkiService> _logger = logger;
 
-    public async Task UpdateAnkiFromJsonFileAsync(AnkiSettings ankiSettings, string fileName)
+    public async Task UpdateAnkiFromJsonFileAsync(
+        AnkiSettings ankiSettings, CommandLineOptions commandLineOptions)
     {
         var sourcePhraseTranslations = await _jsonPhraseTranslationsReader
-            .LoadPhraseTranslationsAsync(fileName);
+            .LoadPhraseTranslationsAsync(commandLineOptions.InputFilePath);
         var targetPhraseTranslations =
             await _ankiPhraseTranslationsRepository.LoadPhraseTranslationsAsync(ankiSettings);
         var changeSet = ChangeSetCalculator.CalculateChangeSet(
@@ -38,14 +40,21 @@ internal sealed class UpdateAnkiService(
             matchComparer: new PhraseTranslationMatchComparer(),
             keyDistanceProvider: new PhraseTranslationDistanceProvider());
         LogChangeSet(changeSet);
-        await _ankiPhraseTranslationsRepository
-            .UpdatePhraseTranslationsAsync(changeSet, ankiSettings);
+        if (!commandLineOptions.WhatIf)
+        {
+            await _ankiPhraseTranslationsRepository
+                .UpdatePhraseTranslationsAsync(changeSet, ankiSettings);
+        }
+        else
+        {
+            _logger.LogInformation("WhatIf mode: no changes will be applied.");
+        }
     }
 
     private void LogChangeSet(
         ChangeSet<PhraseTranslation, KeyValuePair<long, PhraseTranslation>> changeSet)
     {
-        var changeSetJson = JsonConvert.SerializeObject(changeSet, Formatting.Indented);
+        var changeSetJson = JsonConvert.SerializeObject(changeSet);
         _logger.LogDebug("ChangeSet: {ChangeSet}", changeSetJson);
     }
 }

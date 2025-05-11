@@ -20,6 +20,4 @@ Push-Location $exportGooglePhraseBookFromSpreadSheetAppPath
 dotnet run -- -i $spreadSheetId -o $outputFileName
 Pop-Location
 
-Push-Location $updateAnkiAppPath
-dotnet run -- $outputFileName
-Pop-Location
+dotnet run --project $updateAnkiAppPath -- -i $outputFileName --what-if
