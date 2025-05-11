@@ -8,6 +8,7 @@ if (${what-if}) {
 }
 
 $outputPath = "Output"
+$logPath = "$PSScriptRoot/logs"
 $phraseBookFileName = "$PSScriptRoot/$outputPath/GooglePhrasebook.json"
 
 $appPathRoot = "$PSScriptRoot/src/src"
@@ -25,4 +26,6 @@ dotnet run --project $exportGooglePhraseBookFromSpreadSheetAppPath `
     -- -i $spreadSheetId -o $phraseBookFileName
 
 dotnet run --project "$appPathRoot/UpdateAnki" `
-    -- -i $phraseBookFileName $(${what-if} ? "--what-if" : "")
+    -- `
+    -i $phraseBookFileName $(${what-if} ? "--what-if" : "") `
+    -l $logPath

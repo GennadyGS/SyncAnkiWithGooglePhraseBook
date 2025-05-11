@@ -29,7 +29,7 @@ internal sealed class UpdateAnkiService(
         var sourcePhraseTranslations = await _jsonPhraseTranslationsReader
             .LoadPhraseTranslationsAsync(commandLineOptions.InputFilePath);
         var targetPhraseTranslations =
-            await _ankiPhraseTranslationsRepository.LoadPhraseTranslationsAsync(ankiSettings);
+            await LoadAndDumpAnkiPhraseTranslationsAsync(ankiSettings, commandLineOptions);
         var changeSet = ChangeSetCalculator.CalculateChangeSet(
             sourcePhraseTranslations,
             targetPhraseTranslations,
@@ -39,11 +39,29 @@ internal sealed class UpdateAnkiService(
             deleteUnmatched: false,
             matchComparer: new PhraseTranslationMatchComparer(),
             keyDistanceProvider: new PhraseTranslationDistanceProvider());
-        LogChangeSet(changeSet);
+        await UpdatePhraseTranslationsAsync(changeSet, ankiSettings, commandLineOptions);
+    }
+
+    private async Task<IReadOnlyDictionary<long, PhraseTranslation>>
+        LoadAndDumpAnkiPhraseTranslationsAsync(
+            AnkiSettings ankiSettings, CommandLineOptions commandLineOptions)
+    {
+        var result =
+            await _ankiPhraseTranslationsRepository.LoadPhraseTranslationsAsync(ankiSettings);
+        DumpUtils.DumpObject(result, FileNames.AnkiPhraseTranslations, commandLineOptions);
+        return result;
+    }
+
+    private async Task UpdatePhraseTranslationsAsync(
+        ChangeSet<PhraseTranslation, KeyValuePair<long, PhraseTranslation>> changeSet,
+        AnkiSettings ankiSettings,
+        CommandLineOptions commandLineOptions)
+    {
+        _logger.LogDebug("ChangeSet: {ChangeSet}", JsonConvert.SerializeObject(changeSet));
+        DumpUtils.DumpObject(changeSet, FileNames.ChangeSet, commandLineOptions);
         if (!commandLineOptions.WhatIf)
         {
-            ////await _ankiPhraseTranslationsRepository
-            ////    .UpdatePhraseTranslationsAsync(changeSet, ankiSettings);
+            await _ankiPhraseTranslationsRepository.UpdatePhraseTranslationsAsync(changeSet, ankiSettings);
         }
         else
         {
@@ -51,10 +69,10 @@ internal sealed class UpdateAnkiService(
         }
     }
 
-    private void LogChangeSet(
-        ChangeSet<PhraseTranslation, KeyValuePair<long, PhraseTranslation>> changeSet)
+    private static class FileNames
     {
-        var changeSetJson = JsonConvert.SerializeObject(changeSet);
-        _logger.LogDebug("ChangeSet: {ChangeSet}", changeSetJson);
+        public const string AnkiPhraseTranslations = nameof(AnkiPhraseTranslations);
+
+        public const string ChangeSet = nameof(ChangeSet);
     }
 }

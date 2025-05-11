@@ -2,7 +2,7 @@
 
 namespace ShareGoogleDriveFile.Models;
 
-internal sealed class CommandLineOptions
+internal sealed record CommandLineOptions
 {
     [Option('i', "fileId", HelpText = "Input File ID.", Required = true)]
     public required string FileId { get; init; }

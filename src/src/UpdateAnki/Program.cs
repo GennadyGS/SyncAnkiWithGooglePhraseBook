@@ -43,15 +43,21 @@ internal static class Program
 
     private static async Task UpdateAnkiAsync(CommandLineOptions commandLineOptions)
     {
+        SetEnvironmentVariables(commandLineOptions);
         var configuration = LoadConfiguration();
         var ankiSettings = configuration.GetAnkiSettings();
         var updateAnkiService = CreateUpdateAnkiService(configuration);
         await updateAnkiService.UpdateAnkiFromJsonFileAsync(ankiSettings, commandLineOptions);
     }
 
+    private static void SetEnvironmentVariables(CommandLineOptions commandLineOptions)
+    {
+        var logDirectoryPath = commandLineOptions.EstablishLogDirectoryPath();
+        Environment.SetEnvironmentVariable(EnvVariables.LogPath, logDirectoryPath);
+    }
+
     private static UpdateAnkiService CreateUpdateAnkiService(IConfiguration configuration)
     {
-        Environment.SetEnvironmentVariable("BaseDirectory", AppContext.BaseDirectory);
         var ankiConnectSettings = configuration.GetAnkiConnectSettings();
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
@@ -68,4 +74,9 @@ internal static class Program
             .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile(ConfigurationFileName, optional: false)
             .Build();
+
+    private static class EnvVariables
+    {
+        public const string LogPath = nameof(LogPath);
+    }
 }
