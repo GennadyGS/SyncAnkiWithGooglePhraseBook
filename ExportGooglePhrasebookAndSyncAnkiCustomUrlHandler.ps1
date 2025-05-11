@@ -1,5 +1,6 @@
 param (
-    [Parameter(Mandatory=$true)] $url
+    [Parameter(Mandatory=$true)] $url,
+    [switch] ${what-if}
 )
 
 Add-Type -AssemblyName System.Web
