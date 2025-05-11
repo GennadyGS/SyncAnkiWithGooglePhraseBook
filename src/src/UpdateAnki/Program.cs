@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Serilog;
 using UpdateAnki.Extensions;
-using UpdateAnki.Models;
 using UpdateAnki.Services;
 
 namespace UpdateAnki;
@@ -16,24 +15,26 @@ internal static class Program
         var fileName = args[0];
         var configuration = LoadConfiguration();
         var ankiSettings = configuration.GetAnkiSettings();
-        var ankiConnectSettings = configuration.GetAnkiConnectSettings();
-        var updateAnkiService = CreateUpdateAnkiService(ankiConnectSettings);
+        var updateAnkiService = CreateUpdateAnkiService(configuration);
         await updateAnkiService.UpdateAnkiFromJsonFileAsync(ankiSettings, fileName);
     }
 
-    private static UpdateAnkiService CreateUpdateAnkiService(
-        AnkiConnectSettings ankiConnectSettings)
+    private static UpdateAnkiService CreateUpdateAnkiService(IConfiguration configuration)
     {
+        Environment.SetEnvironmentVariable("BaseDirectory", AppContext.BaseDirectory);
+        var ankiConnectSettings = configuration.GetAnkiConnectSettings();
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
         var serviceProvider = new ServiceCollection()
             .RegisterServices(ankiConnectSettings)
-            .AddLogging(builder => builder.AddConsole())
+            .AddLogging(builder => builder.AddSerilog(dispose: true))
             .BuildServiceProvider();
         return serviceProvider.GetRequiredService<UpdateAnkiService>();
     }
 
     private static IConfigurationRoot LoadConfiguration() =>
         new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile(ConfigurationFileName, optional: false)
             .Build();
 }

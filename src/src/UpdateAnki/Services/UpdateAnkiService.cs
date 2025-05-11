@@ -1,5 +1,8 @@
 ﻿using ChangeSetCalculation;
+using ChangeSetCalculation.Models;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Translation.Models;
 using UpdateAnki.Comparers;
 using UpdateAnki.Models;
 using UpdateAnki.Utils;
@@ -34,8 +37,15 @@ internal sealed class UpdateAnkiService(
             deleteUnmatched: false,
             matchComparer: new PhraseTranslationMatchComparer(),
             keyDistanceProvider: new PhraseTranslationDistanceProvider());
-        _logger.LogDebug("ChangeSet: {ChangeSet}", changeSet);
+        LogChangeSet(changeSet);
         await _ankiPhraseTranslationsRepository
             .UpdatePhraseTranslationsAsync(changeSet, ankiSettings);
+    }
+
+    private void LogChangeSet(
+        ChangeSet<PhraseTranslation, KeyValuePair<long, PhraseTranslation>> changeSet)
+    {
+        var changeSetJson = JsonConvert.SerializeObject(changeSet, Formatting.Indented);
+        _logger.LogDebug("ChangeSet: {ChangeSet}", changeSetJson);
     }
 }
