@@ -7,6 +7,7 @@ $appPathRoot = "$PSScriptRoot/src/src"
 $exportGooglePhraseBookFromSpreadSheetAppPath =
     "$appPathRoot/ExportGooglePhraseBookFromSpreadSheet"
 $shareGoogleDriveFileAppPath = "$appPathRoot/ShareGoogleDriveFile"
+$updateAnkiAppPath = "$appPathRoot/UpdateAnki"
 
 $credentialFilePath = "$exportGooglePhraseBookFromSpreadSheetAppPath/credential.json"
 $credential = Get-Content $credentialFilePath -Raw | ConvertFrom-Json
@@ -17,4 +18,8 @@ Pop-Location
 
 Push-Location $exportGooglePhraseBookFromSpreadSheetAppPath
 dotnet run -- -i $spreadSheetId -o $outputFileName
+Pop-Location
+
+Push-Location $updateAnkiAppPath
+dotnet run -- $outputFileName
 Pop-Location
