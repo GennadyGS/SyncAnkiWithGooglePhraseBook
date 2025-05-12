@@ -12,14 +12,17 @@ internal static class PhraseTranslationExtensions
         new()
         {
             DeckName = ankiSettings.RootDeckName.ThrowIfNull(),
-            ModelName = translation.GetAnkiModelName(),
+            ModelName = translation.GetAnkiModelName(ankiSettings.ModelNamePattern.ThrowIfNull()),
             Fields = new Dictionary<string, object?>
             {
-                [AnkiNoteFields.Front] = translation.Source,
-                [AnkiNoteFields.Back] = translation.Target,
+                [AnkiNoteFields.Front] = translation.Source.Text,
+                [AnkiNoteFields.Back] = translation.Target.Text,
             },
         };
 
-    private static string GetAnkiModelName(this PhraseTranslation translation) =>
-        $"{translation.Source.LanguageCode}-{translation.Target.LanguageCode}";
+    private static string GetAnkiModelName(
+        this PhraseTranslation translation, string modelNamePattern) =>
+        modelNamePattern
+            .Replace("{sourceLanguage}", translation.Source.LanguageCode)
+            .Replace("{targetLanguage}", translation.Target.LanguageCode);
 }

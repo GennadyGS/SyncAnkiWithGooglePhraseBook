@@ -17,7 +17,10 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
     {
         var noteIds = await _httpClient.FindNotesAsync($"\"deck:{ankiSettings.RootDeckName}\"");
         var notesInfo = await _httpClient.GetNotesInfoAsync(noteIds);
-        var modelNamePattern = ankiSettings.ModelNamePattern.ThrowIfNull();
+        var modelNamePattern = Regex.Replace(
+            ankiSettings.ModelNamePattern.ThrowIfNull(),
+            "{(\\w+)}",
+            "(?'$1'[a-z]{2})");
         var modelNameRegex = new Regex($"^{modelNamePattern}$", RegexOptions.Compiled);
         return notesInfo
             .ToDictionary(info => info.NoteId, info => info.ToPhraseTranslation(modelNameRegex));
