@@ -4,7 +4,7 @@ namespace UpdateAnki.Comparers;
 
 internal sealed class PhraseTranslationMatchComparer : IEqualityComparer<PhraseTranslation>
 {
-    private static readonly StringComparer StringComparer = StringComparer.OrdinalIgnoreCase;
+    private readonly PhraseComparer _sourcePhraseComparer = new();
 
     public bool Equals(PhraseTranslation? x, PhraseTranslation? y)
     {
@@ -28,9 +28,9 @@ internal sealed class PhraseTranslationMatchComparer : IEqualityComparer<PhraseT
             return false;
         }
 
-        var sourcePhraseComparer = new PhraseComparer(StringComparer);
-        return sourcePhraseComparer.Equals(x.Source, y.Source) &&
-            StringComparer.Equals(x.Target.LanguageCode, y.Target.LanguageCode);
+        var languageCodeComparer = EqualityComparers.LanguageCodeComparer;
+        return _sourcePhraseComparer.Equals(x.Source, y.Source) &&
+            languageCodeComparer.Equals(x.Target.LanguageCode, y.Target.LanguageCode);
     }
 
     public int GetHashCode(PhraseTranslation obj) =>

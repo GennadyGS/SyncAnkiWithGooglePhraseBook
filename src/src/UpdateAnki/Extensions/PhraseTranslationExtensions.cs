@@ -21,7 +21,7 @@ internal static class PhraseTranslationExtensions
             },
         };
 
-    private static TranslationDirection GetDirection(this PhraseTranslation translation) =>
+    public static TranslationDirection GetDirection(this PhraseTranslation translation) =>
         new()
         {
             SourceLanguageCode = translation.Source.LanguageCode,

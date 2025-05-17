@@ -2,7 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Translation.Models;
+using UpdateAnki.Comparers;
 using UpdateAnki.Configuration;
+using UpdateAnki.Extensions;
 using UpdateAnki.Models;
 using UpdateAnki.Utils;
 
@@ -26,12 +28,21 @@ internal sealed class UpdateAnkiService(
     {
         var sourcePhraseTranslations = await _jsonPhraseTranslationsReader
             .LoadPhraseTranslationsAsync(commandLineOptions.InputFilePath);
+        var relevantSourcePhraseTranslations = sourcePhraseTranslations
+            .Where(tr => WithinDirections(tr, ankiSettings.TranslationDirections))
+            .ToList();
         var targetPhraseTranslations =
             await LoadAndDumpAnkiPhraseTranslationsAsync(ankiSettings, commandLineOptions);
         var changeSet = PhraseTranslationChangeSetCalculator
-            .CalculateChangeSet(sourcePhraseTranslations, targetPhraseTranslations);
+            .CalculateChangeSet(relevantSourcePhraseTranslations, targetPhraseTranslations);
         await UpdatePhraseTranslationsAsync(changeSet, ankiSettings, commandLineOptions);
     }
+
+    private static bool WithinDirections(
+        PhraseTranslation translation,
+        IReadOnlyCollection<TranslationDirection> translationDirections) =>
+        translationDirections.Contains(
+            translation.GetDirection(), new TranslationDirectionEqualityComparer());
 
     private async Task<IReadOnlyDictionary<long, PhraseTranslation>>
         LoadAndDumpAnkiPhraseTranslationsAsync(

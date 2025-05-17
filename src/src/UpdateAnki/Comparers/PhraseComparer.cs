@@ -2,12 +2,8 @@
 
 namespace UpdateAnki.Comparers;
 
-internal sealed class PhraseComparer(IEqualityComparer<string>? stringComparer = null)
-    : IEqualityComparer<Phrase>
+internal sealed class PhraseComparer : IEqualityComparer<Phrase>
 {
-    private readonly IEqualityComparer<string> _stringComparer =
-        stringComparer ?? StringComparer.Ordinal;
-
     public bool Equals(Phrase? x, Phrase? y)
     {
         if (ReferenceEquals(x, y))
@@ -30,8 +26,8 @@ internal sealed class PhraseComparer(IEqualityComparer<string>? stringComparer =
             return false;
         }
 
-        return _stringComparer.Equals(x.Text, y.Text) &&
-            _stringComparer.Equals(x.LanguageCode, y.LanguageCode);
+        return EqualityComparers.TextComparer.Equals(x.Text, y.Text) &&
+            EqualityComparers.LanguageCodeComparer.Equals(x.LanguageCode, y.LanguageCode);
     }
 
     public int GetHashCode(Phrase obj) =>
