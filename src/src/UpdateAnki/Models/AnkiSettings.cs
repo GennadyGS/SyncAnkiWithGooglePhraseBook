@@ -2,7 +2,9 @@
 
 internal sealed record AnkiSettings
 {
-    public string? RootDeckName { get; init; }
+    public required string RootDeckName { get; init; }
 
-    public string? ModelNamePattern { get; init; }
+    public required string ModelNamePattern { get; init; }
+
+    public required IReadOnlyCollection<TranslationDirection> TranslationDirections { get; init; }
 }
