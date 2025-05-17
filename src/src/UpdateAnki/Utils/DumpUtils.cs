@@ -9,7 +9,7 @@ internal static class DumpUtils
     public static void DumpObject<T>(
         T obj, string baseFileName, CommandLineOptions commandLineOptions)
     {
-        var dumpFileName = $"{baseFileName}_{DateTime.UtcNow:yyyy-MM-dd-hh-mm-ss}.json";
+        var dumpFileName = $"{baseFileName}_{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}.json";
         var dumpFilePath = commandLineOptions.GetFullLogFilePath(dumpFileName);
         File.WriteAllText(dumpFilePath, JsonConvert.SerializeObject(obj, Formatting.Indented));
     }

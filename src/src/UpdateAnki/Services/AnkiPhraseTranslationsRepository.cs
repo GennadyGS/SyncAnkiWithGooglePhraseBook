@@ -1,4 +1,5 @@
 ﻿using ChangeSetCalculation.Models;
+using Common.Extensions;
 using Translation.Models;
 using UpdateAnki.Constants;
 using UpdateAnki.Extensions;
@@ -17,10 +18,8 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
         var query = GetSearchQuery(ankiSettings);
         var noteIds = await _httpClient.FindNotesAsync(query);
         var notesInfo = await _httpClient.GetNotesInfoAsync(noteIds);
-        var modelNameParser =
-            ModelNamePatternEngine.CreateModelNameParser(ankiSettings.ModelNamePattern);
         return notesInfo.ToDictionary(
-            info => info.NoteId, info => info.ToPhraseTranslation(modelNameParser));
+            info => info.NoteId, info => info.ToPhraseTranslation(ankiSettings.ModelNamePattern));
     }
 
     public async Task UpdatePhraseTranslationsAsync(
@@ -38,8 +37,22 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
         await DeletePhraseTranslationsAsync(translationsToDelete);
     }
 
-    private static string GetSearchQuery(AnkiSettings ankiSettings) =>
-        $"\"deck:{ankiSettings.RootDeckName}\"";
+    private static string GetSearchQuery(AnkiSettings ankiSettings)
+    {
+        var deckQuery = $"\"deck:{ankiSettings.RootDeckName}\"";
+        var languagesQuery = ankiSettings.TranslationDirections
+            .Select(td => GetModelNameQuery(td, ankiSettings.ModelNamePattern))
+            .JoinStrings(" OR ");
+        return $"{deckQuery} AND ({languagesQuery})";
+    }
+
+    private static string GetModelNameQuery(
+        TranslationDirection translationDirection, string modelNamePattern)
+    {
+        var modelName =
+            ModelNamePatternEngine.GenerateModelName(modelNamePattern, translationDirection);
+        return $"\"note:{modelName}\"";
+    }
 
     private async Task UpdatePhraseTranslationsAsync(
         IReadOnlyCollection<KeyValuePair<long, PhraseTranslation>> updates)

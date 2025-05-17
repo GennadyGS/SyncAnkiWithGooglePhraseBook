@@ -1,15 +1,17 @@
 ﻿using Translation.Models;
 using UpdateAnki.Constants;
 using UpdateAnki.Models;
+using UpdateAnki.Utils;
 
 namespace UpdateAnki.Extensions;
 
 internal static class NoteInfoExtensions
 {
     public static PhraseTranslation ToPhraseTranslation(
-        this NoteInfo noteInfo, Func<string, TranslationDirection> modelNameParser)
+        this NoteInfo noteInfo, string modelNamePattern)
     {
-        var translationDirection = modelNameParser(noteInfo.ModelName);
+        var translationDirection =
+            ModelNamePatternEngine.ParseModelName(modelNamePattern, noteInfo.ModelName);
         return new PhraseTranslation
         {
             Source = new Phrase
