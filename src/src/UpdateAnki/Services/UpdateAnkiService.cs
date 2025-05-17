@@ -1,9 +1,7 @@
-﻿using ChangeSetCalculation;
-using ChangeSetCalculation.Models;
+﻿using ChangeSetCalculation.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Translation.Models;
-using UpdateAnki.Comparers;
 using UpdateAnki.Configuration;
 using UpdateAnki.Models;
 using UpdateAnki.Utils;
@@ -30,15 +28,8 @@ internal sealed class UpdateAnkiService(
             .LoadPhraseTranslationsAsync(commandLineOptions.InputFilePath);
         var targetPhraseTranslations =
             await LoadAndDumpAnkiPhraseTranslationsAsync(ankiSettings, commandLineOptions);
-        var changeSet = ChangeSetCalculator.CalculateChangeSet(
-            sourcePhraseTranslations,
-            targetPhraseTranslations,
-            s => s,
-            t => t.Value,
-            deleteExcessMatched: true,
-            deleteUnmatched: false,
-            matchComparer: new PhraseTranslationMatchComparer(),
-            keyDistanceProvider: new PhraseTranslationDistanceProvider());
+        var changeSet = PhraseTranslationChangeSetCalculator
+            .CalculateChangeSet(sourcePhraseTranslations, targetPhraseTranslations);
         await UpdatePhraseTranslationsAsync(changeSet, ankiSettings, commandLineOptions);
     }
 
