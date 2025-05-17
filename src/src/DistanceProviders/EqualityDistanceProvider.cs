@@ -1,4 +1,6 @@
-﻿namespace DistanceProviders;
+﻿using DistanceProviders.Constants;
+
+namespace DistanceProviders;
 
 public sealed class EqualityDistanceProvider<T>(IEqualityComparer<T> equalityComparer)
     : IDistanceProvider<T>
@@ -6,5 +8,5 @@ public sealed class EqualityDistanceProvider<T>(IEqualityComparer<T> equalityCom
     private readonly IEqualityComparer<T> _equalityComparer = equalityComparer;
 
     public double GetDistance(T source, T target) =>
-        _equalityComparer.Equals(source, target) ? 0 : 1;
+        _equalityComparer.Equals(source, target) ? Distance.MinValue : Distance.MaxValue;
 }

@@ -1,4 +1,5 @@
 ﻿using DistanceProviders;
+using DistanceProviders.Constants;
 using Translation.Models;
 using UpdateAnki.Comparers;
 
@@ -17,7 +18,7 @@ internal sealed class PhraseTranslationDistanceProvider(
     public double GetDistance(PhraseTranslation source, PhraseTranslation target) =>
         _matchComparer.Equals(source, target)
             ? _stringDistanceProvider.GetDistance(GetTargetText(source), GetTargetText(target))
-            : 1;
+            : Distance.MaxValue;
 
     private static string GetTargetText(PhraseTranslation translation) => translation.Target.Text;
 }

@@ -1,3 +1,4 @@
+using DistanceProviders.Constants;
 using DistanceProviders.EqualityComparers;
 
 namespace DistanceProviders;
@@ -13,8 +14,8 @@ public sealed class SoftCaseCharDistanceProvider(
     public double GetDistance(char source, char target) =>
         (source, target) switch
         {
-            _ when source == target => 0,
+            _ when source == target => Distance.MinValue,
             _ when _ignoreCaseComparer.Equals(source, target) => _caseDistance,
-            _ => 1,
+            _ => Distance.MaxValue,
         };
 }
