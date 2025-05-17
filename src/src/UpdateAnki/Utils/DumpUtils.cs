@@ -11,6 +11,7 @@ internal static class DumpUtils
     {
         var dumpFileName = $"{baseFileName}_{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}.json";
         var dumpFilePath = commandLineOptions.GetFullLogFilePath(dumpFileName);
-        File.WriteAllText(dumpFilePath, JsonConvert.SerializeObject(obj, Formatting.Indented));
+        var content = JsonConvert.SerializeObject(obj, Formatting.Indented);
+        File.WriteAllText(dumpFilePath, content);
     }
 }
