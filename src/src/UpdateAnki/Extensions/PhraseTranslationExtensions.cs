@@ -1,7 +1,7 @@
-﻿using Common.Extensions;
-using Translation.Models;
+﻿using Translation.Models;
 using UpdateAnki.Constants;
 using UpdateAnki.Models;
+using UpdateAnki.Utils;
 
 namespace UpdateAnki.Extensions;
 
@@ -11,8 +11,9 @@ internal static class PhraseTranslationExtensions
         this PhraseTranslation translation, AnkiSettings ankiSettings) =>
         new()
         {
-            DeckName = ankiSettings.RootDeckName.ThrowIfNull(),
-            ModelName = translation.GetAnkiModelName(ankiSettings.ModelNamePattern.ThrowIfNull()),
+            DeckName = ankiSettings.RootDeckName,
+            ModelName = ModelNamePatternEngine.GenerateModelName(
+                ankiSettings.ModelNamePattern, translation.GetDirection()),
             Fields = new Dictionary<string, object?>
             {
                 [AnkiNoteFields.Front] = translation.Source.Text,
@@ -20,9 +21,10 @@ internal static class PhraseTranslationExtensions
             },
         };
 
-    private static string GetAnkiModelName(
-        this PhraseTranslation translation, string modelNamePattern) =>
-        modelNamePattern
-            .Replace("{sourceLanguage}", translation.Source.LanguageCode)
-            .Replace("{targetLanguage}", translation.Target.LanguageCode);
+    private static TranslationDirection GetDirection(this PhraseTranslation translation) =>
+        new()
+        {
+            SourceLanguageCode = translation.Source.LanguageCode,
+            TargetLanguageCode = translation.Target.LanguageCode,
+        };
 }

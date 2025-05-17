@@ -2,7 +2,7 @@
 
 internal sealed record TranslationDirectionSection
 {
-    public string? SourceLanguage { get; init; }
+    public string? SourceLanguageCode { get; init; }
 
-    public string? TargetLanguage { get; init; }
+    public string? TargetLanguageCode { get; init; }
 }

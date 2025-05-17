@@ -41,15 +41,14 @@ internal static class ConfigurationExtensions
     private static IReadOnlyCollection<TranslationDirection> ToTranslationDirections(
         this IReadOnlyCollection<TranslationDirectionSection?> sections) =>
         sections
-            .Select(td => td.ThrowIfNull())
-            .Select(td => td.ToTranslationDirection())
+            .Select(section => section.ThrowIfNull().ToTranslationDirection())
             .ToList();
 
     private static TranslationDirection ToTranslationDirection(
         this TranslationDirectionSection section) =>
         new()
         {
-            SourceLanguage = section.SourceLanguage.ThrowIfNull(),
-            TargetLanguage = section.TargetLanguage.ThrowIfNull(),
+            SourceLanguageCode = section.SourceLanguageCode.ThrowIfNull(),
+            TargetLanguageCode = section.TargetLanguageCode.ThrowIfNull(),
         };
 }

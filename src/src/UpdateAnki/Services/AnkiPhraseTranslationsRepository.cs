@@ -1,10 +1,9 @@
-﻿using System.Text.RegularExpressions;
-using ChangeSetCalculation.Models;
-using Common.Extensions;
+﻿using ChangeSetCalculation.Models;
 using Translation.Models;
 using UpdateAnki.Constants;
 using UpdateAnki.Extensions;
 using UpdateAnki.Models;
+using UpdateAnki.Utils;
 
 namespace UpdateAnki.Services;
 
@@ -15,15 +14,13 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
     public async Task<IReadOnlyDictionary<long, PhraseTranslation>> LoadPhraseTranslationsAsync(
         AnkiSettings ankiSettings)
     {
-        var noteIds = await _httpClient.FindNotesAsync($"\"deck:{ankiSettings.RootDeckName}\"");
+        var query = GetSearchQuery(ankiSettings);
+        var noteIds = await _httpClient.FindNotesAsync(query);
         var notesInfo = await _httpClient.GetNotesInfoAsync(noteIds);
-        var modelNamePattern = Regex.Replace(
-            ankiSettings.ModelNamePattern.ThrowIfNull(),
-            "{(\\w+)}",
-            "(?'$1'[a-z]{2})");
-        var modelNameRegex = new Regex($"^{modelNamePattern}$", RegexOptions.Compiled);
-        return notesInfo
-            .ToDictionary(info => info.NoteId, info => info.ToPhraseTranslation(modelNameRegex));
+        var modelNameParser =
+            ModelNamePatternEngine.CreateModelNameParser(ankiSettings.ModelNamePattern);
+        return notesInfo.ToDictionary(
+            info => info.NoteId, info => info.ToPhraseTranslation(modelNameParser));
     }
 
     public async Task UpdatePhraseTranslationsAsync(
@@ -40,6 +37,9 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
             .ToList();
         await DeletePhraseTranslationsAsync(translationsToDelete);
     }
+
+    private static string GetSearchQuery(AnkiSettings ankiSettings) =>
+        $"\"deck:{ankiSettings.RootDeckName}\"";
 
     private async Task UpdatePhraseTranslationsAsync(
         IReadOnlyCollection<KeyValuePair<long, PhraseTranslation>> updates)
