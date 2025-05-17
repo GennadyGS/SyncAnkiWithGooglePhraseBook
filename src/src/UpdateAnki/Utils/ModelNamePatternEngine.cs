@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using UpdateAnki.Models;
+using Translation.Models;
 
 namespace UpdateAnki.Utils;
 

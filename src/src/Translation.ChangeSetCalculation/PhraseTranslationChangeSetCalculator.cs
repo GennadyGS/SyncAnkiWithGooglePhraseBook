@@ -1,11 +1,12 @@
 ﻿using ChangeSetCalculation;
 using ChangeSetCalculation.Models;
+using Translation.ChangeSetCalculation.Comparers;
+using Translation.ChangeSetCalculation.DistanceProviders;
 using Translation.Models;
-using UpdateAnki.Comparers;
 
-namespace UpdateAnki.Utils;
+namespace Translation.ChangeSetCalculation;
 
-internal static class PhraseTranslationChangeSetCalculator
+public static class PhraseTranslationChangeSetCalculator
 {
     public static ChangeSet<PhraseTranslation, KeyValuePair<long, PhraseTranslation>>
         CalculateChangeSet(

@@ -1,4 +1,6 @@
-﻿namespace UpdateAnki.Models;
+﻿using Translation.Models;
+
+namespace UpdateAnki.Models;
 
 internal sealed record AnkiSettings
 {

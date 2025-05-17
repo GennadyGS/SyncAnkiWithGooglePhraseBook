@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.IO;
 using CommandLine;
 using ExportGooglePhraseBookFromSpreadSheet.Configuration;
 using ExportGooglePhraseBookFromSpreadSheet.Extensions;

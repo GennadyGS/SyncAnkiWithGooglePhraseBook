@@ -1,9 +1,9 @@
 ﻿using DistanceProviders;
 using DistanceProviders.Constants;
+using Translation.ChangeSetCalculation.Comparers;
 using Translation.Models;
-using UpdateAnki.Comparers;
 
-namespace UpdateAnki.Utils;
+namespace Translation.ChangeSetCalculation.DistanceProviders;
 
 internal sealed class PhraseTranslationDistanceProvider(
     PhraseTranslationMatchComparer matchComparer) : IDistanceProvider<PhraseTranslation>

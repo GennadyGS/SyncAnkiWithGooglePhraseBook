@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\ChangeSetCalculation\ChangeSetCalculation.csproj" />
+    <ProjectReference Include="..\Translation.Models\Translation.Models.csproj" />
+  </ItemGroup>
+</Project>

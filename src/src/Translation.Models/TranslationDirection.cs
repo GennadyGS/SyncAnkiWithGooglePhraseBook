@@ -1,6 +1,6 @@
-﻿namespace UpdateAnki.Models;
+﻿namespace Translation.Models;
 
-internal sealed record TranslationDirection
+public sealed record TranslationDirection
 {
     public required string SourceLanguageCode { get; init; }
 

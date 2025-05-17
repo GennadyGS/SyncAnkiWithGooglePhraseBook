@@ -1,6 +1,7 @@
 ﻿using ChangeSetCalculation.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Translation.ChangeSetCalculation;
 using Translation.Models;
 using UpdateAnki.Comparers;
 using UpdateAnki.Configuration;

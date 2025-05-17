@@ -17,10 +17,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\ChangeSetCalculation\ChangeSetCalculation.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\DistanceProviders\DistanceProviders.csproj" />
-    <ProjectReference Include="..\Translation.Models\Translation.Models.csproj" />
+    <ProjectReference Include="..\Translation.ChangeSetCalculation\Translation.ChangeSetCalculation.csproj" />
   </ItemGroup>
   
   <ItemGroup>

@@ -1,4 +1,5 @@
-﻿using UpdateAnki.Models;
+﻿using Translation.Models;
+using Translation.Models.Comparers;
 
 namespace UpdateAnki.Comparers;
 

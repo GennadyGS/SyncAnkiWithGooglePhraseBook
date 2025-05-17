@@ -1,6 +1,7 @@
 ﻿using Translation.Models;
+using Translation.Models.Comparers;
 
-namespace UpdateAnki.Comparers;
+namespace Translation.ChangeSetCalculation.Comparers;
 
 internal sealed class PhraseTranslationMatchComparer : IEqualityComparer<PhraseTranslation>
 {

@@ -1,5 +1,6 @@
 ﻿using Common.Extensions;
 using Microsoft.Extensions.Configuration;
+using Translation.Models;
 using UpdateAnki.Configuration.Sections;
 using UpdateAnki.Constants;
 using UpdateAnki.Models;

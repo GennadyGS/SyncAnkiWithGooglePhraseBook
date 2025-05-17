@@ -1,6 +1,6 @@
-﻿namespace UpdateAnki.Comparers;
+﻿namespace Translation.Models.Comparers;
 
-internal static class EqualityComparers
+public static class EqualityComparers
 {
     public static readonly StringComparer LanguageCodeComparer = StringComparer.OrdinalIgnoreCase;
 
