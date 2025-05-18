@@ -6,6 +6,6 @@ internal abstract record ChangeAction<TSource, TTarget>
 
     public sealed record Delete(IEnumerable<TTarget> Keys) : ChangeAction<TSource, TTarget>;
 
-    public sealed record Update(IEnumerable<(TSource source, TTarget target)> Updates)
+    public sealed record Update(IEnumerable<UpdatePair<TSource, TTarget>> Updates)
         : ChangeAction<TSource, TTarget>;
 }

@@ -97,8 +97,7 @@ public static class ChangeSetCalculator
 
         return
         [
-            new ChangeAction<TSource, TTarget>
-                .Update([(source: sourceItem, target: targetItem)]),
+            new ChangeAction<TSource, TTarget>.Update([UpdatePair.Create(sourceItem, targetItem)]),
         ];
     }
 

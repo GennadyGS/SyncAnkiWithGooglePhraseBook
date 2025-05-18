@@ -25,7 +25,7 @@ public sealed class ChangeSetCalculatorTests
                 ExpectedResult = new ChangeSet<string, KeyValuePair<int, string>>
                 {
                     ToAdd = ["three"],
-                    ToUpdate = [(source: "One", target: KeyValuePair.Create(1, "one"))],
+                    ToUpdate = [UpdatePair.Create("One", KeyValuePair.Create(1, "one"))],
                     ToDelete = [KeyValuePair.Create(4, "four")],
                 },
             },
@@ -74,7 +74,7 @@ public sealed class ChangeSetCalculatorTests
                 ExpectedResult = new ChangeSet<string, KeyValuePair<int, string>>
                 {
                     ToAdd = ["ONE", "OnE", "three"],
-                    ToUpdate = [(source: "Two", target: KeyValuePair.Create(2, "two"))],
+                    ToUpdate = [UpdatePair.Create("Two", KeyValuePair.Create(2, "two"))],
                     ToDelete = [KeyValuePair.Create(4, "four")],
                 },
             },

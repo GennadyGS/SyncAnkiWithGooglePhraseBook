@@ -53,8 +53,8 @@ public sealed class PhraseTranslationChangeSetCalculatorTests
         {
             ToAdd = [],
             ToUpdate = [
-                (
-                    source: new()
+                new UpdatePair<PhraseTranslation, KeyValuePair<long, PhraseTranslation>>(
+                    new()
                     {
                         Source = new Phrase
                         {
@@ -67,7 +67,7 @@ public sealed class PhraseTranslationChangeSetCalculatorTests
                             LanguageCode = "ru",
                         },
                     },
-                    target: KeyValuePair.Create(
+                    KeyValuePair.Create(
                         1465978079469,
                         new PhraseTranslation
                         {

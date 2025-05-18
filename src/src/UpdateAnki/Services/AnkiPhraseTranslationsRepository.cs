@@ -27,7 +27,7 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
         AnkiSettings ankiSettings)
     {
         var translationsToUpdate = changeSet.ToUpdate
-            .Select(item => KeyValuePair.Create(item.target.Key, item.source))
+            .Select(item => KeyValuePair.Create(item.Target.Key, item.Source))
             .ToList();
         await UpdatePhraseTranslationsAsync(translationsToUpdate);
         await AddPhraseTranslationsAsync(changeSet.ToAdd, ankiSettings);
