@@ -34,12 +34,15 @@ internal static class AnkiHttpClientExtensions
     public static async Task UpdateNoteFieldsAsync(
         this HttpClient httpClient,
         long noteId,
-        IReadOnlyCollection<KeyValuePair<string, object?>> fields)
+        IReadOnlyDictionary<string, object?> fields)
     {
         var parameters = new UpdateNoteFieldsParams
         {
-            NoteId = noteId,
-            Fields = fields,
+            Note = new NoteFieldsParams
+            {
+                Id = noteId,
+                Fields = fields,
+            },
         };
 
         await httpClient.InvokeAnkiCommandAsync<UpdateNoteFieldsParams, object>(

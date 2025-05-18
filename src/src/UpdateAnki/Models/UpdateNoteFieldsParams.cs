@@ -2,7 +2,5 @@
 
 internal sealed record UpdateNoteFieldsParams
 {
-    public required long NoteId { get; init; }
-
-    public required IReadOnlyCollection<KeyValuePair<string, object?>> Fields { get; init; }
+    public required NoteFieldsParams Note { get; init; }
 }

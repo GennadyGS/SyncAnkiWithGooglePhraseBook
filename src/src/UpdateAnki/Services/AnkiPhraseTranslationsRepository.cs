@@ -65,10 +65,10 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
 
     private async Task UpdatePhraseTranslationAsync(long noteId, PhraseTranslation translation)
     {
-        var fields = new[]
+        var fields = new Dictionary<string, object?>
         {
-            KeyValuePair.Create(AnkiNoteFields.Front, (object?)translation.Source),
-            KeyValuePair.Create(AnkiNoteFields.Back, (object?)translation.Target),
+            [AnkiNoteFields.Front] = translation.Source.Text,
+            [AnkiNoteFields.Back] = translation.Target.Text,
         };
 
         await _httpClient.UpdateNoteFieldsAsync(noteId, fields);
