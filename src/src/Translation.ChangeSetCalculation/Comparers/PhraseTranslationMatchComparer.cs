@@ -35,5 +35,5 @@ internal sealed class PhraseTranslationMatchComparer : IEqualityComparer<PhraseT
     }
 
     public int GetHashCode(PhraseTranslation obj) =>
-        HashCode.Combine(obj.Source, obj.Target);
+        HashCode.Combine(obj.Source, obj.Target.LanguageCode);
 }
