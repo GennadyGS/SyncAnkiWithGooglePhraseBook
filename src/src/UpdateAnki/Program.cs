@@ -15,13 +15,16 @@ internal static class Program
 
     public static async Task<int> Main(string[] args)
     {
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .CreateLogger();
         try
         {
             return await RunCommandLineParserAsync(args);
         }
         catch (Exception e)
         {
-            await Console.Error.WriteLineAsync(e.ToString());
+            Log.Logger.Error(e, "An unhandled error occurred");
             return ErrorExitCode;
         }
     }
@@ -36,7 +39,7 @@ internal static class Program
         {
             foreach (var error in errors)
             {
-                Console.WriteLine($"Command line parser error: {error}");
+                Log.Logger.Error("Command line parser error: {Error}", error);
             }
         })
         .MapResult(_ => 0, _ => 1);
