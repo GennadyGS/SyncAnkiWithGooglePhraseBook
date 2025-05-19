@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using UpdateAnki.Exceptions;
 using UpdateAnki.Models;
 using UpdateAnki.Utils;
@@ -12,7 +11,7 @@ internal static class HttpConnectionExtensions
 
     private static readonly JsonSerializerSettings JsonSettings = new()
     {
-        ContractResolver = new CamelCasePropertyNamesContractResolver(),
+        ContractResolver = new CustomCamelCaseContractResolver(),
     };
 
     public static async Task<dynamic?> InvokeAnkiCommandAsync(

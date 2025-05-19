@@ -64,7 +64,8 @@ internal sealed class UpdateAnkiService(
         DumpUtils.DumpObject(changeSet, FileNames.ChangeSet, commandLineOptions);
         if (!commandLineOptions.WhatIf)
         {
-            await _ankiPhraseTranslationsRepository.UpdatePhraseTranslationsAsync(changeSet, ankiSettings);
+            await _ankiPhraseTranslationsRepository
+                .UpdatePhraseTranslationsAsync(changeSet, ankiSettings);
         }
         else
         {
