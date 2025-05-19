@@ -27,6 +27,11 @@ internal sealed class UpdateAnkiService(
     public async Task UpdateAnkiFromJsonFileAsync(
         AnkiSettings ankiSettings, CommandLineOptions commandLineOptions)
     {
+        if (commandLineOptions.WhatIf)
+        {
+            _logger.LogInformation("Running in what-if mode. No changes will be applied.");
+        }
+
         var sourcePhraseTranslations = await _jsonPhraseTranslationsReader
             .LoadPhraseTranslationsAsync(commandLineOptions.InputFilePath);
         var relevantSourcePhraseTranslations = sourcePhraseTranslations
@@ -66,10 +71,6 @@ internal sealed class UpdateAnkiService(
         {
             await _ankiPhraseTranslationsRepository
                 .UpdatePhraseTranslationsAsync(changeSet, ankiSettings);
-        }
-        else
-        {
-            _logger.LogInformation("Running in what-if mode. No changes will be applied.");
         }
     }
 
