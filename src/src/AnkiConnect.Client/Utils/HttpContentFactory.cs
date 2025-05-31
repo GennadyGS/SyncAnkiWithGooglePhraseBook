@@ -2,7 +2,7 @@
 using System.Text;
 using Newtonsoft.Json;
 
-namespace UpdateAnki.Utils;
+namespace AnkiConnect.Client.Utils;
 
 internal static class HttpContentFactory
 {

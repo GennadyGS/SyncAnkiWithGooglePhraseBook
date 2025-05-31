@@ -1,10 +1,8 @@
-﻿using UpdateAnki.Constants;
-using UpdateAnki.Extensions;
-using UpdateAnki.Models;
+﻿using AnkiConnect.Client.Models;
 
-namespace UpdateAnki;
+namespace AnkiConnect.Client.Extensions;
 
-internal static class AnkiHttpClientExtensions
+public static class AnkiHttpClientExtensions
 {
     public static async Task<long[]> FindNotesAsync(this HttpClient httpClient, string query)
     {

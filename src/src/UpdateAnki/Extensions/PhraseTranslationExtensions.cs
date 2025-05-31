@@ -1,5 +1,5 @@
-﻿using Translation.Models;
-using UpdateAnki.Constants;
+﻿using AnkiConnect.Client.Models;
+using Translation.Models;
 using UpdateAnki.Models;
 using UpdateAnki.Utils;
 
@@ -16,8 +16,8 @@ internal static class PhraseTranslationExtensions
                 ankiSettings.ModelNamePattern, translation.GetDirection()),
             Fields = new Dictionary<string, object?>
             {
-                [AnkiNoteFields.Front] = translation.Source.Text,
-                [AnkiNoteFields.Back] = translation.Target.Text,
+                [NoteInfoFields.Front] = translation.Source.Text,
+                [NoteInfoFields.Back] = translation.Target.Text,
             },
         };
 

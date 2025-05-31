@@ -1,6 +1,6 @@
-﻿namespace UpdateAnki.Models;
+﻿namespace AnkiConnect.Client.Models;
 
-internal sealed record AddNoteParams
+public sealed record AddNoteParams
 {
     public required string DeckName { get; init; }
 

@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using UpdateAnki.Exceptions;
-using UpdateAnki.Models;
+﻿using AnkiConnect.Client.Models;
+using AnkiConnect.Client.Utils;
+using Newtonsoft.Json;
 using UpdateAnki.Utils;
 
-namespace UpdateAnki.Extensions;
+namespace AnkiConnect.Client.Extensions;
 
 internal static class HttpConnectionExtensions
 {

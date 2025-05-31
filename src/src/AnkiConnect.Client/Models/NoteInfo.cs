@@ -1,6 +1,6 @@
-﻿namespace UpdateAnki.Models;
+﻿namespace AnkiConnect.Client.Models;
 
-internal sealed record NoteInfo
+public sealed record NoteInfo
 {
     public required long NoteId { get; init; }
 

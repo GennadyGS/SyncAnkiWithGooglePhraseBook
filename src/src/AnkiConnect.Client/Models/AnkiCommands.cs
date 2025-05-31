@@ -1,4 +1,4 @@
-﻿namespace UpdateAnki.Constants;
+﻿namespace AnkiConnect.Client.Models;
 
 internal static class AnkiCommands
 {

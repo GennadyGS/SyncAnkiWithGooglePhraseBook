@@ -1,7 +1,8 @@
-﻿using ChangeSetCalculation.Models;
+﻿using AnkiConnect.Client.Extensions;
+using AnkiConnect.Client.Models;
+using ChangeSetCalculation.Models;
 using Common.Extensions;
 using Translation.Models;
-using UpdateAnki.Constants;
 using UpdateAnki.Extensions;
 using UpdateAnki.Models;
 using UpdateAnki.Utils;
@@ -67,8 +68,8 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
     {
         var fields = new Dictionary<string, object?>
         {
-            [AnkiNoteFields.Front] = translation.Source.Text,
-            [AnkiNoteFields.Back] = translation.Target.Text,
+            [NoteInfoFields.Front] = translation.Source.Text,
+            [NoteInfoFields.Back] = translation.Target.Text,
         };
 
         await _httpClient.UpdateNoteFieldsAsync(noteId, fields);

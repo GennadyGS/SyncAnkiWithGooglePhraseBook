@@ -1,6 +1,5 @@
-﻿using Translation.Models;
-using UpdateAnki.Constants;
-using UpdateAnki.Models;
+﻿using AnkiConnect.Client.Models;
+using Translation.Models;
 using UpdateAnki.Utils;
 
 namespace UpdateAnki.Extensions;

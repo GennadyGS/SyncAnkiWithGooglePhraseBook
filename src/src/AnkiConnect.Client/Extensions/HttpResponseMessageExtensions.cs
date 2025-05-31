@@ -1,8 +1,8 @@
-﻿using Common.Extensions;
+﻿using AnkiConnect.Client.Models;
+using Common.Extensions;
 using Newtonsoft.Json;
-using UpdateAnki.Models;
 
-namespace UpdateAnki.Extensions;
+namespace AnkiConnect.Client.Extensions;
 
 internal static class HttpResponseMessageExtensions
 {

@@ -1,4 +1,4 @@
-﻿namespace UpdateAnki.Models;
+﻿namespace AnkiConnect.Client.Models;
 
 internal sealed record FindNotesParams
 {
