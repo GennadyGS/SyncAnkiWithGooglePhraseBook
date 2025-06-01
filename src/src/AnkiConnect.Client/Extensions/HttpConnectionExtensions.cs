@@ -21,6 +21,19 @@ internal static class HttpConnectionExtensions
     public static async Task<TResult?> InvokeAnkiCommandAsync<TParams, TResult>(
         this HttpClient httpClient, string action, TParams parameters)
     {
+        var ankiResponse =
+            await httpClient.PostAnkiCommandAsync<TParams, TResult>(action, parameters);
+        if (ankiResponse.Error is not null)
+        {
+            throw new AnkiException(ankiResponse.Error);
+        }
+
+        return ankiResponse.Result;
+    }
+
+    public static async Task<AnkiResponse<TResult>> PostAnkiCommandAsync<TParams, TResult>(
+        this HttpClient httpClient, string action, TParams parameters)
+    {
         var ankiRequest = new AnkiRequest<TParams>
         {
             Action = action,
@@ -32,12 +45,6 @@ internal static class HttpConnectionExtensions
             HttpContentFactory.CreateJsonContentWithFixedLength(ankiRequest, JsonSettings);
         var responseMessage = await httpClient.PostAsync(new Uri("/", UriKind.Relative), content);
         responseMessage.EnsureSuccessStatusCode();
-        var ankiResponse = await responseMessage.GetAnkiResponseAsync<TResult>(JsonSettings);
-        if (ankiResponse.Error is not null)
-        {
-            throw new AnkiException(ankiResponse.Error);
-        }
-
-        return ankiResponse.Result;
+        return await responseMessage.GetAnkiResponseAsync<TResult>(JsonSettings);
     }
 }
