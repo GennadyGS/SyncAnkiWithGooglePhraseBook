@@ -2,5 +2,5 @@
 
 internal sealed record AddNotesParams
 {
-    public required AddNoteParams[] Notes { get; init; }
+    public required IReadOnlyCollection<AddNoteParams> Notes { get; init; }
 }

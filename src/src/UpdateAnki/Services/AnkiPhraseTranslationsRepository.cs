@@ -2,6 +2,7 @@
 using AnkiConnect.Client.Models;
 using ChangeSetCalculation.Models;
 using Common.Extensions;
+using Newtonsoft.Json;
 using Translation.Models;
 using UpdateAnki.Extensions;
 using UpdateAnki.Models;
@@ -81,6 +82,18 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
         var addNodeRequests = translations
             .Select(translation => translation.ToAddNoteParams(ankiSettings))
             .ToList();
+        var results = await _httpClient.CanAddNotesWithErrorDetailAsync(addNodeRequests);
+        if (results.Any(x => !x.CanAdd))
+        {
+            var errorDetails = results
+                .Zip(addNodeRequests, (result, request) => (result, request))
+                .Where(x => !x.result.CanAdd)
+                .Select(x => new MatchedError<AddNoteParams>(x.request, x.result.Error))
+                .ToList();
+            var errorDetailsJson = JsonConvert.SerializeObject(errorDetails);
+            throw new InvalidOperationException($"Cannot add some notes: '{errorDetailsJson}'");
+        }
+
         await _httpClient.AddNotesAsync(addNodeRequests);
     }
 
@@ -88,4 +101,6 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
     {
         await _httpClient.DeleteNotesAsync(noteIds);
     }
+
+    private sealed record MatchedError<T>(T Parameter, string Error);
 }
