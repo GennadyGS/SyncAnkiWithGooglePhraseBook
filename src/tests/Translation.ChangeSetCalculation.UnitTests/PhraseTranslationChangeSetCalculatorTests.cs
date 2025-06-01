@@ -87,6 +87,75 @@ public sealed class PhraseTranslationChangeSetCalculatorTests
                     ToDelete = [],
                 },
             },
+            new TestCase
+            {
+                Id = 2,
+                Source =
+                [
+                    new()
+                    {
+                        Source = new Phrase
+                        {
+                            Text = "prudent",
+                            LanguageCode = "en",
+                        },
+                        Target = new Phrase
+                        {
+                            Text = "благоразумный",
+                            LanguageCode = "ru",
+                        },
+                    },
+                    new()
+                    {
+                        Source = new Phrase
+                        {
+                            Text = "prudent",
+                            LanguageCode = "en",
+                        },
+                        Target = new Phrase
+                        {
+                            Text = "предусмотрительный",
+                            LanguageCode = "ru",
+                        },
+                    },
+                ],
+                Target = new Dictionary<long, PhraseTranslation>
+                {
+                    [1556259401981] = new()
+                    {
+                        Source = new Phrase
+                        {
+                            Text = "prudent",
+                            LanguageCode = "en",
+                        },
+                        Target = new Phrase
+                        {
+                            Text = "предусмотрительный",
+                            LanguageCode = "ru",
+                        },
+                    },
+                },
+                ExpectedResult = new ChangeSet<PhraseTranslation, KeyValuePair<long, PhraseTranslation>>
+                {
+                    ToAdd = [
+                        new()
+                        {
+                            Source = new Phrase
+                            {
+                                Text = "prudent",
+                                LanguageCode = "en",
+                            },
+                            Target = new Phrase
+                            {
+                                Text = "благоразумный",
+                                LanguageCode = "ru",
+                            },
+                        },
+                    ],
+                    ToUpdate = [],
+                    ToDelete = [],
+                },
+            },
         ]);
 
     [Theory]
