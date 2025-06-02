@@ -19,6 +19,10 @@ internal static class PhraseTranslationExtensions
                 [NoteInfoFields.Front] = translation.Source.Text,
                 [NoteInfoFields.Back] = translation.Target.Text,
             },
+            Options = new AddNoteOptions
+            {
+                AllowDuplicate = true,
+            },
         };
 
     public static TranslationDirection GetDirection(this PhraseTranslation translation) =>

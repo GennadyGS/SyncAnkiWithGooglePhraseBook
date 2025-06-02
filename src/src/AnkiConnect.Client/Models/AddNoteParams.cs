@@ -7,4 +7,6 @@ public sealed record AddNoteParams
     public required string ModelName { get; init; }
 
     public IReadOnlyCollection<KeyValuePair<string, object?>> Fields { get; init; } = [];
+
+    public AddNoteOptions? Options { get; init; }
 }
