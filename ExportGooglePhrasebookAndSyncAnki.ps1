@@ -25,6 +25,8 @@ Pop-Location
 dotnet run --project $exportGooglePhraseBookFromSpreadSheetAppPath `
     -- -i $spreadSheetId -o $phraseBookFileName
 
+Start-Process ${Env:LocalAppData}\Programs\Anki\anki.exe
+
 dotnet run --project "$appPathRoot/UpdateAnki" `
     -- `
     -i $phraseBookFileName $(${what-if} ? "--what-if" : "") `
