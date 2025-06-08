@@ -15,7 +15,7 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
     private readonly HttpClient _httpClient = httpClient;
 
     public async Task<IReadOnlyDictionary<long, PhraseTranslation>> LoadPhraseTranslationsAsync(
-        AnkiSettings ankiSettings)
+        AnkiDeckSettings ankiSettings)
     {
         var query = GetSearchQuery(ankiSettings);
         var noteIds = await _httpClient.FindNotesAsync(query);
@@ -26,7 +26,7 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
 
     public async Task UpdatePhraseTranslationsAsync(
         ChangeSet<PhraseTranslation, KeyValuePair<long, PhraseTranslation>> changeSet,
-        AnkiSettings ankiSettings)
+        AnkiDeckSettings ankiSettings)
     {
         var translationsToUpdate = changeSet.ToUpdate
             .Select(item => KeyValuePair.Create(item.Target.Key, item.Source))
@@ -39,7 +39,7 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
         await DeletePhraseTranslationsAsync(translationsToDelete);
     }
 
-    private static string GetSearchQuery(AnkiSettings ankiSettings)
+    private static string GetSearchQuery(AnkiDeckSettings ankiSettings)
     {
         var deckQuery = $"\"deck:{ankiSettings.DeckName}\"";
         var languagesQuery = ankiSettings.TranslationDirections
@@ -77,7 +77,7 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
     }
 
     private async Task AddPhraseTranslationsAsync(
-        IReadOnlyCollection<PhraseTranslation> translations, AnkiSettings ankiSettings)
+        IReadOnlyCollection<PhraseTranslation> translations, AnkiDeckSettings ankiSettings)
     {
         var addNodeRequests = translations
             .Select(translation => translation.ToAddNoteParams(ankiSettings))

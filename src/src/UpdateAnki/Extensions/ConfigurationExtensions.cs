@@ -31,6 +31,11 @@ internal static class ConfigurationExtensions
         ?? throw new InvalidOperationException($"Section {key} is missing in configuration.");
 
     private static AnkiSettings ToAnkiSettings(this AnkiSettingsSection section) =>
+        new(section
+            .Select(deckSection => deckSection.ThrowIfNull().ToAnkiDeckSettings())
+            .ToList());
+
+    private static AnkiDeckSettings ToAnkiDeckSettings(this AnkiDeckSettingsSection section) =>
         new()
         {
             DeckName = section.DeckName.ThrowIfNull(),

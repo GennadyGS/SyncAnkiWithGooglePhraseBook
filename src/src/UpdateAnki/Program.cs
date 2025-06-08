@@ -50,7 +50,10 @@ internal static class Program
         var configuration = LoadConfiguration();
         var ankiSettings = configuration.GetAnkiSettings();
         var updateAnkiService = CreateUpdateAnkiService(configuration);
-        await updateAnkiService.UpdateAnkiFromJsonFileAsync(ankiSettings, commandLineOptions);
+        foreach (var deckSettings in ankiSettings)
+        {
+            await updateAnkiService.UpdateAnkiFromJsonFileAsync(deckSettings, commandLineOptions);
+        }
     }
 
     private static void SetEnvironmentVariables(CommandLineOptions commandLineOptions)

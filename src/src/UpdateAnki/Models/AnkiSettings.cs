@@ -1,12 +1,6 @@
-﻿using Translation.Models;
+﻿using System.Collections.ObjectModel;
 
 namespace UpdateAnki.Models;
 
-internal sealed record AnkiSettings
-{
-    public required string DeckName { get; init; }
-
-    public required string ModelNamePattern { get; init; }
-
-    public required IReadOnlyCollection<TranslationDirection> TranslationDirections { get; init; }
-}
+internal sealed class AnkiSettings(IReadOnlyList<AnkiDeckSettings> settings)
+    : ReadOnlyCollection<AnkiDeckSettings>(settings.ToList());

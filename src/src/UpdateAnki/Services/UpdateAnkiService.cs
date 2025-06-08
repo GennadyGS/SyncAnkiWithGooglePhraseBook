@@ -25,7 +25,7 @@ internal sealed class UpdateAnkiService(
     private readonly ILogger<UpdateAnkiService> _logger = logger;
 
     public async Task UpdateAnkiFromJsonFileAsync(
-        AnkiSettings ankiSettings, CommandLineOptions commandLineOptions)
+        AnkiDeckSettings ankiSettings, CommandLineOptions commandLineOptions)
     {
         if (commandLineOptions.WhatIf)
         {
@@ -52,7 +52,7 @@ internal sealed class UpdateAnkiService(
 
     private async Task<IReadOnlyDictionary<long, PhraseTranslation>>
         LoadAndDumpAnkiPhraseTranslationsAsync(
-            AnkiSettings ankiSettings, CommandLineOptions commandLineOptions)
+            AnkiDeckSettings ankiSettings, CommandLineOptions commandLineOptions)
     {
         var result =
             await _ankiPhraseTranslationsRepository.LoadPhraseTranslationsAsync(ankiSettings);
@@ -62,7 +62,7 @@ internal sealed class UpdateAnkiService(
 
     private async Task UpdatePhraseTranslationsAsync(
         ChangeSet<PhraseTranslation, KeyValuePair<long, PhraseTranslation>> changeSet,
-        AnkiSettings ankiSettings,
+        AnkiDeckSettings ankiSettings,
         CommandLineOptions commandLineOptions)
     {
         _logger.LogDebug("ChangeSet: {ChangeSet}", JsonConvert.SerializeObject(changeSet));

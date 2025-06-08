@@ -8,7 +8,7 @@ namespace UpdateAnki.Extensions;
 internal static class PhraseTranslationExtensions
 {
     public static AddNoteParams ToAddNoteParams(
-        this PhraseTranslation translation, AnkiSettings ankiSettings) =>
+        this PhraseTranslation translation, AnkiDeckSettings ankiSettings) =>
         new()
         {
             DeckName = ankiSettings.DeckName,
