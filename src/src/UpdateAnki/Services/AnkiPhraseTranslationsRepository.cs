@@ -41,7 +41,7 @@ internal sealed class AnkiPhraseTranslationsRepository(HttpClient httpClient)
 
     private static string GetSearchQuery(AnkiSettings ankiSettings)
     {
-        var deckQuery = $"\"deck:{ankiSettings.RootDeckName}\"";
+        var deckQuery = $"\"deck:{ankiSettings.DeckName}\"";
         var languagesQuery = ankiSettings.TranslationDirections
             .Select(td => GetModelNameQuery(td, ankiSettings.ModelNamePattern))
             .JoinStrings(" OR ");

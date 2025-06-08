@@ -33,7 +33,7 @@ internal static class ConfigurationExtensions
     private static AnkiSettings ToAnkiSettings(this AnkiSettingsSection section) =>
         new()
         {
-            RootDeckName = section.RootDeckName.ThrowIfNull(),
+            DeckName = section.DeckName.ThrowIfNull(),
             ModelNamePattern = section.ModelNamePattern.ThrowIfNull(),
             TranslationDirections =
                 section.TranslationDirections.ThrowIfNull().ToTranslationDirections(),

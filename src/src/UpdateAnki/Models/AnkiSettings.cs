@@ -4,7 +4,7 @@ namespace UpdateAnki.Models;
 
 internal sealed record AnkiSettings
 {
-    public required string RootDeckName { get; init; }
+    public required string DeckName { get; init; }
 
     public required string ModelNamePattern { get; init; }
 

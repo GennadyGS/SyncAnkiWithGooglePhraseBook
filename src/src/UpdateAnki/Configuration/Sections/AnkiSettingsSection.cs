@@ -2,7 +2,7 @@
 
 internal sealed record AnkiSettingsSection
 {
-    public string? RootDeckName { get; init; }
+    public string? DeckName { get; init; }
 
     public string? ModelNamePattern { get; init; }
 

@@ -11,7 +11,7 @@ internal static class PhraseTranslationExtensions
         this PhraseTranslation translation, AnkiSettings ankiSettings) =>
         new()
         {
-            DeckName = ankiSettings.RootDeckName,
+            DeckName = ankiSettings.DeckName,
             ModelName = ModelNamePatternEngine.GenerateModelName(
                 ankiSettings.ModelNamePattern, translation.GetDirection()),
             Fields = new Dictionary<string, object?>
