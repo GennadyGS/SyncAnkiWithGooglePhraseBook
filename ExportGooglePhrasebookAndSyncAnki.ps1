@@ -3,6 +3,7 @@ param (
     [switch] ${what-if}
 )
 
+$ErrorActionPreference = "Stop"
 if (${what-if}) {
     Write-Host "Running in what-if mode. No changes will be applied."
 }
