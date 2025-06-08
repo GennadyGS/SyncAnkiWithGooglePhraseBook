@@ -41,7 +41,7 @@ internal sealed class UpdateAnkiService(
             await LoadAndDumpAnkiPhraseTranslationsAsync(ankiSettings, commandLineOptions);
         var changeSet = PhraseTranslationChangeSetCalculator
             .CalculateChangeSet(relevantSourcePhraseTranslations, targetPhraseTranslations);
-        await UpdatePhraseTranslationsAsync(changeSet, ankiSettings, commandLineOptions);
+        await UpdateAndDumpPhraseTranslationsAsync(changeSet, ankiSettings, commandLineOptions);
     }
 
     private static bool WithinDirections(
@@ -56,17 +56,18 @@ internal sealed class UpdateAnkiService(
     {
         var result =
             await _ankiPhraseTranslationsRepository.LoadPhraseTranslationsAsync(ankiSettings);
-        DumpUtils.DumpObject(result, FileNames.AnkiPhraseTranslations, commandLineOptions);
+        DumpUtils.DumpObject(
+            result, FileNames.AnkiPhraseTranslations, ankiSettings.DeckName, commandLineOptions);
         return result;
     }
 
-    private async Task UpdatePhraseTranslationsAsync(
+    private async Task UpdateAndDumpPhraseTranslationsAsync(
         ChangeSet<PhraseTranslation, KeyValuePair<long, PhraseTranslation>> changeSet,
         AnkiDeckSettings ankiSettings,
         CommandLineOptions commandLineOptions)
     {
         _logger.LogDebug("ChangeSet: {ChangeSet}", JsonConvert.SerializeObject(changeSet));
-        DumpUtils.DumpObject(changeSet, FileNames.ChangeSet, commandLineOptions);
+        DumpUtils.DumpObject(changeSet, FileNames.ChangeSet, ankiSettings.DeckName, commandLineOptions);
         if (!commandLineOptions.WhatIf)
         {
             await _ankiPhraseTranslationsRepository
