@@ -1,13 +1,16 @@
 ﻿using System.Text.RegularExpressions;
 using Blazor.BrowserExtension;
+using Microsoft.JSInterop;
 using WebExtensions.Net.ActionNs;
 using WebExtensions.Net.Tabs;
 
 namespace SyncAnkiWithGooglePhraseBookExtension;
 
-public partial class BackgroundWorker : BackgroundWorkerBase
+public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBase
 {
     private const string GoogleTranslateUrl = "https://translate.google.com/saved";
+
+    private readonly IJSRuntime _jsRuntime = jsRuntime;
 
     [GeneratedRegex(@"^https://docs\.google\.com/spreadsheets/d/([a-zA-Z0-9-_]+)")]
     private static partial Regex GoogleSheetUrlRegex { get; }
@@ -37,6 +40,8 @@ public partial class BackgroundWorker : BackgroundWorkerBase
         if (!match.Success)
         {
             await NavigateToUrlAsync(tab, new Uri(GoogleTranslateUrl));
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            await ClickButtonByClassAsync("VfPpkd-Bz112c-LgbsSe");
             return;
         }
 
@@ -49,5 +54,17 @@ public partial class BackgroundWorker : BackgroundWorkerBase
     {
         var updateProperties = new UpdateProperties { Url = uri.ToString() };
         await WebExtensions.Tabs.Update(tab.Id, updateProperties);
+    }
+
+    private async Task ClickButtonByClassAsync(string cssClass)
+    {
+        var args = $$"""
+            (function() {
+                var btn = document.querySelector('{{cssClass}}');
+                if (btn) btn.click();
+            })();
+         
+        """;
+        await _jsRuntime.InvokeVoidAsync("eval", args);
     }
 }
