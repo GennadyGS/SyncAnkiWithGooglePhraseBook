@@ -7,6 +7,11 @@ namespace SyncAnkiWithGooglePhraseBookExtension;
 
 public partial class BackgroundWorker : BackgroundWorkerBase
 {
+    private const string GoogleTranslateUrl = "https://translate.google.com/saved";
+
+    [GeneratedRegex(@"^https://docs\.google\.com/spreadsheets/d/([a-zA-Z0-9-_]+)")]
+    private static partial Regex GoogleSheetUrlRegex { get; }
+
     [BackgroundWorkerMain]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Reliability",
@@ -28,18 +33,21 @@ public partial class BackgroundWorker : BackgroundWorkerBase
             return;
         }
 
-        var match = GoogleSheetUrlRegex().Match(url);
+        var match = GoogleSheetUrlRegex.Match(url);
         if (!match.Success)
         {
+            await NavigateToUrlAsync(tab, new Uri(GoogleTranslateUrl));
             return;
         }
 
         var sheetId = match.Groups[1].Value;
-        var redirectUrl = $"exportGooglePhraseBookToAnki://open?spreadSheetId={sheetId}";
-        var updateProperties = new UpdateProperties { Url = redirectUrl };
-        await WebExtensions.Tabs.Update(tab.Id, updateProperties);
+        var redirectUrl = new Uri($"exportGooglePhraseBookToAnki://open?spreadSheetId={sheetId}");
+        await NavigateToUrlAsync(tab, redirectUrl);
     }
 
-    [GeneratedRegex(@"^https://docs\.google\.com/spreadsheets/d/([a-zA-Z0-9-_]+)")]
-    private static partial Regex GoogleSheetUrlRegex();
+    private async Task NavigateToUrlAsync(Tab tab, Uri uri)
+    {
+        var updateProperties = new UpdateProperties { Url = uri.ToString() };
+        await WebExtensions.Tabs.Update(tab.Id, updateProperties);
+    }
 }
