@@ -58,13 +58,6 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
 
     private async Task ClickButtonByClassAsync(string cssClass)
     {
-        var args = $$"""
-            (function() {
-                var btn = document.querySelector('{{cssClass}}');
-                if (btn) btn.click();
-            })();
-         
-        """;
-        await _jsRuntime.InvokeVoidAsync("eval", args);
+        await _jsRuntime.InvokeVoidAsync("clickButtonByClass", cssClass);
     }
 }
