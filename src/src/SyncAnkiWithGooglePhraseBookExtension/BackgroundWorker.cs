@@ -41,15 +41,18 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
             return;
         }
 
-        var tabId = tab.Id ?? throw new InvalidOperationException("Tab ID is not available");
+        if (url.Equals("https://docs.google.com/spreadsheets/import/inline?authuser=0"))
+        {
+            await ClickButtonBySelectorAsync(tab, "#confirmActionButton");
+            return;
+        }
+
         var match = GoogleSheetUrlRegex.Match(url);
         if (!match.Success)
         {
             await NavigateToUrlAsync(tab, new Uri(GoogleTranslateUrl));
             await WaitForPageLoadAsync();
             await ClickButtonBySelectorAsync(tab, ExportButtonSelector);
-            await WaitForPageLoadAsync();
-            await ClickButtonBySelectorAsync(tab, "#confirmActionButton");
             return;
         }
 
