@@ -6,9 +6,14 @@ using WebExtensions.Net.Tabs;
 
 namespace SyncAnkiWithGooglePhraseBookExtension;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Major Code Smell",
+    "S1144:Unused private types or members should be removed",
+    Justification = "Pending")]
 public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBase
 {
     private const string GoogleTranslateUrl = "https://translate.google.com/saved";
+    private const string ExportButtonSelector = "button[aria-label=\"Export to Google Sheets\"]";
 
     private readonly IJSRuntime _jsRuntime = jsRuntime;
 
@@ -41,7 +46,8 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         {
             await NavigateToUrlAsync(tab, new Uri(GoogleTranslateUrl));
             await Task.Delay(TimeSpan.FromSeconds(2));
-            await ClickButtonByClassAsync("VfPpkd-Bz112c-LgbsSe");
+            var tabId = tab.Id ?? throw new InvalidOperationException("Tab ID is not available");
+            await ClickButtonBySelectorAsync(ExportButtonSelector, tabId);
             return;
         }
 
@@ -56,8 +62,13 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         await WebExtensions.Tabs.Update(tab.Id, updateProperties);
     }
 
-    private async Task ClickButtonByClassAsync(string cssClass)
+    private async Task ClickButtonBySelectorAsync(string selector, int tabId)
     {
-        await _jsRuntime.InvokeVoidAsync("clickButtonByClass", cssClass);
+        var message = new
+        {
+            command = "clickButton",
+            selector,
+        };
+        await _jsRuntime.InvokeVoidAsync("chrome.tabs.sendMessage", tabId, message);
     }
 }
