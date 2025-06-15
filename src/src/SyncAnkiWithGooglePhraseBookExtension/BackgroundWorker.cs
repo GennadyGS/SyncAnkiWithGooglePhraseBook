@@ -41,13 +41,15 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
             return;
         }
 
+        var tabId = tab.Id ?? throw new InvalidOperationException("Tab ID is not available");
         var match = GoogleSheetUrlRegex.Match(url);
         if (!match.Success)
         {
             await NavigateToUrlAsync(tab, new Uri(GoogleTranslateUrl));
-            await Task.Delay(TimeSpan.FromSeconds(2));
-            var tabId = tab.Id ?? throw new InvalidOperationException("Tab ID is not available");
-            await ClickButtonBySelectorAsync(ExportButtonSelector, tabId);
+            await WaitForPageLoadAsync();
+            await ClickButtonBySelectorAsync(tab, ExportButtonSelector);
+            await WaitForPageLoadAsync();
+            await ClickButtonBySelectorAsync(tab, "#confirmActionButton");
             return;
         }
 
@@ -56,14 +58,20 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         await NavigateToUrlAsync(tab, redirectUrl);
     }
 
+    private static async Task WaitForPageLoadAsync()
+    {
+        await Task.Delay(TimeSpan.FromSeconds(2));
+    }
+
     private async Task NavigateToUrlAsync(Tab tab, Uri uri)
     {
         var updateProperties = new UpdateProperties { Url = uri.ToString() };
         await WebExtensions.Tabs.Update(tab.Id, updateProperties);
     }
 
-    private async Task ClickButtonBySelectorAsync(string selector, int tabId)
+    private async Task ClickButtonBySelectorAsync(Tab tab, string selector)
     {
+        var tabId = tab.Id ?? throw new InvalidOperationException("Tab ID is not available");
         var message = new
         {
             command = "clickButton",
