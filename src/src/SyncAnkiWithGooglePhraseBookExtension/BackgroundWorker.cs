@@ -36,7 +36,7 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
 
     public async Task OnClickAsync(Tab tab, OnClickData data)
     {
-        if (tab is not { Url: { } url })
+        if (tab is not { Url: { } url, Id: { } tabId })
         {
             return;
         }
@@ -50,26 +50,21 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         var match = GoogleSheetUrlRegex.Match(url);
         if (!match.Success)
         {
-            await NavigateToUrlAsync(tab, new Uri(GoogleTranslateUrl));
-            await WaitForPageLoadAsync();
+            await NavigateToUrlAsync(tabId, new Uri(GoogleTranslateUrl));
+            await WaitForTabLoadAsync(tabId);
             await ClickButtonBySelectorAsync(tab, ExportButtonSelector);
             return;
         }
 
         var sheetId = match.Groups[1].Value;
         var redirectUrl = new Uri($"exportGooglePhraseBookToAnki://open?spreadSheetId={sheetId}");
-        await NavigateToUrlAsync(tab, redirectUrl);
+        await NavigateToUrlAsync(tabId, redirectUrl);
     }
 
-    private static async Task WaitForPageLoadAsync()
-    {
-        await Task.Delay(TimeSpan.FromSeconds(2));
-    }
-
-    private async Task NavigateToUrlAsync(Tab tab, Uri uri)
+    private async Task NavigateToUrlAsync(int tabId, Uri uri)
     {
         var updateProperties = new UpdateProperties { Url = uri.ToString() };
-        await WebExtensions.Tabs.Update(tab.Id, updateProperties);
+        await WebExtensions.Tabs.Update(tabId, updateProperties);
     }
 
     private async Task ClickButtonBySelectorAsync(Tab tab, string selector)
@@ -80,6 +75,40 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
             command = "clickButton",
             selector,
         };
+        await SendMessageAsync(tabId, message);
+    }
+
+    private async Task SendMessageAsync(int tabId, object message)
+    {
         await _jsRuntime.InvokeVoidAsync("chrome.tabs.sendMessage", tabId, message);
+    }
+
+    private async Task WaitForTabLoadAsync(int tabId, int timeoutMs = 10_000)
+    {
+        try
+        {
+            var message = new { command = "waitForTabLoad", tabId, timeoutMs };
+            await SendMessageAsync(tabId, message);
+            await LogInfoAsync("Page finished loading.");
+        }
+        catch (JSException e)
+        {
+            if (e.Message.Contains("Timeout waiting for tab"))
+            {
+                await LogErrorAsync($"Tab {tabId} timed out after waiting: {e.Message}");
+            }
+
+            throw;
+        }
+    }
+
+    private async Task LogInfoAsync(string message)
+    {
+        await _jsRuntime.InvokeVoidAsync("extensionLogger.logInfo", message);
+    }
+
+    private async Task LogErrorAsync(string message)
+    {
+        await _jsRuntime.InvokeVoidAsync("extensionLogger.logError", message);
     }
 }
