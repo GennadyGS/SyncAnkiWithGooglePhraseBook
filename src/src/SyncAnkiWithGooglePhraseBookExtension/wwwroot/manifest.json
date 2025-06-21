@@ -19,7 +19,8 @@
       "resources": [
         "framework/*",
         "content/*",
-        "scripts/extensionInterop.js"
+        "scripts/extensionInterop.js",
+        "scripts/backgroundInterop.js"
       ],
       "matches": [ "<all_urls>" ]
     }

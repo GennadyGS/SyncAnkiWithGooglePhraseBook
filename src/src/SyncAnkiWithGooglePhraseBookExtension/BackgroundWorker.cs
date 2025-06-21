@@ -51,7 +51,7 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         if (!match.Success)
         {
             await NavigateToUrlAsync(tabId, new Uri(GoogleTranslateUrl));
-            await WaitForTabLoadAsync(tabId);
+            await _jsRuntime.InvokeVoidAsync("waitForTabToLoad", tabId);
             await ClickButtonBySelectorAsync(tab, ExportButtonSelector);
             return;
         }
