@@ -70,45 +70,41 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
     private async Task ClickButtonBySelectorAsync(Tab tab, string selector)
     {
         var tabId = tab.Id ?? throw new InvalidOperationException("Tab ID is not available");
-        var message = new
-        {
-            command = "clickButton",
-            selector,
-        };
-        await SendMessageAsync(tabId, message);
-    }
-
-    private async Task SendMessageAsync(int tabId, object message)
-    {
-        await _jsRuntime.InvokeVoidAsync("chrome.tabs.sendMessage", tabId, message);
+        await SendMessageAsync(tabId, "clickButton", new { selector });
     }
 
     private async Task WaitForTabLoadAsync(int tabId, int timeoutMs = 10_000)
     {
         try
         {
-            var message = new { command = "waitForTabLoad", tabId, timeoutMs };
-            await SendMessageAsync(tabId, message);
-            await LogInfoAsync("Page finished loading.");
+            await LogInfoAsync(tabId, "Waiting for page load.");
+            var args = new { tabId, timeoutMs };
+            await SendMessageAsync(tabId, "waitForTabLoad", args);
+            await LogInfoAsync(tabId, "Page finished loading.");
         }
         catch (JSException e)
         {
             if (e.Message.Contains("Timeout waiting for tab"))
             {
-                await LogErrorAsync($"Tab {tabId} timed out after waiting: {e.Message}");
+                await LogErrorAsync(tabId, $"Tab {tabId} timed out after waiting: {e.Message}");
             }
 
             throw;
         }
     }
 
-    private async Task LogInfoAsync(string message)
+    private async Task LogInfoAsync(int tabId, string message)
     {
-        await _jsRuntime.InvokeVoidAsync("extensionLogger.logInfo", message);
+        await SendMessageAsync(tabId, "logInfo", new { message });
     }
 
-    private async Task LogErrorAsync(string message)
+    private async Task LogErrorAsync(int tabId, string message)
     {
-        await _jsRuntime.InvokeVoidAsync("extensionLogger.logError", message);
+        await SendMessageAsync(tabId, "logError", new { message });
+    }
+
+    private async Task SendMessageAsync(int tabId, string command, object args)
+    {
+        await _jsRuntime.InvokeVoidAsync("chrome.tabs.sendMessage", tabId, new { command, args });
     }
 }
