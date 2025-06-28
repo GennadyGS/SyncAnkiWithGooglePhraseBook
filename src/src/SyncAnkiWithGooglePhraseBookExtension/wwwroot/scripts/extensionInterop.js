@@ -10,22 +10,6 @@
         }
     }
 
-    if (message.command === "waitForTabLoad") {
-        console.log("document.readyState", document.readyState);
-        if (document.readyState === "complete") {
-            sendResponse();
-        } else {
-            window.addEventListener(
-                "load",
-                () => {
-                    console.log("loaded: ", document.readyState);
-                    sendResponse();
-                },
-                { once: true });
-        }
-    }
-
-
     if (message.command === "logInfo") {
         console.log(message.args.message);
     }
