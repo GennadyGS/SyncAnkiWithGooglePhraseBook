@@ -1,4 +1,4 @@
-window.waitForTabToLoad = function(tabId) {
+window.waitForTabToLoad = function (tabId) {
     return new Promise((resolve) => {
         function listener(updatedTabId, changeInfo) {
             if (updatedTabId === tabId && changeInfo.status === "complete") {
@@ -6,6 +6,12 @@ window.waitForTabToLoad = function(tabId) {
                 resolve();
             }
         }
-        chrome.tabs.onUpdated.addListener(listener);
+        chrome.tabs.get(tabId, function (tab) {
+            if (tab.status === "complete") {
+                resolve();
+            } else {
+                chrome.tabs.onUpdated.addListener(listener);
+            }
+        });
     });
 };
