@@ -8,6 +8,10 @@ namespace SyncAnkiWithGooglePhraseBookExtension;
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage(
     "Major Code Smell",
+    "S1172:Unused method parameters should be removed",
+    Justification = "Pending")]
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Major Code Smell",
     "S1144:Unused private types or members should be removed",
     Justification = "Pending")]
 public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBase
@@ -50,9 +54,11 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         var match = GoogleSheetUrlRegex.Match(url);
         if (!match.Success)
         {
+            await WaitForTabLoadAsync(tabId);
             await NavigateToUrlAsync(tabId, new Uri(GoogleTranslateUrl));
-            await _jsRuntime.InvokeVoidAsync("waitForTabToLoad", tabId);
+            await WaitForTabLoadAsync(tabId);
             await ClickButtonBySelectorAsync(tab, ExportButtonSelector);
+            await WaitForTabLoadAsync(tabId);
             return;
         }
 
@@ -61,16 +67,17 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         await NavigateToUrlAsync(tabId, redirectUrl);
     }
 
-    private async Task NavigateToUrlAsync(int tabId, Uri uri)
+    private async Task NavigateToUrlAsync(int tabId, Uri url)
     {
-        var updateProperties = new UpdateProperties { Url = uri.ToString() };
+        await LogInfoAsync($"NavigateToUrl {url}");
+        var updateProperties = new UpdateProperties { Url = url.ToString() };
         await WebExtensions.Tabs.Update(tabId, updateProperties);
     }
 
     private async Task ClickButtonBySelectorAsync(Tab tab, string selector)
     {
         var tabId = tab.Id ?? throw new InvalidOperationException("Tab ID is not available");
-        await LogInfoAsync(tabId, $"Click button with selector {selector}");
+        await LogInfoAsync($"Click button with selector {selector}");
         await SendMessageAsync(tabId, "clickButton", new { selector });
     }
 
@@ -78,10 +85,9 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
     {
         try
         {
-            await LogInfoAsync(tabId, "Waiting for page load.");
-            var args = new { tabId, timeoutMs };
-            await SendMessageAsync(tabId, "waitForTabLoad", args);
-            await LogInfoAsync(tabId, "Page finished loading.");
+            await LogInfoAsync("Waiting for page load.");
+            await _jsRuntime.InvokeVoidAsync("waitForTabToLoad", tabId);
+            await LogInfoAsync("Page finished loading.");
         }
         catch (JSException e)
         {
@@ -94,18 +100,18 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         }
     }
 
-    private async Task LogInfoAsync(int tabId, string message)
+    private async Task SendMessageAsync(int tabId, string command, object args)
     {
-        await _jsRuntime.InvokeVoidAsync("logInfo", tabId, message);
+        await _jsRuntime.InvokeVoidAsync("chrome.tabs.sendMessage", tabId, new { command, args });
+    }
+
+    private async Task LogInfoAsync(string message)
+    {
+        await _jsRuntime.InvokeVoidAsync("console.log", message);
     }
 
     private async Task LogErrorAsync(int tabId, string message)
     {
-        await _jsRuntime.InvokeVoidAsync("logError", tabId, message);
-    }
-
-    private async Task SendMessageAsync(int tabId, string command, object args)
-    {
-        await _jsRuntime.InvokeVoidAsync("chrome.tabs.sendMessage", tabId, new { command, args });
+        await _jsRuntime.InvokeVoidAsync("console.error", message);
     }
 }
