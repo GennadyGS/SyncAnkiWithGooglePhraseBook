@@ -70,6 +70,7 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
     private async Task ClickButtonBySelectorAsync(Tab tab, string selector)
     {
         var tabId = tab.Id ?? throw new InvalidOperationException("Tab ID is not available");
+        await LogInfoAsync(tabId, $"Click button with selector {selector}");
         await SendMessageAsync(tabId, "clickButton", new { selector });
     }
 
@@ -95,12 +96,12 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
 
     private async Task LogInfoAsync(int tabId, string message)
     {
-        await SendMessageAsync(tabId, "logInfo", new { message });
+        await _jsRuntime.InvokeVoidAsync("logInfo", tabId, message);
     }
 
     private async Task LogErrorAsync(int tabId, string message)
     {
-        await SendMessageAsync(tabId, "logError", new { message });
+        await _jsRuntime.InvokeVoidAsync("logError", tabId, message);
     }
 
     private async Task SendMessageAsync(int tabId, string command, object args)
