@@ -21,6 +21,15 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
 
     private readonly IJSRuntime _jsRuntime = jsRuntime;
 
+    private enum State
+    {
+        Start,
+        OriginalPage,
+        PhraseBook,
+        ExportConfirmation,
+        StyleSheet,
+    }
+
     [GeneratedRegex(@"^https://docs\.google\.com/spreadsheets/d/([a-zA-Z0-9-_]+)")]
     private static partial Regex GoogleSheetUrlRegex { get; }
 
@@ -40,31 +49,62 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
 
     public async Task OnClickAsync(Tab tab, OnClickData data)
     {
-        if (tab is not { Url: { } url, Id: { } tabId })
+        var currentState = new TabState(State.Start, tab);
+        while (true)
         {
-            return;
+            currentState = await WaitForTabLoadAsync(currentState);
+            var updatedState = await PerformContinueFlowActionAsync(currentState);
+            if (updatedState.State > currentState.State)
+            {
+                currentState = updatedState;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    private async Task<TabState> PerformContinueFlowActionAsync(TabState tabState)
+    {
+        if (tabState.Tab is not { Id: { } tabId, Url: { } url })
+        {
+            await LogInfoAsync("Tab ID or URL is not defined");
+            return tabState;
         }
 
-        if (url.Equals("https://docs.google.com/spreadsheets/import/inline?authuser=0"))
+        await LogInfoAsync($"Performing continue flow action; url: {url}");
+        if (tabState.State < State.PhraseBook &&
+            Regex.IsMatch(url, @"^https://translate\.google\.com/saved(\?.*)?$"))
         {
-            await ClickButtonBySelectorAsync(tab, "#confirmActionButton");
-            return;
+            await ClickButtonBySelectorAsync(tabState.Tab, ExportButtonSelector);
+            return new TabState(State.PhraseBook, tabState.Tab);
+        }
+
+        if (tabState.State < State.ExportConfirmation &&
+            url.Equals("https://docs.google.com/spreadsheets/import/inline?authuser=0"))
+        {
+            await ClickButtonBySelectorAsync(tabState.Tab, "#confirmActionButton");
+            return new TabState(State.ExportConfirmation, tabState.Tab);
         }
 
         var match = GoogleSheetUrlRegex.Match(url);
-        if (!match.Success)
+        if (tabState.State < State.StyleSheet && match.Success)
         {
-            await WaitForTabLoadAsync(tabId);
-            await NavigateToUrlAsync(tabId, new Uri(GoogleTranslateUrl));
-            await WaitForTabLoadAsync(tabId);
-            await ClickButtonBySelectorAsync(tab, ExportButtonSelector);
-            await WaitForTabLoadAsync(tabId);
-            return;
+            var sheetId = match.Groups[1].Value;
+            var redirectUrl = new Uri($"exportGooglePhraseBookToAnki://open?spreadSheetId={sheetId}");
+            await NavigateToUrlAsync(tabId, redirectUrl);
+            return new TabState(State.StyleSheet, tabState.Tab);
         }
 
-        var sheetId = match.Groups[1].Value;
-        var redirectUrl = new Uri($"exportGooglePhraseBookToAnki://open?spreadSheetId={sheetId}");
-        await NavigateToUrlAsync(tabId, redirectUrl);
+        if (tabState.State < State.OriginalPage)
+        {
+            await NavigateToUrlAsync(tabId, new Uri(GoogleTranslateUrl));
+            return new TabState(State.OriginalPage, tabState.Tab);
+        }
+
+        await LogInfoAsync("Cannot continue flow from current url");
+        return tabState;
     }
 
     private async Task NavigateToUrlAsync(int tabId, Uri url)
@@ -81,13 +121,21 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         await SendMessageAsync(tabId, "clickButton", new { selector });
     }
 
-    private async Task WaitForTabLoadAsync(int tabId, int timeoutMs = 10_000)
+    private async Task<TabState> WaitForTabLoadAsync(
+        TabState state, int timeoutMs = 10_000)
     {
+        if (state.Tab is not { Id: { } tabId })
+        {
+            return state;
+        }
+
         try
         {
             await LogInfoAsync("Waiting for page load.");
             await _jsRuntime.InvokeVoidAsync("waitForTabToLoad", tabId);
             await LogInfoAsync("Page finished loading.");
+            var updatedTab = await WebExtensions.Tabs.Get(tabId);
+            return new TabState(state.State, updatedTab);
         }
         catch (JSException e)
         {
@@ -114,4 +162,6 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
     {
         await _jsRuntime.InvokeVoidAsync("console.error", message);
     }
+
+    private sealed record TabState(State State, Tab Tab);
 }

@@ -3,7 +3,7 @@
   "name": "SyncAnkiWithGooglePhraseBook",
   "description": "Browser extension for synchronizing Anki with Google Phrasebook",
   "version": "0.1",
-  "permissions": [ "activeTab", "scripting" ],
+  "permissions": [ "tabs", "activeTab", "scripting" ],
   "background": {
     "service_worker": "content/BackgroundWorker.js",
     "type": "module"
