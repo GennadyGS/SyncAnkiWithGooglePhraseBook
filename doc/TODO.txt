@@ -2,9 +2,9 @@
 [+] Multiple configurations (for each language)
 [] Login from extension
 [] Do not close Anki on console close
-[] Automate
-  [] Export
-  [] Navigation to google translate
+[+] Automate
+  [+] Export
+  [+] Navigation to google translate
 [] Improve logging
 [] Hierarchical configuration
 [] Eliminate redundant AnkiConnect requests
