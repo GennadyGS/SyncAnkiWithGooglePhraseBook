@@ -17,6 +17,10 @@ namespace SyncAnkiWithGooglePhraseBookExtension;
 public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBase
 {
     private const string GoogleTranslateUrl = "https://translate.google.com/saved";
+
+    private const string ExportConfirmationUrl =
+        "https://docs.google.com/spreadsheets/import/inline?authuser=0";
+
     private const string ExportButtonSelector = "button[aria-label=\"Export to Google Sheets\"]";
 
     private readonly IJSRuntime _jsRuntime = jsRuntime;
@@ -77,12 +81,11 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         if (tabState.State < State.PhraseBook &&
             Regex.IsMatch(url, @"^https://translate\.google\.com/saved(\?.*)?$"))
         {
-            await ClickButtonBySelectorAsync(tabState.Tab, ExportButtonSelector);
-            return new TabState(State.PhraseBook, tabState.Tab);
+            var newTab = await ClickButtonAndGetNewTabAsync(tabState.Tab, ExportButtonSelector);
+            return new TabState(State.PhraseBook, newTab);
         }
 
-        if (tabState.State < State.ExportConfirmation &&
-            url.Equals("https://docs.google.com/spreadsheets/import/inline?authuser=0"))
+        if (tabState.State < State.ExportConfirmation && url.Equals(ExportConfirmationUrl))
         {
             await ClickButtonBySelectorAsync(tabState.Tab, "#confirmActionButton");
             return new TabState(State.ExportConfirmation, tabState.Tab);
@@ -112,6 +115,24 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         await LogInfoAsync($"NavigateToUrl {url}");
         var updateProperties = new UpdateProperties { Url = url.ToString() };
         await WebExtensions.Tabs.Update(tabId, updateProperties);
+    }
+
+    private async Task<Tab> ClickButtonAndGetNewTabAsync(Tab currentTab, string selector)
+    {
+        var newTabTaskCompletionSource = new TaskCompletionSource<Tab>();
+        WebExtensions.Tabs.OnCreated.AddListener(OnTabCreatedAsync);
+        await ClickButtonBySelectorAsync(currentTab, selector);
+        await LogInfoAsync("Waiting for new tab");
+        var result = await newTabTaskCompletionSource.Task;
+        await LogInfoAsync("Waiting for new tab complete");
+        return result;
+
+        async Task OnTabCreatedAsync(Tab tab)
+        {
+            await LogInfoAsync("New tab is created");
+            newTabTaskCompletionSource.TrySetResult(tab);
+            WebExtensions.Tabs.OnCreated.RemoveListener(OnTabCreatedAsync);
+    }
     }
 
     private async Task ClickButtonBySelectorAsync(Tab tab, string selector)
