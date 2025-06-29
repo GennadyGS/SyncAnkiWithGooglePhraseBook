@@ -8,4 +8,4 @@
 [+] Improve logging
 [] Hierarchical configuration
 [] Eliminate redundant AnkiConnect requests
-[] Delete Spreadsheet after export
+[+] Delete Spreadsheet after export
