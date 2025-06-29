@@ -22,6 +22,7 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         "https://docs.google.com/spreadsheets/import/inline?authuser=0";
 
     private const string ExportButtonSelector = "button[aria-label=\"Export to Google Sheets\"]";
+    private const string ConfirmationButtonSelector = "#confirmActionButton";
 
     private readonly IJSRuntime _jsRuntime = jsRuntime;
 
@@ -69,6 +70,9 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         }
     }
 
+    private static Uri GetExportToolUrl(string sheetId) =>
+        new($"exportGooglePhraseBookToAnki://open?spreadSheetId={sheetId}");
+
     private async Task<TabState> PerformContinueFlowActionAsync(TabState tabState)
     {
         if (tabState.Tab is not { Id: { } tabId, Url: { } url })
@@ -78,8 +82,7 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         }
 
         await LogInfoAsync($"Performing continue flow action; url: {url}");
-        if (tabState.State < State.PhraseBook &&
-            Regex.IsMatch(url, @"^https://translate\.google\.com/saved(\?.*)?$"))
+        if (tabState.State < State.PhraseBook && url.StartsWith(GoogleTranslateUrl))
         {
             var newTab = await ClickButtonAndGetNewTabAsync(tabState.Tab, ExportButtonSelector);
             return new TabState(State.PhraseBook, newTab);
@@ -87,7 +90,7 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
 
         if (tabState.State < State.ExportConfirmation && url.Equals(ExportConfirmationUrl))
         {
-            await ClickButtonBySelectorAsync(tabState.Tab, "#confirmActionButton");
+            await ClickButtonBySelectorAsync(tabState.Tab, ConfirmationButtonSelector);
             return new TabState(State.ExportConfirmation, tabState.Tab);
         }
 
@@ -95,7 +98,7 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         if (tabState.State < State.StyleSheet && match.Success)
         {
             var sheetId = match.Groups[1].Value;
-            var redirectUrl = new Uri($"exportGooglePhraseBookToAnki://open?spreadSheetId={sheetId}");
+            var redirectUrl = GetExportToolUrl(sheetId);
             await NavigateToUrlAsync(tabId, redirectUrl);
             return new TabState(State.StyleSheet, tabState.Tab);
         }
@@ -112,7 +115,7 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
 
     private async Task NavigateToUrlAsync(int tabId, Uri url)
     {
-        await LogInfoAsync($"NavigateToUrl {url}");
+        await LogInfoAsync($"Navigate to URL {url}");
         var updateProperties = new UpdateProperties { Url = url.ToString() };
         await WebExtensions.Tabs.Update(tabId, updateProperties);
     }
