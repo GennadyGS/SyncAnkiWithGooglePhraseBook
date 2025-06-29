@@ -32,11 +32,14 @@ internal sealed class UpdateAnkiService(
             _logger.LogInformation("Running in what-if mode. No changes will be applied.");
         }
 
+        _logger.LogInformation("Updating Anki deck '{DeckName}'", ankiSettings.DeckName);
         var sourcePhraseTranslations = await _jsonPhraseTranslationsReader
             .LoadPhraseTranslationsAsync(commandLineOptions.InputFilePath);
         var relevantSourcePhraseTranslations = sourcePhraseTranslations
             .Where(tr => WithinDirections(tr, ankiSettings.TranslationDirections))
             .ToList();
+        _logger.LogInformation(
+            "Loading phrases from anki for deck {DeckName}", ankiSettings.DeckName);
         var targetPhraseTranslations =
             await LoadAndDumpAnkiPhraseTranslationsAsync(ankiSettings, commandLineOptions);
         var changeSet = PhraseTranslationChangeSetCalculator
@@ -70,6 +73,8 @@ internal sealed class UpdateAnkiService(
         DumpUtils.DumpObject(changeSet, FileNames.ChangeSet, ankiSettings.DeckName, commandLineOptions);
         if (!commandLineOptions.WhatIf)
         {
+            _logger.LogInformation(
+                "Saving updated phrases to anki deck {DeckName}", ankiSettings.DeckName);
             await _ankiPhraseTranslationsRepository
                 .UpdatePhraseTranslationsAsync(changeSet, ankiSettings);
         }
