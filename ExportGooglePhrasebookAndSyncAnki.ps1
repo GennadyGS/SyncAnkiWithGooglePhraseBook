@@ -19,8 +19,8 @@ $exportGooglePhraseBookFromSpreadSheetAppPath =
 $credentialFilePath = "$exportGooglePhraseBookFromSpreadSheetAppPath/credential.json"
 $credential = Get-Content $credentialFilePath -Raw | ConvertFrom-Json
 
-Push-Location "$appPathRoot/ShareGoogleDriveFile"
-dotnet run -- -i $spreadSheetId -u $credential.client_email
+Push-Location "$appPathRoot/GoogleDriveFileControl"
+dotnet run -- -a Share -i $spreadSheetId -u $credential.client_email
 Pop-Location
 
 dotnet run --project $exportGooglePhraseBookFromSpreadSheetAppPath `
@@ -32,3 +32,8 @@ dotnet run --project "$appPathRoot/UpdateAnki" `
     -- `
     -i $phraseBookFileName $(${what-if} ? "--what-if" : "") `
     -l $logPath
+
+Push-Location "$appPathRoot/GoogleDriveFileControl"
+dotnet run -- -a Delete -i $spreadSheetId
+Pop-Location
+

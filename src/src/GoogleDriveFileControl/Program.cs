@@ -3,9 +3,9 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
-using ShareGoogleDriveFile.Models;
+using GoogleDriveFileControl.Models;
 
-namespace ShareGoogleDriveFile;
+namespace GoogleDriveFileControl;
 
 internal static class Program
 {
@@ -28,10 +28,7 @@ internal static class Program
 
     private static async Task<int> RunCommandLineParserAsync(string[] args) =>
         (await Parser.Default.ParseArguments<CommandLineOptions>(args)
-            .WithParsedAsync(async opt =>
-            {
-                await ShareFileAsync(opt.FileId, opt.UserEmail);
-            }))
+            .WithParsedAsync(async opt => await RunAsync(opt)))
         .WithNotParsed(errors =>
         {
             foreach (var error in errors)
@@ -40,6 +37,28 @@ internal static class Program
             }
         })
         .MapResult(_ => 0, _ => 1);
+
+    private static async Task RunAsync(CommandLineOptions opt)
+    {
+        switch (opt.Action)
+        {
+            case FileAction.Share:
+                if (string.IsNullOrEmpty(opt.UserEmail))
+                {
+                    throw new InvalidOperationException("User email is required for sharing.");
+                }
+
+                await ShareFileAsync(opt.FileId, opt.UserEmail);
+                break;
+            case FileAction.Delete:
+                await DeleteFileAsync(opt.FileId);
+                break;
+            default:
+            {
+                throw new InvalidOperationException("Invalid action. Use 'share' or 'delete'.");
+            }
+        }
+    }
 
     private static async Task<Permission> ShareFileAsync(string fileId, string userEmail)
     {
@@ -56,6 +75,20 @@ internal static class Program
         {
             throw new AggregateException(
                 $"Error sharing file (ID: {fileId}) with user {userEmail}", e);
+        }
+    }
+
+    private static async Task DeleteFileAsync(string fileId)
+    {
+        try
+        {
+            var service = await AuthenticateUserAsync();
+            await DeleteFileAsync(service, fileId);
+            Console.WriteLine($"Successfully deleted file (ID: {fileId}).");
+        }
+        catch (Exception e)
+        {
+            throw new AggregateException($"Error deleting file (ID: {fileId})", e);
         }
     }
 
@@ -88,5 +121,18 @@ internal static class Program
         var request = service.Permissions.Create(permission, fileId);
         request.Fields = "id";
         return await request.ExecuteAsync();
+    }
+
+    private static async Task DeleteFileAsync(DriveService service, string fileId)
+    {
+        try
+        {
+            var request = service.Files.Delete(fileId);
+            await request.ExecuteAsync();
+        }
+        catch (Exception e)
+        {
+            throw new AggregateException($"Error deleting file (ID: {fileId})", e);
+        }
     }
 }
