@@ -5,6 +5,7 @@
 [+] Automate
   [+] Export
   [+] Navigation to google translate
-[] Improve logging
+[+] Improve logging
 [] Hierarchical configuration
 [] Eliminate redundant AnkiConnect requests
+[] Delete Spreadsheet after export
