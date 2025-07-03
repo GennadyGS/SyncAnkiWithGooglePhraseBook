@@ -94,7 +94,8 @@ internal static class Program
 
     private static async Task<DriveService> AuthenticateUserAsync()
     {
-        await using var stream = new FileStream(SecretFileName, FileMode.Open, FileAccess.Read);
+        var secretFilePath = GetFullFilePath(SecretFileName);
+        await using var stream = new FileStream(secretFilePath, FileMode.Open, FileAccess.Read);
         var secretsStream = await GoogleClientSecrets.FromStreamAsync(stream);
         var credential = await GoogleWebAuthorizationBroker
             .AuthorizeAsync(secretsStream.Secrets, Scopes, "user", CancellationToken.None);
@@ -134,5 +135,11 @@ internal static class Program
         {
             throw new AggregateException($"Error deleting file (ID: {fileId})", e);
         }
+    }
+
+    private static string GetFullFilePath(string filePath)
+    {
+        var assemblyPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+        return Path.Combine(assemblyPath ?? string.Empty, filePath);
     }
 }

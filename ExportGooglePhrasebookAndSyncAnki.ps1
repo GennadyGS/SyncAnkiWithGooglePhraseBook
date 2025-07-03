@@ -42,9 +42,8 @@ $googleDriveFileControlAppPath = "$appPathRoot/GoogleDriveFileControl"
 $credentialFilePath = "$exportGooglePhraseBookFromSpreadSheetAppPath/credential.json"
 $credential = Get-Content $credentialFilePath -Raw | ConvertFrom-Json
 
-Push-Location $googleDriveFileControlAppPath
-Invoke-ExternalCommand dotnet run "--" "-a" Share "-i" $spreadSheetId "-u" $credential.client_email
-Pop-Location
+Invoke-ExternalCommand dotnet run "--project" $googleDriveFileControlAppPath `
+    "--" "-a" Share "-i" $spreadSheetId "-u" $credential.client_email
 
 Invoke-ExternalCommand dotnet run "--project" $exportGooglePhraseBookFromSpreadSheetAppPath `
     "--" "-i" $spreadSheetId "-o" $phraseBookFileName
@@ -56,6 +55,6 @@ Invoke-ExternalCommand dotnet run "--project" "$appPathRoot/UpdateAnki" `
     "-i" $phraseBookFileName $(${what-if} ? "--what-if" : "") `
     "-l" $logPath
 
-Push-Location $googleDriveFileControlAppPath
-Invoke-ExternalCommand dotnet run "--no-build" "--" "-a" Delete "-i" $spreadSheetId
-Pop-Location
+Invoke-ExternalCommand dotnet run "--project" $googleDriveFileControlAppPath `
+    "--no-build" `
+    "--" "-a" Delete "-i" $spreadSheetId
