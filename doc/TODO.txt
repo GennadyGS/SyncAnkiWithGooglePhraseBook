@@ -1,4 +1,4 @@
-[] Error handling
+[+] Error handling
 [+] Multiple configurations (for each language)
 [+] Login from extension
 [+] Do not close Anki on console close
@@ -6,6 +6,5 @@
   [+] Export
   [+] Navigation to google translate
 [+] Improve logging
-[] Hierarchical configuration
-[] Eliminate redundant AnkiConnect requests
+[+] Hierarchical configuration
 [+] Delete Spreadsheet after export

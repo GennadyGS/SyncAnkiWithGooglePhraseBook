@@ -7,4 +7,6 @@ internal sealed record AnkiDeckSettingsSection
     public string? ModelNamePattern { get; init; }
 
     public IReadOnlyCollection<TranslationDirectionSection?>? TranslationDirections { get; init; }
+
+    public IReadOnlyCollection<AnkiDeckSettingsSection?>? ChildSettings { get; init; }
 }
