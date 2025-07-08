@@ -30,9 +30,9 @@ if (${what-if}) {
     Write-Host "Running in what-if mode. No changes will be applied."
 }
 
-$outputPath = "Output"
+$outputPath = "$PSScriptRoot/Output"
 $logPath = "$PSScriptRoot/logs"
-$phraseBookFileName = "$PSScriptRoot/$outputPath/GooglePhrasebook.json"
+$phraseBookFileName = "$outputPath/GooglePhrasebook.json"
 
 $appPathRoot = "$PSScriptRoot/src/src"
 $exportGooglePhraseBookFromSpreadSheetAppPath =
@@ -41,6 +41,10 @@ $googleDriveFileControlAppPath = "$appPathRoot/GoogleDriveFileControl"
 
 $credentialFilePath = "$exportGooglePhraseBookFromSpreadSheetAppPath/credential.json"
 $credential = Get-Content $credentialFilePath -Raw | ConvertFrom-Json
+
+if (!(Test-Path $outputPath -PathType Container)) {
+  New-Item $outputPath -ItemType Directory | Out-Null
+}
 
 Invoke-ExternalCommand dotnet run "--project" $googleDriveFileControlAppPath `
     "--" "-a" Share "-i" $spreadSheetId "-u" $credential.client_email
