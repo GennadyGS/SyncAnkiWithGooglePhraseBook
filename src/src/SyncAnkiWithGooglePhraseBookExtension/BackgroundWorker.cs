@@ -21,7 +21,7 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
     private const string ExportConfirmationUrl =
         "https://docs.google.com/spreadsheets/import/inline?authuser=0";
 
-    private const string ExportButtonSelector = "button[aria-label=\"Export to Google Sheets\"]";
+    private const string ExportButtonSelector = "button[aria-label=\"Export to Google Sheets (new tab)\"]";
     private const string ConfirmationButtonSelector = "#confirmActionButton";
 
     private readonly IJSRuntime _jsRuntime = jsRuntime;
