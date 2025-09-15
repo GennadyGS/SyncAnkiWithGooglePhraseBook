@@ -32,33 +32,18 @@ if (${what-if}) {
 
 $outputPath = "$PSScriptRoot/Output"
 $logPath = "$PSScriptRoot/logs"
-$phraseBookFileName = "$outputPath/GooglePhrasebook.json"
-
+$phraseBookFilePath = "$outputPath/GooglePhrasebook.json"
 $appPathRoot = "$PSScriptRoot/src/src"
-$exportGooglePhraseBookFromSpreadSheetAppPath =
-    "$appPathRoot/ExportGooglePhraseBookFromSpreadSheet"
-$googleDriveFileControlAppPath = "$appPathRoot/GoogleDriveFileControl"
 
-$credentialFilePath = "$exportGooglePhraseBookFromSpreadSheetAppPath/credential.json"
-$credential = Get-Content $credentialFilePath -Raw | ConvertFrom-Json
-
-if (!(Test-Path $outputPath -PathType Container)) {
-  New-Item $outputPath -ItemType Directory | Out-Null
-}
-
-Invoke-ExternalCommand dotnet run "--project" $googleDriveFileControlAppPath `
-    "--" "-a" Share "-i" $spreadSheetId "-u" $credential.client_email
-
-Invoke-ExternalCommand dotnet run "--project" $exportGooglePhraseBookFromSpreadSheetAppPath `
-    "--" "-i" $spreadSheetId "-o" $phraseBookFileName
+& $PSScriptRoot/ExportGooglePhrasebook.ps1 `
+    -spreadSheetId $spreadSheetId `
+    -outputFilePath $phraseBookFilePath
 
 cmd /c start "" "${Env:LocalAppData}\Programs\Anki\anki.exe"
 
 Invoke-ExternalCommand dotnet run "--project" "$appPathRoot/UpdateAnki" `
     "--" `
-    "-i" $phraseBookFileName $(${what-if} ? "--what-if" : "") `
+    "-i" $phraseBookFilePath $(${what-if} ? "--what-if" : "") `
     "-l" $logPath
 
-Invoke-ExternalCommand dotnet run "--project" $googleDriveFileControlAppPath `
-    "--no-build" `
-    "--" "-a" Delete "-i" $spreadSheetId
+& $PSScriptRoot/DeleteSpreadSheet.ps1 -spreadSheetId $spreadSheetId
