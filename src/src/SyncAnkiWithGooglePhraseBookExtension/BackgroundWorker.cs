@@ -6,14 +6,6 @@ using WebExtensions.Net.Tabs;
 
 namespace SyncAnkiWithGooglePhraseBookExtension;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Major Code Smell",
-    "S1172:Unused method parameters should be removed",
-    Justification = "Pending")]
-[System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Major Code Smell",
-    "S1144:Unused private types or members should be removed",
-    Justification = "Pending")]
 public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBase
 {
     private const string GoogleTranslateUrl = "https://translate.google.com/saved";
@@ -145,8 +137,7 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         await SendMessageAsync(tabId, "clickButton", new { selector });
     }
 
-    private async Task<TabState> WaitForTabLoadAsync(
-        TabState state, int timeoutMs = 10_000)
+    private async Task<TabState> WaitForTabLoadAsync(TabState state)
     {
         if (state.Tab is not { Id: { } tabId })
         {
@@ -165,7 +156,7 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         {
             if (e.Message.Contains("Timeout waiting for tab"))
             {
-                await LogErrorAsync(tabId, $"Tab {tabId} timed out after waiting: {e.Message}");
+                await LogErrorAsync($"Tab {tabId} timed out after waiting: {e.Message}");
             }
 
             throw;
@@ -182,7 +173,7 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         await _jsRuntime.InvokeVoidAsync("console.log", message);
     }
 
-    private async Task LogErrorAsync(int tabId, string message)
+    private async Task LogErrorAsync(string message)
     {
         await _jsRuntime.InvokeVoidAsync("console.error", message);
     }
