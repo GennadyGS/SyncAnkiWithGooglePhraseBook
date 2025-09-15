@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
-namespace SyncAnkiWithGooglePhraseBookExtension;
+namespace ExportGooglePhraseBookExtension;
 
 public static class Program
 {

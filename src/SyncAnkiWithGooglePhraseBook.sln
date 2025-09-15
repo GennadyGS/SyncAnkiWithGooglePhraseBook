@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportGooglePhraseBookFromSpreadSheet", "src\ExportGooglePhraseBookFromSpreadSheet\ExportGooglePhraseBookFromSpreadSheet.csproj", "{23F60082-3E43-45D6-8F7D-CD4E97CB9B69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncAnkiWithGooglePhraseBookExtension", "src\SyncAnkiWithGooglePhraseBookExtension\SyncAnkiWithGooglePhraseBookExtension.csproj", "{91382296-E688-436E-89AB-FF8E39C2B213}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportGooglePhraseBookExtension", "src\ExportGooglePhraseBookExtension\ExportGooglePhraseBookExtension.csproj", "{91382296-E688-436E-89AB-FF8E39C2B213}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleDriveFileControl", "src\GoogleDriveFileControl\GoogleDriveFileControl.csproj", "{8BD87E83-DFA8-4FA3-B4FA-8300A0C2B3DB}"
 EndProject

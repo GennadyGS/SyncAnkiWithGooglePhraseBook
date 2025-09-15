@@ -4,7 +4,7 @@ using Microsoft.JSInterop;
 using WebExtensions.Net.ActionNs;
 using WebExtensions.Net.Tabs;
 
-namespace SyncAnkiWithGooglePhraseBookExtension;
+namespace ExportGooglePhraseBookExtension;
 
 public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBase
 {
@@ -63,7 +63,7 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
     }
 
     private static Uri GetExportToolUrl(string sheetId) =>
-        new($"exportGooglePhraseBookToAnki://open?spreadSheetId={sheetId}");
+        new($"exportGooglePhraseBook://open?spreadSheetId={sheetId}");
 
     private async Task<TabState> PerformContinueFlowActionAsync(TabState tabState)
     {
@@ -127,7 +127,7 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
             await LogInfoAsync("New tab is created");
             newTabTaskCompletionSource.TrySetResult(tab);
             WebExtensions.Tabs.OnCreated.RemoveListener(OnTabCreatedAsync);
-    }
+        }
     }
 
     private async Task ClickButtonBySelectorAsync(Tab tab, string selector)
