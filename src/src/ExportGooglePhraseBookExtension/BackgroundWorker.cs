@@ -13,10 +13,17 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
     private const string ExportConfirmationUrl =
         "https://docs.google.com/spreadsheets/import/inline?authuser=0";
 
-    private const string ExportButtonSelector = "button[aria-label=\"Export to Google Sheets (new tab)\"]";
+    private const string ExportButtonSelector =
+        "button[aria-label=\"Export to Google Sheets (new tab)\"]";
+
     private const string ConfirmationButtonSelector = "#confirmActionButton";
 
+    private const string DefaultExportToolUrlTemplate =
+        "exportGooglePhraseBook://open?spreadSheetId={sheetId}";
+
     private readonly IJSRuntime _jsRuntime = jsRuntime;
+
+    private string? _exportToolUrlTemplate;
 
     private enum State
     {
@@ -46,6 +53,13 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
 
     public async Task OnClickAsync(Tab tab, OnClickData data)
     {
+        if (_exportToolUrlTemplate is null)
+        {
+            _exportToolUrlTemplate =
+                await GetExportToolUrlTemplateAsync() ?? DefaultExportToolUrlTemplate;
+            await LogInfoAsync($"Loaded export tool url template: {_exportToolUrlTemplate}");
+        }
+
         var currentState = new TabState(State.Start, tab);
         while (true)
         {
@@ -62,8 +76,25 @@ public partial class BackgroundWorker(IJSRuntime jsRuntime) : BackgroundWorkerBa
         }
     }
 
-    private static Uri GetExportToolUrl(string sheetId) =>
-        new($"exportGooglePhraseBook://open?spreadSheetId={sheetId}");
+    private Uri GetExportToolUrl(string sheetId)
+    {
+        var template = _exportToolUrlTemplate ?? DefaultExportToolUrlTemplate;
+        var urlString = template.Replace("{sheetId}", sheetId, StringComparison.OrdinalIgnoreCase);
+        return new Uri(urlString);
+    }
+
+    private async Task<string?> GetExportToolUrlTemplateAsync()
+    {
+        try
+        {
+            return await _jsRuntime.InvokeAsync<string?>("getExportToolUrlTemplate");
+        }
+        catch (Exception ex)
+        {
+            await LogErrorAsync($"Failed to read template from storage: {ex.Message}");
+            return null;
+        }
+    }
 
     private async Task<TabState> PerformContinueFlowActionAsync(TabState tabState)
     {

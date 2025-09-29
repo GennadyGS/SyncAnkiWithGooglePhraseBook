@@ -29,3 +29,12 @@ window.waitForTabToLoad = async function (tabId) {
         await waitForComplete(tabId);
     }
 };
+
+const DEFAULT_TEMPLATE = 'exportGooglePhraseBook://open?spreadSheetId={sheetId}';
+window.getExportToolUrlTemplate = async function () {
+    return new Promise((resolve) => {
+        chrome.storage.sync.get({ exportToolUrlTemplate: DEFAULT_TEMPLATE }, (items) => {
+            resolve(items.exportToolUrlTemplate || DEFAULT_TEMPLATE);
+        });
+    });
+};
