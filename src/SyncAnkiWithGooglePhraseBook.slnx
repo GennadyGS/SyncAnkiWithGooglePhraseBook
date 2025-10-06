@@ -1,0 +1,29 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/src/">
+    <Project Path="src/Common/Common.csproj" />
+    <Project Path="src/ExportGooglePhraseBookExtension/ExportGooglePhraseBookExtension.csproj" />
+    <Project Path="src/ExportGooglePhraseBookFromSpreadSheet/ExportGooglePhraseBookFromSpreadSheet.csproj" />
+    <Project Path="src/GoogleDriveFileControl/GoogleDriveFileControl.csproj" />
+    <Project Path="src/Translation.Models/Translation.Models.csproj" />
+  </Folder>
+  <Folder Name="/src/UpdateAnki/">
+    <Project Path="src/AnkiConnect.Client/AnkiConnect.Client.csproj" />
+    <Project Path="src/AssignmentOptimization/AssignmentOptimization.csproj" />
+    <Project Path="src/ChangeSetCalculation/ChangeSetCalculation.csproj" />
+    <Project Path="src/DistanceProviders/DistanceProviders.csproj" />
+    <Project Path="src/Translation.ChangeSetCalculation/Translation.ChangeSetCalculation.csproj" />
+    <Project Path="src/UpdateAnki/UpdateAnki.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AssignmentOptimization.UnitTests/AssignmentOptimization.UnitTests.csproj" />
+    <Project Path="tests/ChangeSetCalculation.UnitTests/ChangeSetCalculation.UnitTests.csproj" />
+    <Project Path="tests/DistanceProviders.UnitTests/DistanceProviders.UnitTests.csproj" />
+    <Project Path="tests/TestUtils/TestUtils.csproj" />
+    <Project Path="tests/Translation.ChangeSetCalculation.UnitTests/Translation.ChangeSetCalculation.UnitTests.csproj" />
+  </Folder>
+</Solution>
