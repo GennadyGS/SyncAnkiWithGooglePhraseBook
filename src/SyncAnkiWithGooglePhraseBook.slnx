@@ -1,17 +1,9 @@
 <Solution>
-  <Configurations>
-    <Platform Name="Any CPU" />
-    <Platform Name="x64" />
-    <Platform Name="x86" />
-  </Configurations>
-  <Folder Name="/src/">
-    <Project Path="src/Common/Common.csproj" />
-    <Project Path="src/ExportGooglePhraseBookExtension/ExportGooglePhraseBookExtension.csproj" />
-    <Project Path="src/ExportGooglePhraseBookFromSpreadSheet/ExportGooglePhraseBookFromSpreadSheet.csproj" />
-    <Project Path="src/GoogleDriveFileControl/GoogleDriveFileControl.csproj" />
-    <Project Path="src/Translation.Models/Translation.Models.csproj" />
+  <Folder Name="/ExportGooglePhraseBook/">
+    <Project Path="../ExportGooglePhraseBook/src/src/Common/Common.csproj" />
+    <Project Path="../ExportGooglePhraseBook/src/src/Translation.Models/Translation.Models.csproj" />
   </Folder>
-  <Folder Name="/src/UpdateAnki/">
+  <Folder Name="/src/">
     <Project Path="src/AnkiConnect.Client/AnkiConnect.Client.csproj" />
     <Project Path="src/AssignmentOptimization/AssignmentOptimization.csproj" />
     <Project Path="src/ChangeSetCalculation/ChangeSetCalculation.csproj" />

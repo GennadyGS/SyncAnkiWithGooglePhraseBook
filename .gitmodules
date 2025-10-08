@@ -1,0 +1,3 @@
+[submodule "ExportGooglePhraseBook"]
+	path = ExportGooglePhraseBook
+	url = https://github.com/GennadyGS/ExportGooglePhraseBook.git
