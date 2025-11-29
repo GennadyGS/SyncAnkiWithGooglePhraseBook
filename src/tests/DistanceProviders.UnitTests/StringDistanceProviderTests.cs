@@ -9,43 +9,43 @@ public sealed class StringDistanceProviderTests
     public static TheoryData<TestCase> GetDefaultTestCases() =>
         TheoryDataBuilder.TheoryData(
         [
-            new TestCase
+            new()
             {
                 Source = string.Empty,
                 Target = string.Empty,
                 ExpectedDistance = 0,
             },
-            new TestCase
+            new()
             {
                 Source = "kitten",
                 Target = "sitting",
                 ExpectedDistance = 3.0 / 7,
             },
-            new TestCase
+            new()
             {
                 Source = "flaw",
                 Target = "lawn",
                 ExpectedDistance = 0.5,
             },
-            new TestCase
+            new()
             {
                 Source = "distance",
                 Target = "instance",
                 ExpectedDistance = 0.25,
             },
-            new TestCase
+            new()
             {
                 Source = "example",
                 Target = "samples",
                 ExpectedDistance = 3.0 / 7,
             },
-            new TestCase
+            new()
             {
                 Source = "test",
                 Target = "test",
                 ExpectedDistance = 0,
             },
-            new TestCase
+            new()
             {
                 Source = string.Empty,
                 Target = "test",
@@ -62,31 +62,31 @@ public sealed class StringDistanceProviderTests
     public static TheoryData<TestCase> GetIgnoreCaseTestCases() =>
         TheoryDataBuilder.TheoryData(
         [
-            new TestCase
+            new()
             {
                 Source = string.Empty,
                 Target = string.Empty,
                 ExpectedDistance = 0,
             },
-            new TestCase
+            new()
             {
                 Source = "Test",
                 Target = "test",
                 ExpectedDistance = 0,
             },
-            new TestCase
+            new()
             {
                 Source = "Example",
                 Target = "example",
                 ExpectedDistance = 0,
             },
-            new TestCase
+            new()
             {
                 Source = "Kitten",
                 Target = "SITTING",
                 ExpectedDistance = 3.0 / 7,
             },
-            new TestCase
+            new()
             {
                 Source = string.Empty,
                 Target = "test",
@@ -107,56 +107,56 @@ public sealed class StringDistanceProviderTests
     public static TheoryData<SoftCaseTestCase> GetSoftCaseTestCases() =>
         TheoryDataBuilder.TheoryData(
         [
-            new SoftCaseTestCase
+            new()
             {
                 CaseWeight = 0.7,
                 Source = "kitten",
                 Target = "sitting",
                 ExpectedDistance = 3.0 / 7,
             },
-            new SoftCaseTestCase
+            new()
             {
                 CaseWeight = 0.4,
                 Source = "CASE",
                 Target = "case",
                 ExpectedDistance = 1.6 / 4,
             },
-            new SoftCaseTestCase
+            new()
             {
                 CaseWeight = 0.3,
                 Source = "MisMatch",
                 Target = "match",
                 ExpectedDistance = 3.3 / 8,
             },
-            new SoftCaseTestCase
+            new()
             {
                 CaseWeight = 0.6,
                 Source = "Edit",
                 Target = "Distance",
                 ExpectedDistance = 6.6 / 8,
             },
-            new SoftCaseTestCase
+            new()
             {
                 CaseWeight = 0.5,
                 Source = "abc",
                 Target = "aBc",
                 ExpectedDistance = 0.5 / 3,
             },
-            new SoftCaseTestCase
+            new()
             {
                 CaseWeight = 0.5,
                 Source = "abc",
                 Target = "abcd",
                 ExpectedDistance = 1.0 / 4,
             },
-            new SoftCaseTestCase
+            new()
             {
                 CaseWeight = 0.5,
                 Source = "abcd",
                 Target = "abc",
                 ExpectedDistance = 1.0 / 4,
             },
-            new SoftCaseTestCase
+            new()
             {
                 CaseWeight = 0.5,
                 Source = "abc",

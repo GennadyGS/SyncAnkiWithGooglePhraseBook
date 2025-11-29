@@ -4,81 +4,80 @@ namespace AnkiConnect.Client.Extensions;
 
 public static class AnkiHttpClientExtensions
 {
-    public static async Task<long[]> FindNotesAsync(this HttpClient httpClient, string query)
+    extension(HttpClient httpClient)
     {
-        var parameters = new FindNotesParams
+        public async Task<long[]> FindNotesAsync(string query)
         {
-            Query = query,
-        };
-
-        return await httpClient.InvokeAnkiCommandAsync<FindNotesParams, long[]>(
-                AnkiCommands.FindNotes, parameters) ??
-            throw new InvalidOperationException("Result cannot be null");
-    }
-
-    public static async Task<NoteInfo[]> GetNotesInfoAsync(
-        this HttpClient httpClient, long[] noteIds)
-    {
-        var parameters = new GetNotesInfoParams
-        {
-            Notes = noteIds,
-        };
-
-        return await httpClient.InvokeAnkiCommandAsync<GetNotesInfoParams, NoteInfo[]>(
-                AnkiCommands.NotesInfo, parameters) ??
-            throw new InvalidOperationException("Result cannot be null");
-    }
-
-    public static async Task UpdateNoteFieldsAsync(
-        this HttpClient httpClient,
-        long noteId,
-        IReadOnlyDictionary<string, object?> fields)
-    {
-        var parameters = new UpdateNoteFieldsParams
-        {
-            Note = new NoteFieldsParams
+            var parameters = new FindNotesParams
             {
-                Id = noteId,
-                Fields = fields,
-            },
-        };
+                Query = query,
+            };
 
-        await httpClient.InvokeAnkiCommandAsync<UpdateNoteFieldsParams, object>(
-            AnkiCommands.UpdateNoteFields, parameters);
-    }
+            return await httpClient.InvokeAnkiCommandAsync<FindNotesParams, long[]>(
+                    AnkiCommands.FindNotes, parameters) ??
+                throw new InvalidOperationException("Result cannot be null");
+        }
 
-    public static async Task<CanAddErrorDetail[]> CanAddNotesWithErrorDetailAsync(
-        this HttpClient httpClient, IReadOnlyCollection<AddNoteParams> addNoteParams)
-    {
-        var parameters = new AddNotesParams
+        public async Task<NoteInfo[]> GetNotesInfoAsync(long[] noteIds)
         {
-            Notes = addNoteParams,
-        };
-        return await httpClient.InvokeAnkiCommandAsync<AddNotesParams, CanAddErrorDetail[]>(
-            AnkiCommands.CanAddNotesWithErrorDetail, parameters) ??
-            throw new InvalidOperationException("Result cannot be null");
-    }
+            var parameters = new GetNotesInfoParams
+            {
+                Notes = noteIds,
+            };
 
-    public static async Task AddNotesAsync(
-        this HttpClient httpClient, IReadOnlyCollection<AddNoteParams> addNoteParams)
-    {
-        var parameters = new AddNotesParams
+            return await httpClient.InvokeAnkiCommandAsync<GetNotesInfoParams, NoteInfo[]>(
+                    AnkiCommands.NotesInfo, parameters) ??
+                throw new InvalidOperationException("Result cannot be null");
+        }
+
+        public async Task UpdateNoteFieldsAsync(
+            long noteId,
+            IReadOnlyDictionary<string, object?> fields)
         {
-            Notes = addNoteParams,
-        };
-        await httpClient.InvokeAnkiCommandAsync<AddNotesParams, object>(
-            AnkiCommands.AddNotes, parameters);
-    }
+            var parameters = new UpdateNoteFieldsParams
+            {
+                Note = new()
+                {
+                    Id = noteId,
+                    Fields = fields,
+                },
+            };
 
-    public static async Task DeleteNotesAsync(
-        this HttpClient httpClient, IReadOnlyCollection<long> noteIds)
-    {
-        var parameters = new DeleteNotesParams
+            await httpClient.InvokeAnkiCommandAsync<UpdateNoteFieldsParams, object>(
+                AnkiCommands.UpdateNoteFields, parameters);
+        }
+
+        public async Task<CanAddErrorDetail[]> CanAddNotesWithErrorDetailAsync(
+            IReadOnlyCollection<AddNoteParams> addNoteParams)
         {
-            Notes = noteIds.ToArray(),
-        };
+            var parameters = new AddNotesParams
+            {
+                Notes = addNoteParams,
+            };
+            return await httpClient.InvokeAnkiCommandAsync<AddNotesParams, CanAddErrorDetail[]>(
+                    AnkiCommands.CanAddNotesWithErrorDetail, parameters) ??
+                throw new InvalidOperationException("Result cannot be null");
+        }
 
-        await httpClient.InvokeAnkiCommandAsync<DeleteNotesParams, object>(
-            AnkiCommands.DeleteNotes, parameters);
+        public async Task AddNotesAsync(IReadOnlyCollection<AddNoteParams> addNoteParams)
+        {
+            var parameters = new AddNotesParams
+            {
+                Notes = addNoteParams,
+            };
+            await httpClient.InvokeAnkiCommandAsync<AddNotesParams, object>(
+                AnkiCommands.AddNotes, parameters);
+        }
+
+        public async Task DeleteNotesAsync(IReadOnlyCollection<long> noteIds)
+        {
+            var parameters = new DeleteNotesParams
+            {
+                Notes = noteIds.ToArray(),
+            };
+
+            await httpClient.InvokeAnkiCommandAsync<DeleteNotesParams, object>(
+                AnkiCommands.DeleteNotes, parameters);
+        }
     }
 }

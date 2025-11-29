@@ -15,19 +15,19 @@ public sealed class PhraseTranslationChangeSetCalculatorTests
     public static TheoryData<TestCase> GetTestCases() =>
         TheoryDataBuilder.TheoryData(
         [
-            new TestCase
+            new()
             {
                 Id = 1,
                 Source =
                 [
                     new()
                     {
-                        Source = new Phrase
+                        Source = new()
                         {
                             Text = "hassle",
                             LanguageCode = "en",
                         },
-                        Target = new Phrase
+                        Target = new()
                         {
                             Text = "хлопоты",
                             LanguageCode = "ru",
@@ -38,31 +38,31 @@ public sealed class PhraseTranslationChangeSetCalculatorTests
                 {
                     [1465978079469] = new()
                     {
-                        Source = new Phrase
+                        Source = new()
                         {
                             Text = "hassle",
                             LanguageCode = "en",
                         },
-                        Target = new Phrase
+                        Target = new()
                         {
                             Text = "стычка",
                             LanguageCode = "ru",
                         },
                     },
                 },
-                ExpectedResult = new ChangeSet<PhraseTranslation, KeyValuePair<long, PhraseTranslation>>
+                ExpectedResult = new()
                 {
                     ToAdd = [],
                     ToUpdate = [
-                        new UpdatePair<PhraseTranslation, KeyValuePair<long, PhraseTranslation>>(
+                        new(
                             new()
                             {
-                                Source = new Phrase
+                                Source = new()
                                 {
                                     Text = "hassle",
                                     LanguageCode = "en",
                                 },
-                                Target = new Phrase
+                                Target = new()
                                 {
                                     Text = "хлопоты",
                                     LanguageCode = "ru",
@@ -72,12 +72,12 @@ public sealed class PhraseTranslationChangeSetCalculatorTests
                                 1465978079469,
                                 new PhraseTranslation
                                 {
-                                    Source = new Phrase
+                                    Source = new()
                                     {
                                         Text = "hassle",
                                         LanguageCode = "en",
                                     },
-                                    Target = new Phrase
+                                    Target = new()
                                     {
                                         Text = "стычка",
                                         LanguageCode = "ru",
@@ -94,12 +94,12 @@ public sealed class PhraseTranslationChangeSetCalculatorTests
                 [
                     new()
                     {
-                        Source = new Phrase
+                        Source = new()
                         {
                             Text = "prudent",
                             LanguageCode = "en",
                         },
-                        Target = new Phrase
+                        Target = new()
                         {
                             Text = "благоразумный",
                             LanguageCode = "ru",
@@ -107,12 +107,12 @@ public sealed class PhraseTranslationChangeSetCalculatorTests
                     },
                     new()
                     {
-                        Source = new Phrase
+                        Source = new()
                         {
                             Text = "prudent",
                             LanguageCode = "en",
                         },
-                        Target = new Phrase
+                        Target = new()
                         {
                             Text = "предусмотрительный",
                             LanguageCode = "ru",
@@ -123,29 +123,29 @@ public sealed class PhraseTranslationChangeSetCalculatorTests
                 {
                     [1556259401981] = new()
                     {
-                        Source = new Phrase
+                        Source = new()
                         {
                             Text = "prudent",
                             LanguageCode = "en",
                         },
-                        Target = new Phrase
+                        Target = new()
                         {
                             Text = "предусмотрительный",
                             LanguageCode = "ru",
                         },
                     },
                 },
-                ExpectedResult = new ChangeSet<PhraseTranslation, KeyValuePair<long, PhraseTranslation>>
+                ExpectedResult = new()
                 {
                     ToAdd = [
                         new()
                         {
-                            Source = new Phrase
+                            Source = new()
                             {
                                 Text = "prudent",
                                 LanguageCode = "en",
                             },
-                            Target = new Phrase
+                            Target = new()
                             {
                                 Text = "благоразумный",
                                 LanguageCode = "ru",

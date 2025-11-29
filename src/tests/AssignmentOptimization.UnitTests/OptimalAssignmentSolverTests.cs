@@ -22,19 +22,19 @@ public sealed class OptimalAssignmentSolverTests
         {
             Matches =
             [
-                new OptimalMatch
+                new()
                 {
                     SourceIndex = 0,
                     TargetIndex = 1,
                     Cost = 2,
                 },
-                new OptimalMatch
+                new()
                 {
                     SourceIndex = 1,
                     TargetIndex = 0,
                     Cost = 6,
                 },
-                new OptimalMatch
+                new()
                 {
                     SourceIndex = 2,
                     TargetIndex = 2,

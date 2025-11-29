@@ -18,7 +18,7 @@ public static class OptimalAssignmentSolver
         var matches = optimizer.Solution
             .Select((ti, si) => CreateMatch(si, ti))
             .ToList();
-        return new OptimalAssignmentSolution
+        return new()
         {
             Matches = matches,
             TotalCost = optimizer.Value,

@@ -14,37 +14,40 @@ internal static class HttpConnectionExtensions
         ContractResolver = new CustomCamelCaseContractResolver(),
     };
 
-    public static async Task<dynamic?> InvokeAnkiCommandAsync(
-        this HttpClient httpClient, string action, dynamic parameters) =>
-        await InvokeAnkiCommandAsync<dynamic, dynamic>(httpClient, action, parameters);
-
-    public static async Task<TResult?> InvokeAnkiCommandAsync<TParams, TResult>(
-        this HttpClient httpClient, string action, TParams parameters)
+    extension(HttpClient httpClient)
     {
-        var ankiResponse =
-            await httpClient.PostAnkiCommandAsync<TParams, TResult>(action, parameters);
-        if (ankiResponse.Error is not null)
+        public async Task<dynamic?> InvokeAnkiCommandAsync(
+            string action, dynamic parameters) =>
+            await InvokeAnkiCommandAsync<dynamic, dynamic>(httpClient, action, parameters);
+
+        public async Task<TResult?> InvokeAnkiCommandAsync<TParams, TResult>(
+            string action, TParams parameters)
         {
-            throw new AnkiException(ankiResponse.Error);
+            var ankiResponse =
+                await httpClient.PostAnkiCommandAsync<TParams, TResult>(action, parameters);
+            if (ankiResponse.Error is not null)
+            {
+                throw new AnkiException(ankiResponse.Error);
+            }
+
+            return ankiResponse.Result;
         }
 
-        return ankiResponse.Result;
-    }
-
-    public static async Task<AnkiResponse<TResult>> PostAnkiCommandAsync<TParams, TResult>(
-        this HttpClient httpClient, string action, TParams parameters)
-    {
-        var ankiRequest = new AnkiRequest<TParams>
+        public async Task<AnkiResponse<TResult>> PostAnkiCommandAsync<TParams, TResult>(
+            string action, TParams parameters)
         {
-            Action = action,
-            Version = AnkiConnectApiVersion,
-            Params = parameters,
-        };
+            var ankiRequest = new AnkiRequest<TParams>
+            {
+                Action = action,
+                Version = AnkiConnectApiVersion,
+                Params = parameters,
+            };
 
-        var content =
-            HttpContentFactory.CreateJsonContentWithFixedLength(ankiRequest, JsonSettings);
-        var responseMessage = await httpClient.PostAsync(new Uri("/", UriKind.Relative), content);
-        responseMessage.EnsureSuccessStatusCode();
-        return await responseMessage.GetAnkiResponseAsync<TResult>(JsonSettings);
+            var content =
+                HttpContentFactory.CreateJsonContentWithFixedLength(ankiRequest, JsonSettings);
+            var responseMessage = await httpClient.PostAsync(new Uri("/", UriKind.Relative), content);
+            responseMessage.EnsureSuccessStatusCode();
+            return await responseMessage.GetAnkiResponseAsync<TResult>(JsonSettings);
+        }
     }
 }

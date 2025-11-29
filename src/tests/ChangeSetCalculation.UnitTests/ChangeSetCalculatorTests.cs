@@ -22,7 +22,7 @@ public sealed class ChangeSetCalculatorTests
                 },
                 MatchComparer = StringComparer.OrdinalIgnoreCase,
                 DeleteUnmatched = true,
-                ExpectedResult = new ChangeSet<string, KeyValuePair<int, string>>
+                ExpectedResult = new()
                 {
                     ToAdd = ["three"],
                     ToUpdate = [UpdatePair.Create("One", KeyValuePair.Create(1, "one"))],
@@ -46,7 +46,7 @@ public sealed class ChangeSetCalculatorTests
                 },
                 MatchComparer = StringComparer.OrdinalIgnoreCase,
                 DeleteUnmatched = true,
-                ExpectedResult = new ChangeSet<string, KeyValuePair<int, string>>
+                ExpectedResult = new()
                 {
                     ToAdd = ["three"],
                     ToUpdate = [],
@@ -71,7 +71,7 @@ public sealed class ChangeSetCalculatorTests
                 MatchComparer = StringComparer.OrdinalIgnoreCase,
                 CaseWeight = 0.5,
                 DeleteUnmatched = true,
-                ExpectedResult = new ChangeSet<string, KeyValuePair<int, string>>
+                ExpectedResult = new()
                 {
                     ToAdd = ["ONE", "OnE", "three"],
                     ToUpdate = [UpdatePair.Create("Two", KeyValuePair.Create(2, "two"))],

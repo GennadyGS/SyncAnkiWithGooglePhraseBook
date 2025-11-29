@@ -15,7 +15,7 @@ internal static class ModelNamePatternEngine
                 $"Model name '{modelName}' does not match the pattern.");
         }
 
-        return new TranslationDirection
+        return new()
         {
             SourceLanguageCode = regexResult.Groups[Variables.SourceLanguage].Value,
             TargetLanguageCode = regexResult.Groups[Variables.TargetLanguage].Value,
@@ -31,7 +31,7 @@ internal static class ModelNamePatternEngine
     private static Regex GetModelNameRegex(string modelNamePattern)
     {
         var modelNameRegex = Regex.Replace(modelNamePattern, "{(\\w+)}", "(?'$1'[a-z]{2})");
-        return new Regex($"^{modelNameRegex}$", RegexOptions.Compiled);
+        return new($"^{modelNameRegex}$", RegexOptions.Compiled);
     }
 
     private static string ReplaceVariable(this string input, string name, string value) =>

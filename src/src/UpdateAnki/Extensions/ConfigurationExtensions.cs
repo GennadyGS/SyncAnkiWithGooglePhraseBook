@@ -9,27 +9,31 @@ namespace UpdateAnki.Extensions;
 
 internal static class ConfigurationExtensions
 {
-    public static AnkiSettings GetAnkiSettings(this IConfiguration configuration) =>
-        configuration.GetSectionSafe<AnkiSettingsSection>(ConfigurationSectionNames.AnkiSettings)
-            .ToAnkiSettings();
-
-    public static AnkiConnectSettings GetAnkiConnectSettings(this IConfiguration configuration)
+    extension(IConfiguration configuration)
     {
-        var section = configuration.GetSectionSafe<AnkiConnectSettingsSection>(
-            ConfigurationSectionNames.AnkiConnectSettings);
-        return new AnkiConnectSettings { Uri = section.Uri.ThrowIfNull(), };
-    }
+        public AnkiSettings GetAnkiSettings() =>
+            configuration.GetSectionSafe<AnkiSettingsSection>(ConfigurationSectionNames.AnkiSettings)
+                .ToAnkiSettings();
 
-    private static T GetSectionSafe<T>(this IConfiguration configuration, string key) =>
-        configuration.GetSection(key).Get<T>(opt => opt.ErrorOnUnknownConfiguration = true) ??
-        throw new InvalidOperationException($"Section {key} is missing in configuration.");
+        public AnkiConnectSettings GetAnkiConnectSettings()
+        {
+            var section = configuration.GetSectionSafe<AnkiConnectSettingsSection>(
+                ConfigurationSectionNames.AnkiConnectSettings);
+            return new() { Uri = section.Uri.ThrowIfNull(), };
+        }
+
+        private T GetSectionSafe<T>(string key) =>
+            configuration.GetSection(key).Get<T>(opt =>
+                opt.ErrorOnUnknownConfiguration = true) ??
+                throw new InvalidOperationException($"Section {key} is missing in configuration.");
+    }
 
     private static AnkiSettings ToAnkiSettings(this AnkiSettingsSection section)
     {
         var ankiDeckSettings = section
             .SelectMany(deckSection => deckSection
                 .ThrowIfNull()
-                .ToAnkiDeckSettingsRecursive(new AnkiDeckSettingsSection()))
+                .ToAnkiDeckSettingsRecursive(new()))
             .ToList();
         return new(ankiDeckSettings);
     }
@@ -67,7 +71,7 @@ internal static class ConfigurationExtensions
                 section.TranslationDirections.ThrowIfNull().ToTranslationDirections(),
         };
 
-    private static string? CombineDeckNames(string? sectionDeckName, string? contextDeckName) =>
+    private static string CombineDeckNames(string? sectionDeckName, string? contextDeckName) =>
         (contextDeckName ?? string.Empty) + (sectionDeckName ?? string.Empty);
 
     private static IReadOnlyCollection<TranslationDirection> ToTranslationDirections(

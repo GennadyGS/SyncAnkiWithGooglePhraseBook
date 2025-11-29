@@ -11,14 +11,14 @@ internal static class NoteInfoExtensions
     {
         var translationDirection =
             ModelNamePatternEngine.ParseModelName(modelNamePattern, noteInfo.ModelName);
-        return new PhraseTranslation
+        return new()
         {
-            Source = new Phrase
+            Source = new()
             {
                 LanguageCode = translationDirection.SourceLanguageCode,
                 Text = noteInfo.Fields[NoteInfoFields.Front]!.value,
             },
-            Target = new Phrase
+            Target = new()
             {
                 LanguageCode = translationDirection.TargetLanguageCode,
                 Text = noteInfo.Fields[NoteInfoFields.Back]!.value,
