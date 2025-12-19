@@ -41,6 +41,8 @@ $appPathRoot = "$PSScriptRoot/src/src"
 
 cmd /c start "" "${Env:LocalAppData}\Programs\Anki\anki.exe"
 
+Start-Sleep -Seconds 5
+
 Invoke-ExternalCommand dotnet run "--project" "$appPathRoot/UpdateAnki" `
     "--" `
     "-i" $phraseBookFilePath $(${what-if} ? "--what-if" : "") `
