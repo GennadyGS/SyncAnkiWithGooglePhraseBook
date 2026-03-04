@@ -3,6 +3,8 @@ param (
     [switch] ${what-if}
 )
 
+$ankiConnectPort = 8765
+
 function Invoke-ExternalCommand {
     param(
         [Parameter(Mandatory=$true, Position=0)]
@@ -39,9 +41,34 @@ $appPathRoot = "$PSScriptRoot/src/src"
     -spreadSheetId $spreadSheetId `
     -outputFilePath $phraseBookFilePath
 
-cmd /c start "" "${Env:LocalAppData}\Programs\Anki\anki.exe"
+# Start Anki with retry logic (up to 3 attempts)
+$maxRetries = 3
+$ankiStarted = $false
 
-Start-Sleep -Seconds 5
+for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
+    Write-Host "Starting Anki (attempt $attempt/$maxRetries)..."
+    cmd /c start "" "${Env:LocalAppData}\Programs\Anki\anki.exe"
+
+    Start-Sleep -Seconds 5
+
+    if (Get-NetTCPConnection -LocalPort $ankiConnectPort -State Listen -ErrorAction SilentlyContinue) {
+        Write-Host "Anki is listening on port $ankiConnectPort" -ForegroundColor Green
+        $ankiStarted = $true
+        break
+    }
+    else {
+        Write-Host `
+            "Anki port $ankiConnectPort not responding (attempt $attempt/$maxRetries); stopping Anki..." `
+            -ForegroundColor Yellow
+        taskkill.exe /im anki.exe /t /f > $null 2>&1
+        Start-Sleep -Seconds 1
+    }
+}
+
+if (-not $ankiStarted) {
+    throw "Failed to start Anki and establish port $ankiConnectPort connection after $maxRetries attempts"
+}
+Write-Host "Anki started successfully and is ready for synchronization." -ForegroundColor Green
 
 Invoke-ExternalCommand dotnet run "--project" "$appPathRoot/UpdateAnki" `
     "--" `
