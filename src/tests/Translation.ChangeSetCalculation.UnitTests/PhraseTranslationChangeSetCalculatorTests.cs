@@ -87,7 +87,7 @@ public sealed class PhraseTranslationChangeSetCalculatorTests
                     ToDelete = [],
                 },
             },
-            new TestCase
+            new()
             {
                 Id = 2,
                 Source =
@@ -200,7 +200,7 @@ public sealed class PhraseTranslationChangeSetCalculatorTests
                             {
                                 Source = new()
                                 {
-                                    Text = "Jaws",
+                                    Text = "jaws",
                                     LanguageCode = "en",
                                 },
                                 Target = new()
@@ -211,11 +211,11 @@ public sealed class PhraseTranslationChangeSetCalculatorTests
                             },
                             KeyValuePair.Create(
                                 1495740174777,
-                                new PhraseTranslation
+                                new PhraseTranslation()
                                 {
                                     Source = new()
                                     {
-                                        Text = "jaws",
+                                        Text = "Jaws",
                                         LanguageCode = "en",
                                     },
                                     Target = new()

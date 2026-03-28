@@ -15,10 +15,19 @@ internal sealed class PhraseTranslationDistanceProvider(
     private readonly IDistanceProvider<string> _stringDistanceProvider =
         new StringDistanceProvider(new SoftCaseCharDistanceProvider(CaseDistance));
 
-    public double GetDistance(PhraseTranslation source, PhraseTranslation target) =>
-        _matchComparer.Equals(source, target)
-            ? _stringDistanceProvider.GetDistance(GetTargetText(source), GetTargetText(target))
-            : Distance.MaxValue;
+    public double GetDistance(PhraseTranslation source, PhraseTranslation target)
+    {
+        if (!_matchComparer.Equals(source, target))
+        {
+            return Distance.MaxValue;
+        }
+
+        return
+            _stringDistanceProvider.GetDistance(GetSourceText(source), GetSourceText(target)) +
+            _stringDistanceProvider.GetDistance(GetTargetText(source), GetTargetText(target));
+    }
+
+    private static string GetSourceText(PhraseTranslation translation) => translation.Source.Text;
 
     private static string GetTargetText(PhraseTranslation translation) => translation.Target.Text;
 }

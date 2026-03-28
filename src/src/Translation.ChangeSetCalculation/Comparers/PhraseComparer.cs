@@ -5,6 +5,9 @@ namespace Translation.ChangeSetCalculation.Comparers;
 
 internal sealed class PhraseComparer : IEqualityComparer<Phrase>
 {
+    private static readonly StringComparer TextComparer = EqualityComparers.TextComparer;
+    private static readonly StringComparer LanguageCodeComparer = EqualityComparers.LanguageCodeComparer;
+
     public bool Equals(Phrase? x, Phrase? y)
     {
         if (ReferenceEquals(x, y))
@@ -27,10 +30,11 @@ internal sealed class PhraseComparer : IEqualityComparer<Phrase>
             return false;
         }
 
-        return EqualityComparers.TextComparer.Equals(x.Text, y.Text) &&
-            EqualityComparers.LanguageCodeComparer.Equals(x.LanguageCode, y.LanguageCode);
+        return TextComparer.Equals(x.Text, y.Text) &&
+            LanguageCodeComparer.Equals(x.LanguageCode, y.LanguageCode);
     }
 
     public int GetHashCode(Phrase obj) =>
-        HashCode.Combine(obj.Text, obj.LanguageCode);
+        HashCode.Combine(
+            TextComparer.GetHashCode(obj.Text), LanguageCodeComparer.GetHashCode(obj.LanguageCode));
 }
