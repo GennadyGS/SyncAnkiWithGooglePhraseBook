@@ -156,6 +156,78 @@ public sealed class PhraseTranslationChangeSetCalculatorTests
                     ToDelete = [],
                 },
             },
+            new TestCase
+            {
+                Id = 3,
+                Source =
+                [
+                    new()
+                    {
+                        Source = new()
+                        {
+                            Text = "jaws",
+                            LanguageCode = "en",
+                        },
+                        Target = new()
+                        {
+                            Text = "пасть",
+                            LanguageCode = "ru",
+                        },
+                    },
+                ],
+                Target = new Dictionary<long, PhraseTranslation>
+                {
+                    [1495740174777] = new()
+                    {
+                        Source = new()
+                        {
+                            Text = "Jaws",
+                            LanguageCode = "en",
+                        },
+                        Target = new()
+                        {
+                            Text = "пасть",
+                            LanguageCode = "ru",
+                        },
+                    },
+                },
+                ExpectedResult = new()
+                {
+                    ToAdd = [],
+                    ToUpdate = [
+                        new(
+                            new()
+                            {
+                                Source = new()
+                                {
+                                    Text = "Jaws",
+                                    LanguageCode = "en",
+                                },
+                                Target = new()
+                                {
+                                    Text = "пасть",
+                                    LanguageCode = "ru",
+                                },
+                            },
+                            KeyValuePair.Create(
+                                1495740174777,
+                                new PhraseTranslation
+                                {
+                                    Source = new()
+                                    {
+                                        Text = "jaws",
+                                        LanguageCode = "en",
+                                    },
+                                    Target = new()
+                                    {
+                                        Text = "пасть",
+                                        LanguageCode = "ru",
+                                    },
+                                })),
+                    ],
+                    ToDelete = [],
+                },
+            },
         ]);
 
     [Theory]
@@ -177,6 +249,7 @@ public sealed class PhraseTranslationChangeSetCalculatorTests
         public required IReadOnlyDictionary<long, PhraseTranslation> Target { get; init; }
 
         public required ChangeSet<PhraseTranslation, KeyValuePair<long, PhraseTranslation>>
-            ExpectedResult { get; init; }
+            ExpectedResult
+        { get; init; }
     }
 }
