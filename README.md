@@ -26,7 +26,7 @@ Install .NET SDK 10.0.404 or a newer .NET 10 SDK. [global.json](./global.json) k
 
 ## Code analysis
 
-[.editorconfig](./.editorconfig) owns analyzer severities for this repository's source and tests without changing the exporter submodule's policy. Builds use the SDK's .NET 10 recommended analysis baseline, Sonar C# analyzers, threading analyzers, and the xUnit analyzers supplied transitively by xUnit. Menees and the separate .NET analyzer package are no longer referenced by this repository.
+[.editorconfig](./.editorconfig) owns analyzer severities for this repository's source and tests. The [exporter submodule](./external/ExportGooglePhraseBook/README.md) owns an independently usable policy aligned with the same analyzer baseline and severities. Builds use the SDK's .NET 10 recommended analysis baseline, Sonar C# analyzers, threading analyzers, and the xUnit analyzers supplied transitively by xUnit. Menees and the separate .NET analyzer package are no longer referenced by either repository.
 
 Sonar line-length (`S103`) and method-length (`S138`) violations remain warnings and fail the build because warnings are treated as errors. Magic-number checks (`S109`), selected performance/style recommendations, and library-only `CA2007` await guidance are suggestions. Disposal and cancellation-token checks are build-blocking warnings. Other migrated Sonar severities are preserved.
 
@@ -37,7 +37,7 @@ Install-Module PSScriptAnalyzer -RequiredVersion 1.24.0 -Scope CurrentUser
 .\scripts\Test-CodeAnalysis.ps1
 ```
 
-[PSScriptAnalyzerSettings.psd1](./PSScriptAnalyzerSettings.psd1) checks warnings and errors while preserving console output, existing switch defaults, and the custom `-what-if` contract. Formatting verification remains deferred until a formatting baseline is established.
+[PSScriptAnalyzerSettings.psd1](./PSScriptAnalyzerSettings.psd1) checks warnings and errors while preserving console output, existing switch defaults, and the custom `-what-if` contract. The exporter has its own [analysis workflow](./external/ExportGooglePhraseBook/.github/workflows/code-analysis.yml) and PowerShell validation entry point. Formatting verification remains deferred until a formatting baseline is established.
 
 ## Script entry points
 
