@@ -33,6 +33,20 @@ With PowerShell 7, Anki, and AnkiConnect configured:
 .\scripts\CustomUrlProtocol\RegisterCustomUrlProtocolForAnki.ps1
 ```
 
-The `-what-if` switch previews Anki changes only; spreadsheet export and deletion still occur.
+Use `-what-if` for a side-effect-free preview of the workflow:
+
+```powershell
+.\scripts\ExportGooglePhrasebookAndSyncAnki.ps1 -spreadSheetId '<spreadsheet-id>' -what-if
+```
+
+Dry-run prints the planned operations and returns without accessing Google or Anki, starting or stopping Anki, running .NET commands, or writing exports, logs, or build output. It does not calculate individual Anki changes. The [URL handler](./scripts/ExportGooglePhrasebookAndSyncAnkiCustomUrlHandler.ps1) also accepts `-what-if` and preserves the `PLATFORM` environment variable in that mode.
+
+The [protocol registration script](./scripts/CustomUrlProtocol/RegisterCustomUrlProtocolForAnki.ps1) accepts `-what-if` to preview registration without writing to the registry. These guarantees apply to this repository's entry points, not direct invocations of the exporter submodule's scripts.
+
+Run the PowerShell regression tests with the installed Pester module:
+
+```powershell
+Invoke-Pester .\tests\PowerShell\DryRun.Tests.ps1
+```
 
 After upgrading from the old layout, rerun protocol registration to replace the stored handler path. Move any existing root-level `Output` and `logs` directories into `artifacts`, and update local shortcuts to the new script paths. Projects previously under `src\src` and `src\tests` are now under `src` and `tests`; rebuild rather than copying old build caches. The submodule has moved from the repository root to `external\ExportGooglePhraseBook` without changing its pinned commit or internal layout.

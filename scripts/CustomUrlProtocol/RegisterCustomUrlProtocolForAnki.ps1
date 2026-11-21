@@ -1,3 +1,12 @@
+param (
+    [switch] ${what-if}
+)
+
+if (${what-if}) {
+    Write-Host "Would register the 'exportGooglePhrasebookToAnki' URL protocol. No registry changes will be applied."
+    return
+}
+
 $repositoryRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 & (Join-Path $repositoryRoot 'external\ExportGooglePhraseBook\scripts\CustomUrlProtocol\RegisterCustomUrlProtocol.ps1') `

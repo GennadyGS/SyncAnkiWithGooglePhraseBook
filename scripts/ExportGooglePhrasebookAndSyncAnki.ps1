@@ -3,6 +3,12 @@ param (
     [switch] ${what-if}
 )
 
+if (${what-if}) {
+    Write-Host "Running in what-if mode. No changes will be applied."
+    Write-Host "Would export spreadsheet '$spreadSheetId', start Anki, synchronize translations, and delete the spreadsheet."
+    return
+}
+
 $ankiConnectPort = 8765
 $maxStartAnkiRetryCount = 3
 
@@ -27,10 +33,6 @@ trap {
     Write-Host "Press enter to exit..."
     Read-Host
     exit 1
-}
-
-if (${what-if}) {
-    Write-Host "Running in what-if mode. No changes will be applied."
 }
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
@@ -84,7 +86,7 @@ Write-Host "Anki started successfully and is ready for synchronization." -Foregr
 
 Invoke-ExternalCommand dotnet run "--project" (Join-Path $appPathRoot 'UpdateAnki') `
     "--" `
-    "-i" $phraseBookFilePath $(${what-if} ? "--what-if" : "") `
+    "-i" $phraseBookFilePath `
     "-l" $logPath
 
 & (Join-Path $repositoryRoot 'external\ExportGooglePhraseBook\scripts\DeleteSpreadSheet.ps1') -spreadSheetId $spreadSheetId

@@ -3,7 +3,9 @@ param (
     [switch] ${what-if}
 )
 
-Remove-Item Env:PLATFORM -ErrorAction SilentlyContinue
+if (!${what-if}) {
+    Remove-Item Env:PLATFORM -ErrorAction SilentlyContinue
+}
 
 Add-Type -AssemblyName System.Web
 
