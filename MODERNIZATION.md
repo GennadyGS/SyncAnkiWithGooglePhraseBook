@@ -10,16 +10,16 @@ The assessment found that a Release build succeeded with no warnings or errors a
 
 ## 1. Improve operational safety
 
-- Decide and document whether dry-run mode means no remote mutations or only an Anki preview. The current [orchestration script](./ExportGooglePhrasebookAndSyncAnki.ps1) still exports and deletes the spreadsheet in dry-run mode.
+- Decide and document whether dry-run mode means no remote mutations or only an Anki preview. The current [orchestration script](./scripts/ExportGooglePhrasebookAndSyncAnki.ps1) still exports and deletes the spreadsheet in dry-run mode.
 - Reuse an already responsive Anki instance, check an actual AnkiConnect response, and use bounded timeouts.
 - Track processes started by the script; do not terminate unrelated or pre-existing Anki instances.
 - Declare the required PowerShell version, validate typed parameters, and use `Join-Path` and `$PSScriptRoot` for script-relative paths.
-- Validate the scheme and required query parameters in the [URL handler](./ExportGooglePhrasebookAndSyncAnkiCustomUrlHandler.ps1).
+- Validate the scheme and required query parameters in the [URL handler](./scripts/ExportGooglePhrasebookAndSyncAnkiCustomUrlHandler.ps1).
 - Separate interactive error prompts from unattended execution.
 
 ## 2. Document setup and usage
 
-Replace the empty [README](./README.md) with instructions for:
+Expand the [README](./README.md) with instructions for:
 
 - Prerequisites and recursive submodule checkout.
 - Credentials, AnkiConnect, configuration, and protocol registration.
@@ -50,22 +50,17 @@ Replace the empty [README](./README.md) with instructions for:
 - Add a Windows GitHub Actions workflow that checks out submodules recursively, installs the pinned SDK, restores in locked mode, builds Release, runs tests, and checks formatting and PowerShell analysis.
 - Publish test results and release artifacts. Pin actions to reviewed commit SHAs and use minimal workflow permissions.
 
-## 6. Simplify the directory structure
+## 6. Directory structure implemented
 
-Consider this layout while retaining existing project boundaries:
+The repository now follows this layout while retaining existing project boundaries and matching the exporter's source and script conventions:
 
 ```text
 repository\
-  .github\
-    workflows\
-    dependabot.yml
-  eng\
-    build.ps1
-    analyzers\
   scripts\
-    Sync-Phrasebook.ps1
-    Invoke-PhrasebookUrl.ps1
-    Register-PhrasebookProtocol.ps1
+    ExportGooglePhrasebookAndSyncAnki.ps1
+    ExportGooglePhrasebookAndSyncAnkiCustomUrlHandler.ps1
+    CustomUrlProtocol\
+      RegisterCustomUrlProtocolForAnki.ps1
   src\
     application and library projects
   tests\
@@ -73,17 +68,14 @@ repository\
   external\
     ExportGooglePhraseBook\
   artifacts\                    # Ignored generated output
-  .editorconfig
-  .gitattributes
-  global.json
   Directory.Build.props
-  Directory.Build.targets
   Directory.Packages.props
   SyncAnkiWithGooglePhraseBook.slnx
   README.md
+  MODERNIZATION.md
 ```
 
-Update solution and project references, script paths, submodule configuration, and analyzer imports together when moving files.
+Solution and project references, script paths, submodule configuration, and the analyzer import use the new locations. Root build settings apply to this repository's source and tests; the submodule retains its own build and package configuration. Analyzer policy is still imported from the submodule pending the separate build-infrastructure work above. See the [README](./README.md) for build commands and migration steps.
 
 ## 7. Improve distribution and maintenance
 
@@ -97,5 +89,5 @@ Update solution and project references, script paths, submodule configuration, a
 1. Operational safety and README.
 2. SDK pinning and repository-owned analyzer policy.
 3. CI and consistent test configuration.
-4. Directory restructuring.
+4. Directory restructuring (implemented).
 5. Published releases and dependency cleanup.

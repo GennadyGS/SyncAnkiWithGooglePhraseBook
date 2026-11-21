@@ -1,0 +1,38 @@
+# Sync Anki with Google Phrasebook
+
+A Windows-oriented .NET application with PowerShell scripts for exporting Google Phrasebook and synchronizing translations with Anki.
+
+## Repository layout
+
+- [SyncAnkiWithGooglePhraseBook.slnx](./SyncAnkiWithGooglePhraseBook.slnx): solution entry point.
+- [src](./src): application and library projects.
+- [tests](./tests): unit tests and shared test utilities.
+- [scripts](./scripts): synchronization, URL handling, and protocol registration scripts.
+- [external/ExportGooglePhraseBook](./external/ExportGooglePhraseBook): exporter Git submodule, with its own solution, build configuration, source projects, scripts, and analyzer policy.
+- [Directory.Build.props](./Directory.Build.props) and [Directory.Packages.props](./Directory.Packages.props): shared build settings and central package versions for this repository. The analyzer import still uses the exporter submodule; the submodule's own build files govern its projects.
+- `artifacts\Output` and `artifacts\logs`: ignored phrasebook exports and runtime logs. Build output remains in each project's ignored `bin` and `obj` directories.
+
+## Checkout and build
+
+Initialize the submodule after cloning or updating the repository:
+
+```powershell
+git submodule update --init --recursive
+dotnet build .\SyncAnkiWithGooglePhraseBook.slnx --configuration Release
+dotnet test .\SyncAnkiWithGooglePhraseBook.slnx --configuration Release --no-build
+```
+
+Install a .NET SDK supporting the target framework declared in [Directory.Build.props](./Directory.Build.props). See the [exporter setup instructions](./external/ExportGooglePhraseBook/README.md) for credentials and exporter prerequisites.
+
+## Script entry points
+
+With PowerShell 7, Anki, and AnkiConnect configured:
+
+```powershell
+.\scripts\ExportGooglePhrasebookAndSyncAnki.ps1 -spreadSheetId '<spreadsheet-id>'
+.\scripts\CustomUrlProtocol\RegisterCustomUrlProtocolForAnki.ps1
+```
+
+The `-what-if` switch previews Anki changes only; spreadsheet export and deletion still occur.
+
+After upgrading from the old layout, rerun protocol registration to replace the stored handler path. Move any existing root-level `Output` and `logs` directories into `artifacts`, and update local shortcuts to the new script paths. Projects previously under `src\src` and `src\tests` are now under `src` and `tests`; rebuild rather than copying old build caches. The submodule has moved from the repository root to `external\ExportGooglePhraseBook` without changing its pinned commit or internal layout.

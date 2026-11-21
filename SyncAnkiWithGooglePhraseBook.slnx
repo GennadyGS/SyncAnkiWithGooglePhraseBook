@@ -1,7 +1,7 @@
 <Solution>
-  <Folder Name="/ExportGooglePhraseBook/">
-    <Project Path="../ExportGooglePhraseBook/src/Common/Common.csproj" />
-    <Project Path="../ExportGooglePhraseBook/src/Translation.Models/Translation.Models.csproj" />
+  <Folder Name="/external/ExportGooglePhraseBook/">
+    <Project Path="external/ExportGooglePhraseBook/src/Common/Common.csproj" />
+    <Project Path="external/ExportGooglePhraseBook/src/Translation.Models/Translation.Models.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/AnkiConnect.Client/AnkiConnect.Client.csproj" />

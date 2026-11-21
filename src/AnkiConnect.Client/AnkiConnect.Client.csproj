@@ -3,6 +3,6 @@
     <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ExportGooglePhraseBook\src\Common\Common.csproj" />
+    <ProjectReference Include="..\..\external\ExportGooglePhraseBook\src\Common\Common.csproj" />
   </ItemGroup>
 </Project>

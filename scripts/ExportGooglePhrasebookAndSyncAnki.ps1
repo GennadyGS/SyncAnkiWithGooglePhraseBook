@@ -33,12 +33,13 @@ if (${what-if}) {
     Write-Host "Running in what-if mode. No changes will be applied."
 }
 
-$outputPath = "$PSScriptRoot/Output"
-$logPath = "$PSScriptRoot/logs"
-$phraseBookFilePath = "$outputPath/GooglePhrasebook.json"
-$appPathRoot = "$PSScriptRoot/src/src"
+$repositoryRoot = Split-Path -Parent $PSScriptRoot
+$outputPath = Join-Path $repositoryRoot 'artifacts\Output'
+$logPath = Join-Path $repositoryRoot 'artifacts\logs'
+$phraseBookFilePath = Join-Path $outputPath 'GooglePhrasebook.json'
+$appPathRoot = Join-Path $repositoryRoot 'src'
 
-& (Join-Path $PSScriptRoot 'ExportGooglePhraseBook\scripts\ExportGooglePhrasebook.ps1') `
+& (Join-Path $repositoryRoot 'external\ExportGooglePhraseBook\scripts\ExportGooglePhrasebook.ps1') `
     -spreadSheetId $spreadSheetId `
     -outputFilePath $phraseBookFilePath
 
@@ -81,9 +82,9 @@ RetryBlock `
 
 Write-Host "Anki started successfully and is ready for synchronization." -ForegroundColor Green
 
-Invoke-ExternalCommand dotnet run "--project" "$appPathRoot/UpdateAnki" `
+Invoke-ExternalCommand dotnet run "--project" (Join-Path $appPathRoot 'UpdateAnki') `
     "--" `
     "-i" $phraseBookFilePath $(${what-if} ? "--what-if" : "") `
     "-l" $logPath
 
-& (Join-Path $PSScriptRoot 'ExportGooglePhraseBook\scripts\DeleteSpreadSheet.ps1') -spreadSheetId $spreadSheetId
+& (Join-Path $repositoryRoot 'external\ExportGooglePhraseBook\scripts\DeleteSpreadSheet.ps1') -spreadSheetId $spreadSheetId
