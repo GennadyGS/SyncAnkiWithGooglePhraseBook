@@ -14,5 +14,5 @@
     <NoWarn Condition="'$(Configuration)'!='Release'">$(NoWarn);NU5104</NoWarn>
   </PropertyGroup>
 
-  <Import Project="$(MSBuildThisFileDirectory)../ExportGooglePhraseBook/src/codeAnalysis/CodeAnalysis.targets"/>
+  <Import Project="$(MSBuildThisFileDirectory)..\ExportGooglePhraseBook\eng\analyzers\CodeAnalysis.targets"/>
 </Project>

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ExportGooglePhraseBook\src\src\Translation.Models\Translation.Models.csproj" />
+    <ProjectReference Include="..\..\..\ExportGooglePhraseBook\src\Translation.Models\Translation.Models.csproj" />
     <ProjectReference Include="..\ChangeSetCalculation\ChangeSetCalculation.csproj" />
   </ItemGroup>
 </Project>

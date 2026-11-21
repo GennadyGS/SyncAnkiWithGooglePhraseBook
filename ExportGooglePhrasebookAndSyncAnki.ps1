@@ -38,7 +38,7 @@ $logPath = "$PSScriptRoot/logs"
 $phraseBookFilePath = "$outputPath/GooglePhrasebook.json"
 $appPathRoot = "$PSScriptRoot/src/src"
 
-& $PSScriptRoot/ExportGooglePhraseBook/ExportGooglePhrasebook.ps1 `
+& (Join-Path $PSScriptRoot 'ExportGooglePhraseBook\scripts\ExportGooglePhrasebook.ps1') `
     -spreadSheetId $spreadSheetId `
     -outputFilePath $phraseBookFilePath
 
@@ -86,4 +86,4 @@ Invoke-ExternalCommand dotnet run "--project" "$appPathRoot/UpdateAnki" `
     "-i" $phraseBookFilePath $(${what-if} ? "--what-if" : "") `
     "-l" $logPath
 
-& $PSScriptRoot/ExportGooglePhraseBook/DeleteSpreadSheet.ps1 -spreadSheetId $spreadSheetId
+& (Join-Path $PSScriptRoot 'ExportGooglePhraseBook\scripts\DeleteSpreadSheet.ps1') -spreadSheetId $spreadSheetId
