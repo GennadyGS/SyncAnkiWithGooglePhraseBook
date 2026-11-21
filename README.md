@@ -41,6 +41,8 @@ Use `-what-if` for a side-effect-free preview of the workflow:
 
 For valid input, dry-run prints the planned operations and returns without accessing Google or Anki, starting or stopping Anki, running .NET commands, or writing exports, logs, or build output. It does not calculate individual Anki changes. The [URL handler](./scripts/ExportGooglePhrasebookAndSyncAnkiCustomUrlHandler.ps1) also accepts `-what-if` and preserves the `PLATFORM` environment variable in that mode.
 
+The synchronization script reuses a responsive AnkiConnect instance; otherwise it starts Anki once and waits up to 30 seconds for an AnkiConnect version response. Each probe times out after 2 seconds, so the final probe can extend the wait slightly. It does not stop Anki on failure. Check that AnkiConnect is installed and responding on `127.0.0.1:8765` if startup fails.
+
 The URL handler requires an absolute `exportGooglePhrasebookToAnki` URL with exactly one non-empty `spreadSheetId` query parameter, for example `exportGooglePhrasebookToAnki://open?spreadSheetId=<spreadsheet-id>`. Invalid URLs are rejected before the environment is changed.
 
 Workflow and input-validation errors are written to the console and appended to `artifacts\logs\ScriptErrors.log`, including error location and stack trace. The synchronization script and URL handler pause on errors by default when console input is available, including when launched through the registered protocol, then exit with code 1. Pass `-interactive:$false` for unattended execution; redirected console input also disables the pause. If the log cannot be written, that failure is reported in the console before pausing.
@@ -50,7 +52,7 @@ The [protocol registration script](./scripts/CustomUrlProtocol/RegisterCustomUrl
 Run the PowerShell regression tests with the installed Pester module:
 
 ```powershell
-Invoke-Pester .\tests\PowerShell\ScriptSafety.Tests.ps1
+Invoke-Pester .\tests\PowerShell
 ```
 
 After upgrading from the old layout, rerun protocol registration to replace the stored handler path. Move any existing root-level `Output` and `logs` directories into `artifacts`, and update local shortcuts to the new script paths. Projects previously under `src\src` and `src\tests` are now under `src` and `tests`; rebuild rather than copying old build caches. The submodule has moved from the repository root to `external\ExportGooglePhraseBook` without changing its pinned commit or internal layout.

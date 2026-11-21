@@ -11,6 +11,7 @@ param (
 
 $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot 'Common.ps1')
+. (Join-Path $PSScriptRoot 'AnkiStartup.ps1')
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 $logPath = Join-Path $repositoryRoot 'artifacts\logs'
 trap {
@@ -27,9 +28,6 @@ if (${what-if}) {
     Write-Host "Would export spreadsheet '$spreadSheetId', start Anki, synchronize translations, and delete the spreadsheet."
     return
 }
-
-$ankiConnectPort = 8765
-$maxStartAnkiRetryCount = 3
 
 function Invoke-ExternalCommand {
     param(
@@ -54,44 +52,7 @@ $appPathRoot = Join-Path $repositoryRoot 'src'
     -spreadSheetId $spreadSheetId `
     -outputFilePath $phraseBookFilePath
 
-function RetryBlock {
-    param(
-        [Parameter(Mandatory)] [ScriptBlock] $ScriptBlock,
-        [int] $RetryCount = 0,
-        [int] $DelaySeconds = 3
-    )
-    $attemptCount = [Math]::Max($RetryCount + 1, 1)
-    for ($i = 1; $i -le $attemptCount; $i++) {
-        try {
-            & $ScriptBlock
-            return
-        } catch {
-            if ($i -ge $attemptCount) {
-                throw $_
-            } else {
-                Write-Warning (
-                    "Attempt $i failed: $($_.Exception.Message). " +
-                    "Retrying in $DelaySeconds second(s)...")
-                Start-Sleep -Seconds $DelaySeconds
-            }
-        }
-    }
-}
-
-RetryBlock `
-    -ScriptBlock {
-        Write-Host "Starting Anki..."
-        cmd /c start "" "${Env:LocalAppData}\Programs\Anki\anki.exe"
-        Start-Sleep -Seconds 5
-        if (!(Get-NetTCPConnection -LocalPort $ankiConnectPort -State Listen -ErrorAction SilentlyContinue)) {
-            Write-Host "Anki port $ankiConnectPort not responding; stopping Anki..."
-            taskkill.exe /im anki.exe /t /f > $null 2>&1
-            throw "Anki port $ankiConnectPort not responding"
-        }
-    } `
-    -RetryCount $maxStartAnkiRetryCount
-
-Write-Host "Anki started successfully and is ready for synchronization." -ForegroundColor Green
+Start-AnkiWhenNeeded -AnkiPath (Join-Path $Env:LocalAppData 'Programs\Anki\anki.exe')
 
 Invoke-ExternalCommand dotnet run "--project" (Join-Path $appPathRoot 'UpdateAnki') `
     "--" `

@@ -11,7 +11,7 @@ The assessment found that a Release build succeeded with no warnings or errors a
 ## 1. Improve operational safety
 
 - Dry-run safety implemented: the [orchestration script](./scripts/ExportGooglePhrasebookAndSyncAnki.ps1) prints the planned workflow without remote access, file writes, or process operations. The URL handler preserves the environment in dry-run mode.
-- Reuse an already responsive Anki instance, check an actual AnkiConnect response, and use bounded timeouts.
+- Reuse an already responsive Anki instance, check an actual AnkiConnect response, and use bounded timeouts (implemented).
 - Track processes started by the script; do not terminate unrelated or pre-existing Anki instances.
 - Declare the required PowerShell version, validate typed parameters, and use `Join-Path` and `$PSScriptRoot` for script-relative paths.
 - Validate the scheme and required query parameters in the [URL handler](./scripts/ExportGooglePhrasebookAndSyncAnkiCustomUrlHandler.ps1).
