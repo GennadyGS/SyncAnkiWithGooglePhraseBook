@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <PackageReference Include="Accord.Math" Version="3.8.0" />
+    <PackageReference Include="Accord.Math" />
   </ItemGroup>
 </Project>
