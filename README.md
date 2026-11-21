@@ -22,7 +22,7 @@ dotnet build .\SyncAnkiWithGooglePhraseBook.slnx --configuration Release
 dotnet test .\SyncAnkiWithGooglePhraseBook.slnx --configuration Release --no-build
 ```
 
-Install a .NET SDK supporting the target framework declared in [Directory.Build.props](./Directory.Build.props). See the [exporter setup instructions](./external/ExportGooglePhraseBook/README.md) for credentials and exporter prerequisites.
+Install .NET SDK 10.0.404 or a newer .NET 10 SDK. [global.json](./global.json) keeps builds on .NET 10 even when .NET 11 is installed. See the [exporter setup instructions](./external/ExportGooglePhraseBook/README.md) for credentials and exporter prerequisites.
 
 ## Script entry points
 
