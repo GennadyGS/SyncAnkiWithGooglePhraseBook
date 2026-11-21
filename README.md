@@ -26,7 +26,7 @@ Install .NET SDK 10.0.404 or a newer .NET 10 SDK. [global.json](./global.json) k
 
 ## Script entry points
 
-With PowerShell 7, Anki, and AnkiConnect configured:
+With PowerShell 7.0 or later, Anki, and AnkiConnect configured:
 
 ```powershell
 .\scripts\ExportGooglePhrasebookAndSyncAnki.ps1 -spreadSheetId '<spreadsheet-id>'
@@ -41,12 +41,16 @@ Use `-what-if` for a side-effect-free preview of the workflow:
 
 Dry-run prints the planned operations and returns without accessing Google or Anki, starting or stopping Anki, running .NET commands, or writing exports, logs, or build output. It does not calculate individual Anki changes. The [URL handler](./scripts/ExportGooglePhrasebookAndSyncAnkiCustomUrlHandler.ps1) also accepts `-what-if` and preserves the `PLATFORM` environment variable in that mode.
 
+The URL handler requires an absolute `exportGooglePhrasebookToAnki` URL with exactly one non-empty `spreadSheetId` query parameter, for example `exportGooglePhrasebookToAnki://open?spreadSheetId=<spreadsheet-id>`. Invalid URLs are rejected before the environment is changed.
+
+Errors are reported without waiting for input by default, including when launched through the registered protocol. Pass `-interactive` to the synchronization script or URL handler to pause after a workflow error when console input is available. Unattended jobs should omit this switch.
+
 The [protocol registration script](./scripts/CustomUrlProtocol/RegisterCustomUrlProtocolForAnki.ps1) accepts `-what-if` to preview registration without writing to the registry. These guarantees apply to this repository's entry points, not direct invocations of the exporter submodule's scripts.
 
 Run the PowerShell regression tests with the installed Pester module:
 
 ```powershell
-Invoke-Pester .\tests\PowerShell\DryRun.Tests.ps1
+Invoke-Pester .\tests\PowerShell\ScriptSafety.Tests.ps1
 ```
 
 After upgrading from the old layout, rerun protocol registration to replace the stored handler path. Move any existing root-level `Output` and `logs` directories into `artifacts`, and update local shortcuts to the new script paths. Projects previously under `src\src` and `src\tests` are now under `src` and `tests`; rebuild rather than copying old build caches. The submodule has moved from the repository root to `external\ExportGooglePhraseBook` without changing its pinned commit or internal layout.

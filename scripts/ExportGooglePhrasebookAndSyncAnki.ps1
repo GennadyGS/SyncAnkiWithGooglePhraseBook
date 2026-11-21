@@ -1,6 +1,11 @@
+#Requires -Version 7.0
+
 param (
-    [Parameter(Mandatory=$true)] $spreadSheetId,
-    [switch] ${what-if}
+    [Parameter(Mandatory=$true)]
+    [ValidateScript({ -not [string]::IsNullOrWhiteSpace($_) })]
+    [string] $spreadSheetId,
+    [switch] ${what-if},
+    [switch] $interactive
 )
 
 if (${what-if}) {
@@ -29,9 +34,11 @@ function Invoke-ExternalCommand {
 
 $ErrorActionPreference = "Stop"
 trap {
-    Write-Host "ERROR: $($_.Exception.Message)" -ForegroundColor Red
-    Write-Host "Press enter to exit..."
-    Read-Host
+    [Console]::Error.WriteLine("ERROR: $($_.Exception.Message)")
+    if ($interactive -and [Environment]::UserInteractive -and -not [Console]::IsInputRedirected) {
+        Write-Host "Press enter to exit..."
+        Read-Host
+    }
     exit 1
 }
 
