@@ -16,7 +16,7 @@ internal static class Program
     public static async Task<int> Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
-            .WriteTo.Console()
+            .WriteTo.Console(formatProvider: System.Globalization.CultureInfo.CurrentCulture)
             .CreateLogger();
         try
         {

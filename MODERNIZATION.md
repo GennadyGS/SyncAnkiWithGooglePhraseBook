@@ -29,25 +29,25 @@ Expand the [README](./README.md) with instructions for:
 ## 3. Stabilize build infrastructure
 
 - Pin the .NET SDK and roll-forward policy in `global.json`.
-- Make analyzer policy owned by this repository rather than importing it from the exporter submodule.
+- Repository-owned analyzer policy implemented; the exporter submodule retains its separate policy.
 - Preserve central package management and consider NuGet lock files with locked restore in CI.
 - Set `ContinuousIntegrationBuild` in CI and provide a shared local build and test entry point.
 - Account for the submodule's own build and package configuration; root configuration does not automatically override it.
 
 ## 4. Modernize analyzer and formatting policy
 
-- Migrate the legacy ruleset to `.editorconfig`, preserving existing severities first.
-- Explicitly set the analysis level and review whether the separate .NET analyzer package is needed for deliberate version pinning.
+- Migrated this repository's Sonar severities to [.editorconfig](./.editorconfig); line and method length remain build blockers, while magic numbers are suggestions.
+- Selected the SDK's .NET 10 recommended analysis baseline and removed this repository's separate .NET analyzer package and overlapping Menees suite.
 - Add `dotnet format --verify-no-changes` after establishing a formatting baseline.
-- Add PSScriptAnalyzer for scripts and xUnit analyzers for tests.
-- Remove stale analyzer configuration only after confirming it is unused; avoid adding overlapping general-purpose analyzer suites.
+- Added [PSScriptAnalyzer validation](./scripts/Test-CodeAnalysis.ps1) locally and in CI; xUnit analyzers are already supplied transitively by xUnit.
+- Removed the root import of stale StyleCop/Menees configuration; retained the submodule's configuration and avoided additional general-purpose suites.
 
 ## 5. Align tests and CI
 
 - Retain the currently working xUnit v2 and VSTest setup initially and remove misleading Microsoft Testing Platform properties. Treat migration to xUnit v3 and Microsoft Testing Platform as a separate change.
 - Add AnkiConnect contract tests with a fake HTTP handler and CLI validation and exit-code tests.
 - Add Pester tests for orchestration with Google, Anki, and process operations mocked, including dry-run and failure paths.
-- Add a Windows GitHub Actions workflow that checks out submodules recursively, installs the pinned SDK, restores in locked mode, builds Release, runs tests, and checks formatting and PowerShell analysis.
+- Added a [Windows GitHub Actions workflow](./.github/workflows/code-analysis.yml) with recursive submodule checkout, the pinned SDK, Release build, tests, and PowerShell analysis. Locked restore and formatting verification remain deferred.
 - Publish test results and release artifacts. Pin actions to reviewed commit SHAs and use minimal workflow permissions.
 
 ## 6. Directory structure implemented
@@ -75,7 +75,7 @@ repository\
   MODERNIZATION.md
 ```
 
-Solution and project references, script paths, submodule configuration, and the analyzer import use the new locations. Root build settings apply to this repository's source and tests; the submodule retains its own build and package configuration. Analyzer policy is still imported from the submodule pending the separate build-infrastructure work above. See the [README](./README.md) for build commands and migration steps.
+Solution and project references, script paths, and submodule configuration use the new locations. Root build settings and analyzer policy apply to this repository's source and tests; the submodule retains its own build, package, and analyzer configuration. See the [README](./README.md) for build commands, analysis checks, and migration steps.
 
 ## 7. Improve distribution and maintenance
 

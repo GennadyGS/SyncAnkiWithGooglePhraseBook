@@ -43,9 +43,9 @@ internal static class HttpConnectionExtensions
                 Params = parameters,
             };
 
-            var content =
+            using var content =
                 HttpContentFactory.CreateJsonContentWithFixedLength(ankiRequest, JsonSettings);
-            var responseMessage = await httpClient.PostAsync(new Uri("/", UriKind.Relative), content);
+            using var responseMessage = await httpClient.PostAsync(new Uri("/", UriKind.Relative), content);
             responseMessage.EnsureSuccessStatusCode();
             return await responseMessage.GetAnkiResponseAsync<TResult>(JsonSettings);
         }

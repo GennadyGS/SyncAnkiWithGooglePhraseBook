@@ -1,5 +1,7 @@
 #Requires -Version 7.0
 
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+    'PSReviewUnusedParameter', 'interactive', Justification = 'Used by the script-level error trap.')]
 param (
     [Parameter(Mandatory=$true)]
     [AllowEmptyString()]

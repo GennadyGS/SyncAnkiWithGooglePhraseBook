@@ -9,7 +9,7 @@ A Windows-oriented .NET application with PowerShell scripts for exporting Google
 - [tests](./tests): unit tests and shared test utilities.
 - [scripts](./scripts): synchronization, URL handling, and protocol registration scripts.
 - [external/ExportGooglePhraseBook](./external/ExportGooglePhraseBook): exporter Git submodule, with its own solution, build configuration, source projects, scripts, and analyzer policy.
-- [Directory.Build.props](./Directory.Build.props) and [Directory.Packages.props](./Directory.Packages.props): shared build settings and central package versions for this repository. The analyzer import still uses the exporter submodule; the submodule's own build files govern its projects.
+- [Directory.Build.props](./Directory.Build.props) and [Directory.Packages.props](./Directory.Packages.props): shared build settings and central package versions for this repository. The submodule's own build files govern its projects.
 - `artifacts\Output` and `artifacts\logs`: ignored phrasebook exports and runtime logs. Build output remains in each project's ignored `bin` and `obj` directories.
 
 ## Checkout and build
@@ -23,6 +23,21 @@ dotnet test .\SyncAnkiWithGooglePhraseBook.slnx --configuration Release --no-bui
 ```
 
 Install .NET SDK 10.0.404 or a newer .NET 10 SDK. [global.json](./global.json) keeps builds on .NET 10 even when .NET 11 is installed. See the [exporter setup instructions](./external/ExportGooglePhraseBook/README.md) for credentials and exporter prerequisites.
+
+## Code analysis
+
+[.editorconfig](./.editorconfig) owns analyzer severities for this repository's source and tests without changing the exporter submodule's policy. Builds use the SDK's .NET 10 recommended analysis baseline, Sonar C# analyzers, threading analyzers, and the xUnit analyzers supplied transitively by xUnit. Menees and the separate .NET analyzer package are no longer referenced by this repository.
+
+Sonar line-length (`S103`) and method-length (`S138`) violations remain warnings and fail the build because warnings are treated as errors. Magic-number checks (`S109`), selected performance/style recommendations, and library-only `CA2007` await guidance are suggestions. Disposal and cancellation-token checks are build-blocking warnings. Other migrated Sonar severities are preserved.
+
+Install the reviewed PowerShell analyzer version and run the same check used by [CI](./.github/workflows/code-analysis.yml):
+
+```powershell
+Install-Module PSScriptAnalyzer -RequiredVersion 1.24.0 -Scope CurrentUser
+.\scripts\Test-CodeAnalysis.ps1
+```
+
+[PSScriptAnalyzerSettings.psd1](./PSScriptAnalyzerSettings.psd1) checks warnings and errors while preserving console output, existing switch defaults, and the custom `-what-if` contract. Formatting verification remains deferred until a formatting baseline is established.
 
 ## Script entry points
 

@@ -100,10 +100,6 @@ public sealed class StringDistanceProviderTests
             },
         ]);
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Layout",
-        "MEN003:Method is too long",
-        Justification = "Method does not contain logic, just data declarations")]
     public static TheoryData<SoftCaseTestCase> GetSoftCaseTestCases() =>
         TheoryDataBuilder.TheoryData(
         [

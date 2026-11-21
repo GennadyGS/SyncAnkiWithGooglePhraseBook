@@ -8,10 +8,6 @@ namespace Translation.ChangeSetCalculation.UnitTests;
 
 public sealed class PhraseTranslationChangeSetCalculatorTests
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Layout",
-        "MEN003:Method is too long",
-        Justification = "Declarative code only.")]
     public static TheoryData<TestCase> GetTestCases() =>
         TheoryDataBuilder.TheoryData(
         [

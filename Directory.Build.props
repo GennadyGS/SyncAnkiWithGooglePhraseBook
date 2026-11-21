@@ -5,6 +5,8 @@
     <Product>Sync Anki with Google Phrasebook</Product>
     <PackageProjectUrl>https://github.com/GennadyGS/SyncAnkiWithGooglePhraseBook</PackageProjectUrl>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>10.0-recommended</AnalysisLevel>
     <DebugType>Portable</DebugType>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -14,5 +16,8 @@
     <NoWarn Condition="'$(Configuration)'!='Release'">$(NoWarn);NU5104</NoWarn>
   </PropertyGroup>
 
-  <Import Project="$(MSBuildThisFileDirectory)external\ExportGooglePhraseBook\eng\analyzers\CodeAnalysis.targets"/>
+  <ItemGroup>
+    <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" PrivateAssets="all" />
+  </ItemGroup>
 </Project>
