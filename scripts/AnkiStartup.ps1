@@ -52,7 +52,11 @@ function Start-AnkiWhenNeeded {
 
     Write-Host "Starting Anki..."
     $timer = [System.Diagnostics.Stopwatch]::StartNew()
-    Start-Process -FilePath $AnkiPath
+    # Preserve the separate-console launch used by the original workflow.
+    & $Env:ComSpec /c start '""' "`"$AnkiPath`""
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not start Anki: command exited with code $LASTEXITCODE."
+    }
     while ($timer.Elapsed.TotalSeconds -lt $StartupTimeoutSeconds) {
         try {
             Test-AnkiConnect

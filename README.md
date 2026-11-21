@@ -56,7 +56,7 @@ Use `-what-if` for a side-effect-free preview of the workflow:
 
 For valid input, dry-run prints the planned operations and returns without accessing Google or Anki, starting or stopping Anki, running .NET commands, or writing exports, logs, or build output. It does not calculate individual Anki changes. The [URL handler](./scripts/ExportGooglePhrasebookAndSyncAnkiCustomUrlHandler.ps1) also accepts `-what-if` and preserves the `PLATFORM` environment variable in that mode.
 
-The synchronization script reuses a responsive AnkiConnect instance; otherwise it starts Anki once and waits up to 30 seconds for an AnkiConnect version response. Each probe times out after 2 seconds, so the final probe can extend the wait slightly. It does not stop Anki on failure. Check that AnkiConnect is installed and responding on `127.0.0.1:8765` if startup fails.
+The synchronization script reuses a responsive AnkiConnect instance; otherwise it starts Anki once in a separate console and waits up to 30 seconds for an AnkiConnect version response. Anki remains open independently when the synchronization console exits or is closed; successful protocol runs close their console automatically. Each probe times out after 2 seconds, so the final probe can extend the wait slightly. It does not stop Anki on failure. Check that AnkiConnect is installed and responding on `127.0.0.1:8765` if startup fails.
 
 The URL handler requires an absolute `exportGooglePhrasebookToAnki` URL with exactly one non-empty `spreadSheetId` query parameter, for example `exportGooglePhrasebookToAnki://open?spreadSheetId=<spreadsheet-id>`. Invalid URLs are rejected before the environment is changed.
 
