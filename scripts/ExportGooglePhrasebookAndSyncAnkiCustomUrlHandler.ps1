@@ -2,11 +2,21 @@
 
 param (
     [Parameter(Mandatory=$true)]
-    [ValidateScript({ -not [string]::IsNullOrWhiteSpace($_) })]
+    [AllowEmptyString()]
+    [AllowNull()]
     [string] $url,
     [switch] ${what-if},
-    [switch] $interactive
+    [switch] $interactive = $true
 )
+
+$ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot 'Common.ps1')
+$repositoryRoot = Split-Path -Parent $PSScriptRoot
+$logPath = Join-Path $repositoryRoot 'artifacts\logs'
+trap {
+    Write-ScriptError -ErrorRecord $_ -LogDirectory $logPath -Interactive $interactive
+    exit 1
+}
 
 $parsedUrl = $null
 if (-not [Uri]::TryCreate($url, [UriKind]::Absolute, [ref]$parsedUrl)) {
@@ -28,5 +38,9 @@ if (!${what-if}) {
     Remove-Item Env:PLATFORM -ErrorAction SilentlyContinue
 }
 
+$LASTEXITCODE = 0
 & (Join-Path $PSScriptRoot 'ExportGooglePhrasebookAndSyncAnki.ps1') `
     -spreadSheetId $spreadSheetIds[0] -what-if:${what-if} -interactive:$interactive
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}

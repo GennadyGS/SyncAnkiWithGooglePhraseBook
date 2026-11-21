@@ -39,11 +39,11 @@ Use `-what-if` for a side-effect-free preview of the workflow:
 .\scripts\ExportGooglePhrasebookAndSyncAnki.ps1 -spreadSheetId '<spreadsheet-id>' -what-if
 ```
 
-Dry-run prints the planned operations and returns without accessing Google or Anki, starting or stopping Anki, running .NET commands, or writing exports, logs, or build output. It does not calculate individual Anki changes. The [URL handler](./scripts/ExportGooglePhrasebookAndSyncAnkiCustomUrlHandler.ps1) also accepts `-what-if` and preserves the `PLATFORM` environment variable in that mode.
+For valid input, dry-run prints the planned operations and returns without accessing Google or Anki, starting or stopping Anki, running .NET commands, or writing exports, logs, or build output. It does not calculate individual Anki changes. The [URL handler](./scripts/ExportGooglePhrasebookAndSyncAnkiCustomUrlHandler.ps1) also accepts `-what-if` and preserves the `PLATFORM` environment variable in that mode.
 
 The URL handler requires an absolute `exportGooglePhrasebookToAnki` URL with exactly one non-empty `spreadSheetId` query parameter, for example `exportGooglePhrasebookToAnki://open?spreadSheetId=<spreadsheet-id>`. Invalid URLs are rejected before the environment is changed.
 
-Errors are reported without waiting for input by default, including when launched through the registered protocol. Pass `-interactive` to the synchronization script or URL handler to pause after a workflow error when console input is available. Unattended jobs should omit this switch.
+Workflow and input-validation errors are written to the console and appended to `artifacts\logs\ScriptErrors.log`, including error location and stack trace. The synchronization script and URL handler pause on errors by default when console input is available, including when launched through the registered protocol, then exit with code 1. Pass `-interactive:$false` for unattended execution; redirected console input also disables the pause. If the log cannot be written, that failure is reported in the console before pausing.
 
 The [protocol registration script](./scripts/CustomUrlProtocol/RegisterCustomUrlProtocolForAnki.ps1) accepts `-what-if` to preview registration without writing to the registry. These guarantees apply to this repository's entry points, not direct invocations of the exporter submodule's scripts.
 

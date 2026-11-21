@@ -2,11 +2,25 @@
 
 param (
     [Parameter(Mandatory=$true)]
-    [ValidateScript({ -not [string]::IsNullOrWhiteSpace($_) })]
+    [AllowEmptyString()]
+    [AllowNull()]
     [string] $spreadSheetId,
     [switch] ${what-if},
-    [switch] $interactive
+    [switch] $interactive = $true
 )
+
+$ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot 'Common.ps1')
+$repositoryRoot = Split-Path -Parent $PSScriptRoot
+$logPath = Join-Path $repositoryRoot 'artifacts\logs'
+trap {
+    Write-ScriptError -ErrorRecord $_ -LogDirectory $logPath -Interactive $interactive
+    exit 1
+}
+
+if ([string]::IsNullOrWhiteSpace($spreadSheetId)) {
+    throw "Invalid spreadsheet ID: a non-empty value is required."
+}
 
 if (${what-if}) {
     Write-Host "Running in what-if mode. No changes will be applied."
@@ -32,19 +46,7 @@ function Invoke-ExternalCommand {
     }
 }
 
-$ErrorActionPreference = "Stop"
-trap {
-    [Console]::Error.WriteLine("ERROR: $($_.Exception.Message)")
-    if ($interactive -and [Environment]::UserInteractive -and -not [Console]::IsInputRedirected) {
-        Write-Host "Press enter to exit..."
-        Read-Host
-    }
-    exit 1
-}
-
-$repositoryRoot = Split-Path -Parent $PSScriptRoot
 $outputPath = Join-Path $repositoryRoot 'artifacts\Output'
-$logPath = Join-Path $repositoryRoot 'artifacts\logs'
 $phraseBookFilePath = Join-Path $outputPath 'GooglePhrasebook.json'
 $appPathRoot = Join-Path $repositoryRoot 'src'
 
